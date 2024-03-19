@@ -1,0 +1,23 @@
+package models
+
+import (
+	"github.com/beego/beego/v2/client/orm"
+)
+
+type AddCustomerRequestDTO struct {
+	Name                string `orm:"size(255)"`
+	Category            string `orm:"size(255)"`
+	PhoneNumber         string `orm:"size(255)"`
+	ShopName            string `orm:"size(255)"`
+	Nickname            string `orm:"size(255)"`
+	ShopAssistantName   string `orm:"size(255)"`
+	ShopAssistantNumber string `orm:"size(255)"`
+	// Password string `orm:"size(255)"`
+	Email  string `orm:"size(255)"`
+	Gender string `orm:"size(255)"`
+	Dob    string `orm:"size(255)"`
+}
+
+func init() {
+	orm.RegisterModel(new(AddCustomerRequestDTO))
+}
