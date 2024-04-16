@@ -1,0 +1,15 @@
+2024/04/16 00:00:33.824  [I] [server.go:280]  http server Running on http://:8083
+2024/04/16 14:25:17.878  [I] [server.go:280]  http server Running on http://:8083
+2024/04/16 14:34:52.035  [I] [server.go:280]  http server Running on http://:8083
+2024/04/16 14:38:04.329  [I] [server.go:280]  http server Running on http://:8083
+2024/04/16 14:38:19.248  [I] [users.go:123]  Received  {Jezebel jezebellious gendia@gmail.com m 1994-12-26}
+2024/04/16 14:38:19.271  [D] [users.go:128]  [36 50 97 36 48 56 36 50 56 111 65 49 56 75 114 119 82 105 54 88 98 68 86 111 90 82 69 84 46 65 90 71 118 82 87 78 88 97 52 84 98 53 77 104 52 105 66 69 98 108 113 107 115 80 105 70 117 119 76 97]
+2024/04/16 14:38:19.271  [D] [users.go:132]  Sending $2a$08$28oA18KrwRi6XbDVoZRET.AZGvRWNXa4Tb5Mh4iBEblqksPiFuwLa
+2024/04/16 14:38:19.330  [D] [users.go:176]  Returned user is &{21 1 Jezebel  $2a$08$28oA18KrwRi6XbDVoZRET.AZGvRWNXa4Tb5Mh4iBEblqksPiFuwLa gendia@gmail.com  MALE 1994-12-26 00:00:00 +0000 GMT     1 false 2024-04-16 14:38:19 +0000 GMT 2024-04-16 14:38:19 +0000 GMT 1 1}
+2024/04/16 14:38:19.379  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 138.022292ms|   match|[97;46m POST    [0m /v1/users/sign-up   r:/v1/users/sign-up
+2024/04/16 14:38:34.813  [I] [users.go:123]  Received  {Jezebel jezebellious gendia@gmail.com male 1994-12-26}
+2024/04/16 14:38:34.843  [D] [users.go:128]  [36 50 97 36 48 56 36 46 106 70 112 119 112 100 55 99 84 107 98 116 86 46 79 87 100 97 117 56 79 98 114 116 80 76 52 79 67 107 79 110 80 97 65 54 113 100 111 100 55 106 51 97 87 118 50 115 106 81 113 83]
+2024/04/16 14:38:34.843  [D] [users.go:132]  Sending $2a$08$.jFpwpd7cTkbtV.OWdau8ObrtPL4OCkOnPaA6qdod7j3aWv2sjQqS
+2024/04/16 14:38:34.867  [D] [users.go:176]  Returned user is &{22 1 Jezebel  $2a$08$.jFpwpd7cTkbtV.OWdau8ObrtPL4OCkOnPaA6qdod7j3aWv2sjQqS gendia@gmail.com  MALE 1994-12-26 00:00:00 +0000 GMT     1 false 2024-04-16 14:38:35 +0000 GMT 2024-04-16 14:38:35 +0000 GMT 1 1}
+2024/04/16 14:38:34.871  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|  58.782833ms|   match|[97;46m POST    [0m /v1/users/sign-up   r:/v1/users/sign-up
+2024/04/16 14:42:47.953  [I] [server.go:280]  http server Running on http://:8083

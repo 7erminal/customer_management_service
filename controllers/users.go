@@ -135,7 +135,7 @@ func (c *UsersController) SignUp() {
 	}
 
 	// Convert dob string to date
-	dobm, error := time.Parse("2006-01-02 15:04:05.000", v.Dob)
+	dobm, error := time.Parse("2006-01-02", v.Dob)
 
 	if error != nil {
 		logs.Error(error)
@@ -147,7 +147,15 @@ func (c *UsersController) SignUp() {
 
 	} else {
 		// Assign dob
-		var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: v.Gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+		var gender string = strings.ToLower(v.Gender)
+
+		if gender == "m" || gender == "M" || gender == "male" {
+			gender = "MALE"
+		}
+		if gender == "f" || gender == "F" || gender == "female" {
+			gender = "FEMALE"
+		}
+		var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 		if r, err := models.AddUsers(&addUserModel); err == nil {
 			c.Ctx.Output.SetStatus(201)
