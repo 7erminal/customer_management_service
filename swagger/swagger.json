@@ -15,556 +15,6 @@
     },
     "basePath": "/v1",
     "paths": {
-        "/customer_categories/": {
-            "get": {
-                "tags": [
-                    "customer_categories"
-                ],
-                "description": "get Customer_categories\n\u003cbr\u003e",
-                "operationId": "Customer_categoriesController.Get All",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "query",
-                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "sortby",
-                        "description": "Sorted-by fields. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "order",
-                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "description": "Limit the size of result set. Must be an integer",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "offset",
-                        "description": "Start position of result set. Must be an integer",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer_categories"
-                        }
-                    },
-                    "403": {
-                        "description": ""
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "customer_categories"
-                ],
-                "description": "create Customer_categories\n\u003cbr\u003e",
-                "operationId": "Customer_categoriesController.Post",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for Customer_categories content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CustomerCategoriesRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{int} models.CustomerCategoriesResponseDTO"
-                    },
-                    "403": {
-                        "description": "body is empty"
-                    }
-                }
-            }
-        },
-        "/customer_categories/{id}": {
-            "get": {
-                "tags": [
-                    "customer_categories"
-                ],
-                "description": "get Customer_categories by id\n\u003cbr\u003e",
-                "operationId": "Customer_categoriesController.Get One",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The key for staticblock",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer_categories"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is empty"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "customer_categories"
-                ],
-                "description": "update the Customer_categories\n\u003cbr\u003e",
-                "operationId": "Customer_categoriesController.Put",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to update",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for Customer_categories content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer_categories"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer_categories"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is not int"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "customer_categories"
-                ],
-                "description": "delete the Customer_categories\n\u003cbr\u003e",
-                "operationId": "Customer_categoriesController.Delete",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to delete",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{string} delete success!"
-                    },
-                    "403": {
-                        "description": "id is empty"
-                    }
-                }
-            }
-        },
-        "/customers/": {
-            "get": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "get Customers\n\u003cbr\u003e",
-                "operationId": "CustomersController.Get All",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "query",
-                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "sortby",
-                        "description": "Sorted-by fields. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "order",
-                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "description": "Limit the size of result set. Must be an integer",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "offset",
-                        "description": "Start position of result set. Must be an integer",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    },
-                    "403": {
-                        "description": ""
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "create Customers\n\u003cbr\u003e",
-                "operationId": "CustomersController.Post",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for Customers content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "{int} models.Customers"
-                    },
-                    "403": {
-                        "description": "body is empty"
-                    }
-                }
-            }
-        },
-        "/customers/add-customer": {
-            "post": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "Add customer\n\u003cbr\u003e",
-                "operationId": "CustomersController.AddCustomer",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for add customer content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.AddCustomerRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.CustomerResponseDTO"
-                        }
-                    },
-                    "403": {
-                        "description": "body is empty"
-                    }
-                }
-            }
-        },
-        "/customers/{id}": {
-            "get": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "get Customers by id\n\u003cbr\u003e",
-                "operationId": "CustomersController.Get One",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The key for staticblock",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is empty"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "update the Customers\n\u003cbr\u003e",
-                "operationId": "CustomersController.Put",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to update",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for Customers content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customers"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is not int"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "customers"
-                ],
-                "description": "delete the Customers\n\u003cbr\u003e",
-                "operationId": "CustomersController.Delete",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to delete",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{string} delete success!"
-                    },
-                    "403": {
-                        "description": "id is empty"
-                    }
-                }
-            }
-        },
-        "/user_types/": {
-            "get": {
-                "tags": [
-                    "user_types"
-                ],
-                "description": "get UserTypes\n\u003cbr\u003e",
-                "operationId": "UserTypesController.Get All",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "query",
-                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "sortby",
-                        "description": "Sorted-by fields. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "order",
-                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "description": "Limit the size of result set. Must be an integer",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "offset",
-                        "description": "Start position of result set. Must be an integer",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserTypes"
-                        }
-                    },
-                    "403": {
-                        "description": ""
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "user_types"
-                ],
-                "description": "create UserTypes\n\u003cbr\u003e",
-                "operationId": "UserTypesController.Post",
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for UserTypes content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserTypes"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "{int} models.UserTypes"
-                    },
-                    "403": {
-                        "description": "body is empty"
-                    }
-                }
-            }
-        },
-        "/user_types/{id}": {
-            "get": {
-                "tags": [
-                    "user_types"
-                ],
-                "description": "get UserTypes by id\n\u003cbr\u003e",
-                "operationId": "UserTypesController.Get One",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The key for staticblock",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserTypes"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is empty"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "user_types"
-                ],
-                "description": "update the UserTypes\n\u003cbr\u003e",
-                "operationId": "UserTypesController.Put",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to update",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "body for UserTypes content",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserTypes"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserTypes"
-                        }
-                    },
-                    "403": {
-                        "description": ":id is not int"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "user_types"
-                ],
-                "description": "delete the UserTypes\n\u003cbr\u003e",
-                "operationId": "UserTypesController.Delete",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The id you want to delete",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{string} delete success!"
-                    },
-                    "403": {
-                        "description": "id is empty"
-                    }
-                }
-            }
-        },
         "/users/": {
             "get": {
                 "tags": [
@@ -700,6 +150,37 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.SignUpDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/users/verify-otp": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Verify OTP using username\n\u003cbr\u003e",
+                "operationId": "UsersController.Verify OTP",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Verify OTP content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.VerifyOtpDTO"
                         }
                     }
                 ],
@@ -1216,6 +697,18 @@
                 }
             }
         },
+        "requests.VerifyOtpDTO": {
+            "title": "VerifyOtpDTO",
+            "type": "object",
+            "properties": {
+                "Password": {
+                    "type": "string"
+                },
+                "Username": {
+                    "type": "string"
+                }
+            }
+        },
         "structs.UsernameDTO": {
             "title": "UsernameDTO",
             "type": "object",
@@ -1228,20 +721,8 @@
     },
     "tags": [
         {
-            "name": "user_types",
-            "description": "UserTypesController operations for UserTypes\n"
-        },
-        {
             "name": "users",
             "description": "UsersController operations for Users\n"
-        },
-        {
-            "name": "customer_categories",
-            "description": "Customer_categoriesController operations for Customer_categories\n"
-        },
-        {
-            "name": "customers",
-            "description": "CustomersController operations for Customers\n"
         }
     ]
 }

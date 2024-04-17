@@ -6,7 +6,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
-func SendEmail(username string) {
+func SendEmail(username string, otp string) {
 	auth := smtp.PlainAuth("", "bede.abbe@solisfinance.com", "dqcmwcuyvfjwcuyd", "smtp.gmail.com")
 
 	// Here we do it all: connect to our server, set up a message and send it
@@ -15,11 +15,11 @@ func SendEmail(username string) {
 
 	msg := []byte("To: bede.abbe91@gmail.com\r\n" +
 
-		"Subject: Why aren’t you using Mailtrap yet?\r\n" +
+		"Subject: Your One time pin. Adepa.\r\n" +
 
 		"\r\n" +
 
-		"Here’s the space for our great sales pitch\r\n")
+		"Hi " + username + ", your one time pin is " + otp + ".\r\nThis code will expire in 5 mins.\r\n")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, "bede.abbe@solisfinance.com", to, msg)
 
