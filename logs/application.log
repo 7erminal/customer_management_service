@@ -1,15 +1,36 @@
-2024/04/16 00:00:33.824  [I] [server.go:280]  http server Running on http://:8083
-2024/04/16 14:25:17.878  [I] [server.go:280]  http server Running on http://:8083
-2024/04/16 14:34:52.035  [I] [server.go:280]  http server Running on http://:8083
-2024/04/16 14:38:04.329  [I] [server.go:280]  http server Running on http://:8083
-2024/04/16 14:38:19.248  [I] [users.go:123]  Received  {Jezebel jezebellious gendia@gmail.com m 1994-12-26}
-2024/04/16 14:38:19.271  [D] [users.go:128]  [36 50 97 36 48 56 36 50 56 111 65 49 56 75 114 119 82 105 54 88 98 68 86 111 90 82 69 84 46 65 90 71 118 82 87 78 88 97 52 84 98 53 77 104 52 105 66 69 98 108 113 107 115 80 105 70 117 119 76 97]
-2024/04/16 14:38:19.271  [D] [users.go:132]  Sending $2a$08$28oA18KrwRi6XbDVoZRET.AZGvRWNXa4Tb5Mh4iBEblqksPiFuwLa
-2024/04/16 14:38:19.330  [D] [users.go:176]  Returned user is &{21 1 Jezebel  $2a$08$28oA18KrwRi6XbDVoZRET.AZGvRWNXa4Tb5Mh4iBEblqksPiFuwLa gendia@gmail.com  MALE 1994-12-26 00:00:00 +0000 GMT     1 false 2024-04-16 14:38:19 +0000 GMT 2024-04-16 14:38:19 +0000 GMT 1 1}
-2024/04/16 14:38:19.379  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 138.022292ms|   match|[97;46m POST    [0m /v1/users/sign-up   r:/v1/users/sign-up
-2024/04/16 14:38:34.813  [I] [users.go:123]  Received  {Jezebel jezebellious gendia@gmail.com male 1994-12-26}
-2024/04/16 14:38:34.843  [D] [users.go:128]  [36 50 97 36 48 56 36 46 106 70 112 119 112 100 55 99 84 107 98 116 86 46 79 87 100 97 117 56 79 98 114 116 80 76 52 79 67 107 79 110 80 97 65 54 113 100 111 100 55 106 51 97 87 118 50 115 106 81 113 83]
-2024/04/16 14:38:34.843  [D] [users.go:132]  Sending $2a$08$.jFpwpd7cTkbtV.OWdau8ObrtPL4OCkOnPaA6qdod7j3aWv2sjQqS
-2024/04/16 14:38:34.867  [D] [users.go:176]  Returned user is &{22 1 Jezebel  $2a$08$.jFpwpd7cTkbtV.OWdau8ObrtPL4OCkOnPaA6qdod7j3aWv2sjQqS gendia@gmail.com  MALE 1994-12-26 00:00:00 +0000 GMT     1 false 2024-04-16 14:38:35 +0000 GMT 2024-04-16 14:38:35 +0000 GMT 1 1}
-2024/04/16 14:38:34.871  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|  58.782833ms|   match|[97;46m POST    [0m /v1/users/sign-up   r:/v1/users/sign-up
-2024/04/16 14:42:47.953  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 06:44:25.939  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 06:49:53.207  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 06:51:09.790  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials b10-20020a056000054a00b00341b7d5054bsm16839061wrf.72 - gsmtp
+2024/04/17 06:51:09.795  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 1.734339667s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 06:56:40.782  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials m1-20020adfe941000000b00343f2cca88dsm16799430wrn.76 - gsmtp
+2024/04/17 06:56:40.787  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 1.470423916s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 06:58:35.887  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials c10-20020adffb0a000000b00347ec0469b2sm6382116wrr.46 - gsmtp
+2024/04/17 06:58:35.890  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 1.343923375s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 06:58:50.230  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials g9-20020a5d5409000000b00343dc6a0019sm16637077wrv.68 - gsmtp
+2024/04/17 06:58:50.234  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 1.455174083s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 07:06:37.691  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials o28-20020a05600c511c00b0041898fc168bsm1538326wms.36 - gsmtp
+2024/04/17 07:06:37.693  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 1.504335083s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 07:24:33.878  [D] [email_helper.go:28]  535 5.7.8 Username and Password not accepted. For more information, go to
+5.7.8  https://support.google.com/mail/?p=BadCredentials l3-20020a05600012c300b003434c764f01sm16695356wrx.107 - gsmtp
+2024/04/17 07:24:33.881  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|  1.37544225s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 09:47:49.929  [D] [email_helper.go:28]  421 Service not available
+2024/04/17 09:47:49.932  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 413.523416ms|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 09:48:10.493  [D] [email_helper.go:28]  421 Service not available
+2024/04/17 09:48:10.494  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m| 273.746625ms|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 09:49:05.802  [D] [email_helper.go:28]  421 Service not available
+2024/04/17 09:49:05.805  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|  365.50975ms|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 10:19:45.253  [D] [email_helper.go:28]  451 Request action aborted on MFE proxy, SMTP server is not available.
+2024/04/17 10:19:45.257  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|2m7.593168416s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 10:38:55.955  [D] [email_helper.go:28]  451 Request action aborted on MFE proxy, SMTP server is not available.
+2024/04/17 10:38:55.963  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|2m7.549854541s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 10:47:48.561  [D] [email_helper.go:28]  dial tcp 142.251.31.109:587: connect: operation timed out
+2024/04/17 10:47:48.565  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|1m15.097930042s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 10:50:08.171  [D] [email_helper.go:28]  dial tcp 142.251.31.109:587: connect: operation timed out
+2024/04/17 10:50:08.175  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|1m15.04227925s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
+2024/04/17 11:00:23.730  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 11:02:33.472  [I] [server.go:280]  http server Running on http://:8083

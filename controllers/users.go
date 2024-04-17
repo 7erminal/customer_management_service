@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
+	"customer_management_service/structs"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -134,52 +136,48 @@ func (c *UsersController) SignUp() {
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
-	// Convert dob string to date
-	dobm, error := time.Parse("2006-01-02", v.Dob)
+	q, err := models.GetUsersByUsername(v.Email)
 
-	if error != nil {
-		logs.Error(error)
+	if err != nil {
+		// Convert dob string to date
+		dobm, error := time.Parse("2006-01-02", v.Dob)
 
-		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
-		c.Data["json"] = resp
+		if error != nil {
+			logs.Error(error)
 
-		// c.Data["json"] = error.Error()
+			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
+			c.Data["json"] = resp
 
-	} else {
-		// Assign dob
-		var gender string = strings.ToLower(v.Gender)
+			// c.Data["json"] = error.Error()
 
-		if gender == "m" || gender == "M" || gender == "male" {
-			gender = "MALE"
-		}
-		if gender == "f" || gender == "F" || gender == "female" {
-			gender = "FEMALE"
-		}
-		var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+		} else {
+			// Assign dob
+			var gender string = strings.ToLower(v.Gender)
 
-		if r, err := models.AddUsers(&addUserModel); err == nil {
-			c.Ctx.Output.SetStatus(201)
+			if gender == "m" || gender == "M" || gender == "male" {
+				gender = "MALE"
+			}
+			if gender == "f" || gender == "F" || gender == "female" {
+				gender = "FEMALE"
+			}
+			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
-			// logs.Debug("Returned user is", r)
+			if _, err := models.AddUsers(&addUserModel); err == nil {
+				c.Ctx.Output.SetStatus(201)
 
-			// id, _ := strconv.ParseInt(idStr, 0, 64)
-			v, err := models.GetUsersById(r)
+				logs.Debug("User is ", addUserModel)
 
-			if err != nil {
-				c.Data["json"] = err.Error()
+				// logs.Debug("Returned user is", r)
 
-				logs.Error(err.Error())
+				// id, _ := strconv.ParseInt(idStr, 0, 64)
 
-				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
-				c.Data["json"] = resp
-			} else {
-				logs.Debug("Returned user is", v)
+				// logs.Debug("Returned user is", v)
 
-				var cust = models.Customers{User: v, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var cust = models.Customers{User: &addUserModel, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 				if _, err := models.AddCustomers(&cust); err == nil {
 					c.Ctx.Output.SetStatus(200)
-					var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User created successfully"}
+					var resp = models.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 					c.Data["json"] = resp
 				} else {
 					// c.Data["json"] = err.Error()
@@ -187,15 +185,20 @@ func (c *UsersController) SignUp() {
 					c.Data["json"] = resp
 				}
 				// c.Data["json"] = v
+
+			} else {
+				logs.Error(err.Error())
+
+				var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+				c.Data["json"] = resp
+
+				// c.Data["json"] = err.Error()
 			}
-		} else {
-			logs.Error(err.Error())
-
-			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
-			c.Data["json"] = resp
-
-			// c.Data["json"] = err.Error()
 		}
+	} else {
+		// c.Data["json"] = err.Error()
+		var resp = models.UserResponseDTO{StatusCode: 604, User: q, StatusDesc: "User already exists. Username, email or mobile number already exists."}
+		c.Data["json"] = resp
 	}
 
 	c.ServeJSON()
@@ -223,18 +226,24 @@ func (c *UsersController) VerifyUsername() {
 // Resend OTP ...
 // @Title Resend OTP
 // @Description Resend OTP using username
-// @Param	username		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.UsernameDTO
-// @Failure 403 :username is empty
-// @router /resend-otp/:username [get]
+// @Param	body		body 	structs.UsernameDTO	true		"body for SignUp content"
+// @Success 201 {object} models.UserResponseDTO
+// @Failure 403 body is empty
+// @router /resend-otp [post]
 func (c *UsersController) ResendOtp() {
-	username := c.Ctx.Input.Param(":username")
-	v, err := models.GetUsersByUsername(username)
+	// username := c.Ctx.Input.Param(":username")
+	var q structs.UsernameDTO
+	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
+
+	v, err := models.GetUsersByUsername(q.Username)
 
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
-		c.Data["json"] = v
+		functions.SendEmail(v.Email)
+
+		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Email sent successfully"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

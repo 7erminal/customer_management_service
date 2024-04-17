@@ -558,8 +558,8 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
-  /users/resend-otp/{username}:
-    get:
+  /users/resend-otp:
+    post:
       tags:
       - users
       description: |-
@@ -567,18 +567,19 @@ paths:
         <br>
       operationId: UsersController.Resend OTP
       parameters:
-      - in: path
-        name: username
-        description: The key for staticblock
+      - in: body
+        name: body
+        description: body for SignUp content
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/structs.UsernameDTO'
       responses:
-        "200":
+        "201":
           description: ""
           schema:
-            $ref: '#/definitions/models.UsernameDTO'
+            $ref: '#/definitions/models.UserResponseDTO'
         "403":
-          description: :username is empty
+          description: body is empty
   /users/sign-up:
     post:
       tags:
@@ -865,6 +866,12 @@ definitions:
       UserType:
         type: integer
         format: int64
+      Username:
+        type: string
+  structs.UsernameDTO:
+    title: UsernameDTO
+    type: object
+    properties:
       Username:
         type: string
 tags:
