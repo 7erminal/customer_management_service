@@ -11,9 +11,9 @@ func SendEmail(username string) {
 
 	// Here we do it all: connect to our server, set up a message and send it
 
-	to := []string{username}
+	to := []string{"bede.abbe91@gmail.com"}
 
-	msg := []byte("To: " + username + "\r\n" +
+	msg := []byte("To: bede.abbe91@gmail.com\r\n" +
 
 		"Subject: Why aren’t you using Mailtrap yet?\r\n" +
 
