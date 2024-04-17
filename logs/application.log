@@ -34,3 +34,23 @@
 2024/04/17 10:50:08.175  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|1m15.04227925s|   match|[97;44m GET     [0m /v1/users/resend-otp/gendia@gmail.com   r:/v1/users/resend-otp/:username
 2024/04/17 11:00:23.730  [I] [server.go:280]  http server Running on http://:8083
 2024/04/17 11:02:33.472  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 12:41:10.860  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 12:41:15.705  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|    557.667µs|   match|[97;44m GET     [0m /swagger/
+2024/04/17 12:41:44.648  [D] [router.go:1305]  |            ::1|[97;42m 200 [0m|   9.645083ms|   match|[97;44m GET     [0m /swagger/swagger.yml
+2024/04/17 12:42:15.006  [C] [config.go:500]  the request url is  /v1/users/resend-otp
+2024/04/17 12:42:15.007  [C] [config.go:501]  Handler crashed with error <Ormer.Using> unknown db alias name `default`
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/runtime/panic.go:770
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/go/pkg/mod/github.com/beego/beego/v2@v2.1.6/client/orm/orm.go:633
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/go/pkg/mod/github.com/beego/beego/v2@v2.1.6/client/orm/orm.go:625
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/Desktop/projects/golang/customer_management_service/models/users.go:54
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/Desktop/projects/golang/customer_management_service/controllers/users.go:238
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/reflect/value.go:596
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/reflect/value.go:380
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/go/pkg/mod/github.com/beego/beego/v2@v2.1.6/server/web/router.go:1233
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/go/pkg/mod/github.com/beego/beego/v2@v2.1.6/server/web/filter.go:83
+2024/04/17 12:42:15.007  [C] [config.go:507]  /Users/bedeabbe/go/pkg/mod/github.com/beego/beego/v2@v2.1.6/server/web/router.go:1002
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/net/http/server.go:3137
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/net/http/server.go:2039
+2024/04/17 12:42:15.007  [C] [config.go:507]  /usr/local/go/src/runtime/asm_arm64.s:1222
+2024/04/17 12:43:28.645  [I] [server.go:280]  http server Running on http://:8083
+2024/04/17 12:44:06.012  [I] [server.go:280]  http server Running on http://:8083
