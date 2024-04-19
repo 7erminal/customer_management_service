@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
-	"customer_management_service/structs"
-	"customer_management_service/structs/requests"
 
 	// "customer_management_service/structs/responses"
 	"encoding/json"
@@ -32,8 +29,6 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("SignUp", c.SignUp)
 	c.Mapping("SignUp2", c.SignUp2)
-	c.Mapping("VerifyUser", c.VerifyUsername)
-	c.Mapping("ResendOTP", c.ResendOtp)
 }
 
 // SignUp2 ...
@@ -223,47 +218,6 @@ func (c *UsersController) VerifyUsername() {
 	c.ServeJSON()
 }
 
-// Resend OTP ...
-// @Title Resend OTP
-// @Description Resend OTP using username
-// @Param	body		body 	structs.UsernameDTO	true		"body for SignUp content"
-// @Success 201 {object} models.UserResponseDTO
-// @Failure 403 body is empty
-// @router /resend-otp [post]
-func (c *UsersController) ResendOtp() {
-	// username := c.Ctx.Input.Param(":username")
-	var q structs.UsernameDTO
-	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
-
-	v, err := models.GetUsersByUsername(q.Username)
-
-	if err != nil {
-		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User cannot be found"}
-		// c.Data["json"] = err.Error()
-		c.Data["json"] = resp
-	} else {
-		// Generate random number
-		randNum := functions.EncodeToString(6)
-		logs.Debug("Random number generated is ", randNum)
-
-		expiryDate := time.Now().Local().Add(time.Hour*time.Duration(0) + time.Minute*time.Duration(5) + time.Second*time.Duration(0))
-
-		otpModel := models.UserOtps{Code: randNum, UserId: v.UserId, Status: 2, DateCreated: time.Now(), DateModified: time.Now(), DateGenerated: time.Now(), ExpiryDate: expiryDate, Active: 1}
-
-		if _, err := models.AddUserOtp(&otpModel); err == nil {
-			functions.SendEmail(v.Email, randNum)
-
-			var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Email sent successfully"}
-			c.Data["json"] = resp
-		} else {
-			logs.Error("Error inserting OTP...", err.Error())
-			var resp = models.UserResponseDTO{StatusCode: 703, User: v, StatusDesc: "Error sending email"}
-			c.Data["json"] = resp
-		}
-	}
-	c.ServeJSON()
-}
-
 // GetOne ...
 // @Title Get One
 // @Description get Users by id
@@ -449,75 +403,6 @@ func (c *UsersController) Delete() {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
-	}
-	c.ServeJSON()
-}
-
-// Verify OTP ...
-// @Title Verify OTP
-// @Description Verify OTP using username
-// @Param	body		body 	requests.VerifyOtpDTO	true		"body for Verify OTP content"
-// @Success 201 {object} models.UserResponseDTO
-// @Failure 403 body is empty
-// @router /verify-otp [post]
-func (c *UsersController) VerifyOtp() {
-	// username := c.Ctx.Input.Param(":username")
-	var q requests.VerifyOtpDTO
-	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
-
-	v, err := models.GetUsersByUsername(q.Username)
-
-	if err != nil {
-		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User cannot be found"}
-		// c.Data["json"] = err.Error()
-		c.Data["json"] = resp
-	} else {
-		// Get OTP
-		otp, err := models.VerifyUserOTP(v.UserId)
-
-		if err == nil {
-			if q.Password == otp.Code {
-				logs.Debug("OTP Passed")
-				logs.Debug("About to compare OTP expiry date...", otp.ExpiryDate, " with date now ", time.Now())
-				if otp.ExpiryDate.After(time.Now()) {
-					otp.Status = 1
-					if err := models.UpdateUserOtpById(otp); err == nil {
-						var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "OTP Verified successfully"}
-						c.Data["json"] = resp
-					} else {
-						logs.Error("Error is ", err.Error())
-						var resp = models.UserResponseDTO{StatusCode: 403, User: v, StatusDesc: "Error occurred inserting record."}
-						c.Data["json"] = resp
-					}
-				} else {
-					var resp = models.UserResponseDTO{StatusCode: 403, User: v, StatusDesc: "OTP Expired"}
-					c.Data["json"] = resp
-				}
-			} else {
-				var resp = models.UserResponseDTO{StatusCode: 402, User: v, StatusDesc: "OTP Verification failed"}
-				c.Data["json"] = resp
-			}
-		} else {
-			var resp = models.UserResponseDTO{StatusCode: 403, User: v, StatusDesc: "OTP Expired"}
-			c.Data["json"] = resp
-		}
-		// Generate random number
-		// randNum := functions.EncodeToString(6)
-		// logs.Debug("Random number generated is ", randNum)
-
-		// expiryDate := time.Now().Local().Add(time.Hour*time.Duration(0) + time.Minute*time.Duration(5) + time.Second*time.Duration(0))
-
-		// otpModel := models.User_otps{Code: randNum, User: v.UserId, Status: 2, DateCreated: time.Now(), DateModified: time.Now(), DateGenerated: time.Now(), ExpiryDate: expiryDate, Active: 1}
-
-		// if _, err := models.AddUser_otps(&otpModel); err == nil {
-		// 	functions.SendEmail(v.Email, randNum)
-
-		// 	var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Email sent successfully"}
-		// 	c.Data["json"] = resp
-		// } else {
-		// 	var resp = models.UserResponseDTO{StatusCode: 703, User: v, StatusDesc: "Error sending email"}
-		// 	c.Data["json"] = resp
-		// }
 	}
 	c.ServeJSON()
 }

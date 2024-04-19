@@ -161,28 +161,6 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
-  /users/resend-otp:
-    post:
-      tags:
-      - users
-      description: |-
-        Resend OTP using username
-        <br>
-      operationId: UsersController.Resend OTP
-      parameters:
-      - in: body
-        name: body
-        description: body for SignUp content
-        required: true
-        schema:
-          $ref: '#/definitions/structs.UsernameDTO'
-      responses:
-        "201":
-          description: ""
-          schema:
-            $ref: '#/definitions/models.UserResponseDTO'
-        "403":
-          description: body is empty
   /users/sign-up:
     post:
       tags:
@@ -198,28 +176,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.SignUpDTO'
-      responses:
-        "201":
-          description: ""
-          schema:
-            $ref: '#/definitions/models.UserResponseDTO'
-        "403":
-          description: body is empty
-  /users/verify-otp:
-    post:
-      tags:
-      - users
-      description: |-
-        Verify OTP using username
-        <br>
-      operationId: UsersController.Verify OTP
-      parameters:
-      - in: body
-        name: body
-        description: body for Verify OTP content
-        required: true
-        schema:
-          $ref: '#/definitions/requests.VerifyOtpDTO'
       responses:
         "201":
           description: ""
@@ -491,20 +447,6 @@ definitions:
       UserType:
         type: integer
         format: int64
-      Username:
-        type: string
-  requests.VerifyOtpDTO:
-    title: VerifyOtpDTO
-    type: object
-    properties:
-      Password:
-        type: string
-      Username:
-        type: string
-  structs.UsernameDTO:
-    title: UsernameDTO
-    type: object
-    properties:
       Username:
         type: string
 tags:
