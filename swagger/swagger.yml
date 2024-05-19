@@ -12,6 +12,259 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 basePath: /v1
 paths:
+  /customer_categories/:
+    get:
+      tags:
+      - customer_categories
+      description: |-
+        get Customer_categories
+        <br>
+      operationId: Customer_categoriesController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_categories'
+        "403":
+          description: ""
+    post:
+      tags:
+      - customer_categories
+      description: |-
+        create Customer_categories
+        <br>
+      operationId: Customer_categoriesController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Customer_categories content
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerCategoriesRequestDTO'
+      responses:
+        "200":
+          description: '{int} models.CustomerCategoriesResponseDTO'
+        "403":
+          description: body is empty
+  /customer_categories/{id}:
+    get:
+      tags:
+      - customer_categories
+      description: |-
+        get Customer_categories by id
+        <br>
+      operationId: Customer_categoriesController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_categories'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - customer_categories
+      description: |-
+        update the Customer_categories
+        <br>
+      operationId: Customer_categoriesController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customer_categories content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer_categories'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_categories'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - customer_categories
+      description: |-
+        delete the Customer_categories
+        <br>
+      operationId: Customer_categoriesController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /customers/:
+    get:
+      tags:
+      - customers
+      description: |-
+        get Customers
+        <br>
+      operationId: CustomersController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: ""
+  /customers/{id}:
+    get:
+      tags:
+      - customers
+      description: |-
+        get Customers by id
+        <br>
+      operationId: CustomersController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - customers
+      description: |-
+        update the Customers
+        <br>
+      operationId: CustomersController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customers content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customers'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - customers
+      description: |-
+        delete the Customers
+        <br>
+      operationId: CustomersController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /customers/add-customer:
+    post:
+      tags:
+      - customers
+      description: |-
+        Add customer
+        <br>
+      operationId: CustomersController.AddCustomer
+      parameters:
+      - in: body
+        name: body
+        description: body for add customer content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddCustomerRequestDTO'
+      responses:
+        "201":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.CustomerResponseDTO'
+        "403":
+          description: body is empty
   /users/:
     get:
       tags:
@@ -184,30 +437,6 @@ paths:
         "403":
           description: body is empty
 definitions:
-  models.AddCustomerRequestDTO:
-    title: AddCustomerRequestDTO
-    type: object
-    properties:
-      Category:
-        type: string
-      Dob:
-        type: string
-      Email:
-        type: string
-      Gender:
-        type: string
-      Name:
-        type: string
-      Nickname:
-        type: string
-      PhoneNumber:
-        type: string
-      ShopAssistantName:
-        type: string
-      ShopAssistantNumber:
-        type: string
-      ShopName:
-        type: string
   models.Customer_categories:
     title: Customer_categories
     type: object
@@ -302,6 +531,8 @@ definitions:
       DateModified:
         type: string
         format: datetime
+      Image:
+        type: string
       ModifiedBy:
         type: integer
         format: int64
@@ -449,7 +680,39 @@ definitions:
         format: int64
       Username:
         type: string
+  requests.AddCustomerRequestDTO:
+    title: AddCustomerRequestDTO
+    type: object
+    properties:
+      AddedBy:
+        type: string
+      Category:
+        type: string
+      Dob:
+        type: string
+      Email:
+        type: string
+      Gender:
+        type: string
+      Name:
+        type: string
+      Nickname:
+        type: string
+      PhoneNumber:
+        type: string
+      ShopAssistantName:
+        type: string
+      ShopAssistantNumber:
+        type: string
+      ShopName:
+        type: string
 tags:
 - name: users
   description: |
     UsersController operations for Users
+- name: customer_categories
+  description: |
+    Customer_categoriesController operations for Customer_categories
+- name: customers
+  description: |
+    CustomersController operations for Customers

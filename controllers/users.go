@@ -79,6 +79,8 @@ func (c *UsersController) SignUp2() {
 		} else {
 			logs.Debug("Returned user B is", v)
 
+			// Shop here will be amended to cater for the shop that the customer is registering for
+
 			var cust = models.Customers{User: v, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddCustomers(&cust); err == nil {

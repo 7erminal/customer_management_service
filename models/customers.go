@@ -99,7 +99,9 @@ func GetAllCustomers(query map[string]string, fields []string, sortby []string, 
 
 	var l []Customers
 	qs = qs.OrderBy(sortFields...).RelatedSel()
-	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
+
+	// Without Limit
+	if _, err = qs.All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
 				ml = append(ml, v)
@@ -117,6 +119,26 @@ func GetAllCustomers(query map[string]string, fields []string, sortby []string, 
 		}
 		return ml, nil
 	}
+
+	// With limit
+	// if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
+	// 	if len(fields) == 0 {
+	// 		for _, v := range l {
+	// 			ml = append(ml, v)
+	// 		}
+	// 	} else {
+	// 		// trim unused fields
+	// 		for _, v := range l {
+	// 			m := make(map[string]interface{})
+	// 			val := reflect.ValueOf(v)
+	// 			for _, fname := range fields {
+	// 				m[fname] = val.FieldByName(fname).Interface()
+	// 			}
+	// 			ml = append(ml, m)
+	// 		}
+	// 	}
+	// 	return ml, nil
+	// }
 	return nil, err
 }
 

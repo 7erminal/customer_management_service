@@ -2,8 +2,11 @@ package controllers
 
 import (
 	"customer_management_service/models"
+	"customer_management_service/structs/requests"
+	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -20,9 +23,8 @@ type CustomersController struct {
 
 // URLMapping ...
 func (c *CustomersController) URLMapping() {
-	// c.Mapping("Post", c.Post)
-	// c.Mapping("GetOne", c.GetOne)
-	// c.Mapping("GetAll", c.GetAll)
+	c.Mapping("GetOne", c.GetOne)
+	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("AddCustomer", c.AddCustomer)
@@ -35,27 +37,27 @@ func (c *CustomersController) URLMapping() {
 // @Success 201 {int} models.Customers
 // @Failure 403 body is empty
 // @router / [post]
-func (c *CustomersController) Post() {
-	var v models.Customers
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if _, err := models.AddCustomers(&v); err == nil {
-		c.Ctx.Output.SetStatus(201)
-		c.Data["json"] = v
-	} else {
-		c.Data["json"] = err.Error()
-	}
-	c.ServeJSON()
-}
+// func (c *CustomersController) Post() {
+// 	var v models.Customers
+// 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+// 	if _, err := models.AddCustomers(&v); err == nil {
+// 		c.Ctx.Output.SetStatus(201)
+// 		c.Data["json"] = v
+// 	} else {
+// 		c.Data["json"] = err.Error()
+// 	}
+// 	c.ServeJSON()
+// }
 
 // AddCustomer ...
 // @Title AddCustomer
 // @Description Add customer
-// @Param	body		body 	models.AddCustomerRequestDTO	true		"body for add customer content"
+// @Param	body		body 	requests.AddCustomerRequestDTO	true		"body for add customer content"
 // @Success 201 {object} models.CustomerResponseDTO
 // @Failure 403 body is empty
 // @router /add-customer [post]
 func (c *CustomersController) AddCustomer() {
-	var v models.AddCustomerRequestDTO
+	var v requests.AddCustomerRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
@@ -68,16 +70,84 @@ func (c *CustomersController) AddCustomer() {
 
 		defaultPassword = string(hashedPassword)
 
-		logs.Debug("Sending", defaultPassword)
+		logs.Debug("Category received is ", c.Ctx.Input.Query("Category"))
 
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
-	// Convert dob string to date
-	dobm, error := time.Parse("2006-01-02 15:04:05.000", v.Dob)
+	v.Dob = c.Ctx.Input.Query("Dob")
+	v.Category = c.Ctx.Input.Query("Category")
+	v.Email = c.Ctx.Input.Query("Email")
+	v.Gender = c.Ctx.Input.Query("Gender")
+	v.Name = c.Ctx.Input.Query("Name")
+	v.Nickname = c.Ctx.Input.Query("Nickname")
+	v.PhoneNumber = c.Ctx.Input.Query("PhoneNumber")
+	v.ShopAssistantName = c.Ctx.Input.Query("ShopAssistantName")
+	v.ShopAssistantNumber = c.Ctx.Input.Query("ShopAssistantNumber")
+	v.ShopName = c.Ctx.Input.Query("ShopName")
+	v.AddedBy = c.Ctx.Input.Query("AddedBy")
+	addedBy, _ := strconv.Atoi(v.AddedBy)
 
-	if error != nil {
-		logs.Error(error)
+	filePath := ""
+
+	// Handle file
+	file, header, err := c.GetFile("Image")
+	logs.Info("Data received is ", file)
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		// c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Error("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := header.Filename
+		logs.Info("File Name Extracted is ", fileName)
+		filePath = "/uploads/" + fileName // Define your file path
+		logs.Info("File Path Extracted is ", filePath)
+		err = c.SaveToFile("Image", "."+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			errorMessage := "Error: Failed to save the image file"
+
+			resp := responses.StringResponseDTO{StatusCode: http.StatusInternalServerError, Value: errorMessage, StatusDesc: "Internal Server Error"}
+
+			c.Data["json"] = resp
+			c.ServeJSON()
+			return
+		}
+	}
+
+	var proceed bool = true
+
+	var dobm time.Time
+
+	var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000"}
+
+	for _, date_ := range allowedDateList {
+		logs.Debug("About to convert ", v.Dob)
+		logs.Debug("About to convert ", c.Ctx.Input.Query("Dob"))
+		// Convert dob string to date
+		tdobm, error := time.Parse(date_, v.Dob)
+
+		if error != nil {
+			logs.Error("Error parsing date", error)
+			proceed = false
+		} else {
+			logs.Error("Date converted to time successfully", tdobm)
+			dobm = tdobm
+			proceed = true
+
+			break
+		}
+	}
+
+	if !proceed {
 
 		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
@@ -86,7 +156,7 @@ func (c *CustomersController) AddCustomer() {
 
 	} else {
 		// Assign dob
-		var addUserModel = models.Users{FullName: v.Name, PhoneNumber: v.PhoneNumber, UserType: 1, Gender: v.Gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+		var addUserModel = models.Users{FullName: v.Name, PhoneNumber: v.PhoneNumber, UserType: 1, Gender: v.Gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
 		if r, err := models.AddUsers(&addUserModel); err == nil {
 			c.Ctx.Output.SetStatus(201)
@@ -101,18 +171,18 @@ func (c *CustomersController) AddCustomer() {
 
 				logs.Error(err.Error())
 
-				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user. " + err.Error()}
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned user is", ru)
 
-				var shop = models.Shops{ShopName: v.ShopName, ShopDescription: v.ShopName, ShopAssistantName: v.ShopAssistantName, ShopAssistantNumber: v.ShopAssistantNumber, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var shop = models.Shops{ShopName: v.ShopName, ShopDescription: v.ShopName, ShopAssistantName: v.ShopAssistantName, ShopAssistantNumber: v.ShopAssistantNumber, DateCreated: time.Now(), DateModified: time.Now(), Image: filePath, Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
 				if _, err := models.AddShops(&shop); err == nil {
 
 					ccid, _ := strconv.ParseInt(v.Category, 0, 64)
 					if cc, errr := models.GetCustomer_categoriesById(ccid); errr == nil {
-						var cust = models.Customers{User: ru, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+						var cust = models.Customers{User: ru, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
 						if _, err := models.AddCustomers(&cust); err == nil {
 							c.Ctx.Output.SetStatus(200)
@@ -138,7 +208,7 @@ func (c *CustomersController) AddCustomer() {
 		} else {
 			logs.Error(err.Error())
 
-			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user" + err.Error()}
 			c.Data["json"] = resp
 
 			// c.Data["json"] = err.Error()
@@ -223,9 +293,11 @@ func (c *CustomersController) GetAll() {
 
 	l, err := models.GetAllCustomers(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = l
+		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched categories"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"customer_management_service/models"
+	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -124,9 +125,11 @@ func (c *Customer_categoriesController) GetAll() {
 
 	l, err := models.GetAllCustomer_categories(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching category details"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = l
+		resp := responses.CustomerCategoriesDTO{StatusCode: 200, CustomerCategories: &l, StatusDesc: "Successfully fetched categories"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
