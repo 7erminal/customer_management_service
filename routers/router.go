@@ -41,6 +41,12 @@ func init() {
 				&controllers.CustomersController{},
 			),
 		),
+
+		beego.NSNamespace("/accounts",
+			beego.NSInclude(
+				&controllers.AccountsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
