@@ -12,7 +12,7 @@ import (
 
 type Accounts struct {
 	AccountId     int64 `orm:"auto"`
-	UserId        *Users
+	UserId        int64
 	AccountNumber string `orm:"size(255)"`
 	Balance       float64
 	BalanceBefore float64

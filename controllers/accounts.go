@@ -39,7 +39,7 @@ func (c *AccountsController) Post() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
 
 	if us, err := models.GetUsersById(q.UserId); err == nil {
-		var v models.Accounts = models.Accounts{UserId: us, AccountNumber: us.PhoneNumber, Balance: 0, BalanceBefore: 0, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1, Active: 1}
+		var v models.Accounts = models.Accounts{UserId: q.UserId, AccountNumber: us.PhoneNumber, Balance: 0, BalanceBefore: 0, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1, Active: 1}
 		if _, err := models.AddAccounts(&v); err == nil {
 			resp := responses.AccountDTO{StatusCode: 200, Account: &v, StatusDesc: "Account Successfully Added"}
 			c.Ctx.Output.SetStatus(201)

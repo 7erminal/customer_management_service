@@ -47,6 +47,12 @@ func init() {
 				&controllers.AccountsController{},
 			),
 		),
+
+		beego.NSNamespace("/newsletter",
+			beego.NSInclude(
+				&controllers.Newsletter_customersController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

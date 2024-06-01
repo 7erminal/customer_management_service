@@ -12,6 +12,131 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 basePath: /v1
 paths:
+  /accounts/:
+    get:
+      tags:
+      - accounts
+      description: |-
+        get Accounts
+        <br>
+      operationId: AccountsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Accounts'
+        "403":
+          description: ""
+    post:
+      tags:
+      - accounts
+      description: |-
+        create Accounts
+        <br>
+      operationId: AccountsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Accounts content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateAccountRequestDTO'
+      responses:
+        "201":
+          description: '{int} models.Accounts'
+        "403":
+          description: body is empty
+  /accounts/{id}:
+    get:
+      tags:
+      - accounts
+      description: |-
+        get Accounts by id
+        <br>
+      operationId: AccountsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Accounts'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - accounts
+      description: |-
+        update the Accounts
+        <br>
+      operationId: AccountsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Accounts content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Accounts'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Accounts'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - accounts
+      description: |-
+        delete the Accounts
+        <br>
+      operationId: AccountsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /customer_categories/:
     get:
       tags:
@@ -265,6 +390,131 @@ paths:
             $ref: '#/definitions/models.CustomerResponseDTO'
         "403":
           description: body is empty
+  /newsletter/:
+    get:
+      tags:
+      - newsletter
+      description: |-
+        get Newsletter_customers
+        <br>
+      operationId: Newsletter_customersController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Newsletter_customers'
+        "403":
+          description: ""
+    post:
+      tags:
+      - newsletter
+      description: |-
+        create Newsletter_customers
+        <br>
+      operationId: Newsletter_customersController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Newsletter_customers content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.NewsletterRequestDTO'
+      responses:
+        "201":
+          description: '{int} models.Newsletter_customers'
+        "403":
+          description: body is empty
+  /newsletter/{id}:
+    get:
+      tags:
+      - newsletter
+      description: |-
+        get Newsletter_customers by id
+        <br>
+      operationId: Newsletter_customersController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Newsletter_customers'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - newsletter
+      description: |-
+        update the Newsletter_customers
+        <br>
+      operationId: Newsletter_customersController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Newsletter_customers content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Newsletter_customers'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Newsletter_customers'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - newsletter
+      description: |-
+        delete the Newsletter_customers
+        <br>
+      operationId: Newsletter_customersController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /users/:
     get:
       tags:
@@ -437,6 +687,39 @@ paths:
         "403":
           description: body is empty
 definitions:
+  models.Accounts:
+    title: Accounts
+    type: object
+    properties:
+      AccountId:
+        type: integer
+        format: int64
+      AccountNumber:
+        type: string
+      Active:
+        type: integer
+        format: int64
+      Balance:
+        type: number
+        format: double
+      BalanceBefore:
+        type: number
+        format: double
+      CreatedBy:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      ModifiedBy:
+        type: integer
+        format: int64
+      UserId:
+        type: integer
+        format: int64
   models.Customer_categories:
     title: Customer_categories
     type: object
@@ -515,6 +798,34 @@ definitions:
         $ref: '#/definitions/models.Shops'
       User:
         $ref: '#/definitions/models.Users'
+  models.Newsletter_customers:
+    title: Newsletter_customers
+    type: object
+    properties:
+      Active:
+        type: integer
+        format: int64
+      CreatedBy:
+        type: integer
+        format: int64
+      CustomerId:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      ModifiedBy:
+        type: integer
+        format: int64
   models.Shops:
     title: Shops
     type: object
@@ -706,6 +1017,23 @@ definitions:
         type: string
       ShopName:
         type: string
+  requests.CreateAccountRequestDTO:
+    title: CreateAccountRequestDTO
+    type: object
+    properties:
+      UserId:
+        type: integer
+        format: int64
+  requests.NewsletterRequestDTO:
+    title: NewsletterRequestDTO
+    type: object
+    properties:
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
 tags:
 - name: users
   description: |
@@ -716,3 +1044,9 @@ tags:
 - name: customers
   description: |
     CustomersController operations for Customers
+- name: accounts
+  description: |
+    AccountsController operations for Accounts
+- name: newsletter
+  description: |
+    Newsletter_customersController operations for Newsletter_customers
