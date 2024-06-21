@@ -178,6 +178,7 @@ func (c *UsersController) SignUp() {
 					c.Data["json"] = resp
 				} else {
 					// c.Data["json"] = err.Error()
+					logs.Error("Error adding customer, ", err.Error())
 					var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
 					c.Data["json"] = resp
 				}
