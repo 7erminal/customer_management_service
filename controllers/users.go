@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
 
 	// "customer_management_service/structs/responses"
@@ -45,6 +46,9 @@ func (c *UsersController) SignUp2() {
 
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 
+	// authorization := c.Ctx.Input.Header("Authorization")
+	application := c.Ctx.Input.Header("Application")
+
 	if errr == nil {
 		logs.Debug(hashedPassword)
 
@@ -84,6 +88,12 @@ func (c *UsersController) SignUp2() {
 			var cust = models.Customers{User: v, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddCustomers(&cust); err == nil {
+				// Check application and register
+				// If application is rides then create an account
+				// Formulate request to send to create account
+				if application == "RIDE" {
+					functions.RegisterAccount(&c.Controller, addUserModel.UserId)
+				}
 				c.Ctx.Output.SetStatus(200)
 				var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User created successfully"}
 
@@ -121,6 +131,9 @@ func (c *UsersController) SignUp() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
+	// authorization := c.Ctx.Input.Header("Authorization")
+	application := c.Ctx.Input.Header("Application")
+
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 
 	if errr == nil {
@@ -157,7 +170,7 @@ func (c *UsersController) SignUp() {
 			if gender == "f" || gender == "F" || gender == "female" {
 				gender = "FEMALE"
 			}
-			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, PhoneNumber: v.PhoneNumber, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddUsers(&addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
@@ -174,6 +187,13 @@ func (c *UsersController) SignUp() {
 
 				if _, err := models.AddCustomers(&cust); err == nil {
 					c.Ctx.Output.SetStatus(200)
+
+					// Check application and register
+					// If application is rides then create an account
+					// Formulate request to send to create account
+					if application == "RIDE" {
+						functions.RegisterAccount(&c.Controller, addUserModel.UserId)
+					}
 					var resp = models.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 					c.Data["json"] = resp
 				} else {

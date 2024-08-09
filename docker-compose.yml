@@ -1,0 +1,15 @@
+version: "3"
+services:
+  customer-management-service:
+    container_name: customer-managment-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: car-pool/customer-managment-service
+    ports:
+      - 8083:8083
+    networks:
+      - projects_default
+networks:
+  projects_default:
+    external: true

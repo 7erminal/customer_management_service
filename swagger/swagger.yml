@@ -137,10 +137,10 @@ paths:
           description: '{string} delete success!'
         "403":
           description: id is empty
-  /customer_categories/:
+  /customer-categories/:
     get:
       tags:
-      - customer_categories
+      - customer-categories
       description: |-
         get Customer_categories
         <br>
@@ -180,7 +180,7 @@ paths:
           description: ""
     post:
       tags:
-      - customer_categories
+      - customer-categories
       description: |-
         create Customer_categories
         <br>
@@ -197,10 +197,10 @@ paths:
           description: '{int} models.CustomerCategoriesResponseDTO'
         "403":
           description: body is empty
-  /customer_categories/{id}:
+  /customer-categories/{id}:
     get:
       tags:
-      - customer_categories
+      - customer-categories
       description: |-
         get Customer_categories by id
         <br>
@@ -220,7 +220,7 @@ paths:
           description: :id is empty
     put:
       tags:
-      - customer_categories
+      - customer-categories
       description: |-
         update the Customer_categories
         <br>
@@ -246,7 +246,7 @@ paths:
           description: :id is not int
     delete:
       tags:
-      - customer_categories
+      - customer-categories
       description: |-
         delete the Customer_categories
         <br>
@@ -872,6 +872,8 @@ definitions:
         type: string
       Password:
         type: string
+      PhoneNumber:
+        type: string
   models.UpdateUserRequestDTO:
     title: UpdateUserRequestDTO
     type: object
@@ -1038,7 +1040,7 @@ tags:
 - name: users
   description: |
     UsersController operations for Users
-- name: customer_categories
+- name: customer-categories
   description: |
     Customer_categoriesController operations for Customer_categories
 - name: customers

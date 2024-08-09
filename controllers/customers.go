@@ -75,6 +75,8 @@ func (c *CustomersController) AddCustomer() {
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
+	logs.Info("Unmarshalled already:::", v.Dob, " ::: ", v.Category, " ::: ", v.Email, " ::: ", v.Name, " ::: ", v.Gender, " ::: ", v.Nickname)
+
 	v.Dob = c.Ctx.Input.Query("Dob")
 	v.Category = c.Ctx.Input.Query("Category")
 	v.Email = c.Ctx.Input.Query("Email")

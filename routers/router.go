@@ -30,7 +30,7 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/customer_categories",
+		beego.NSNamespace("/customer-categories",
 			beego.NSInclude(
 				&controllers.Customer_categoriesController{},
 			),

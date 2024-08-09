@@ -188,10 +188,10 @@
                 }
             }
         },
-        "/customer_categories/": {
+        "/customer-categories/": {
             "get": {
                 "tags": [
-                    "customer_categories"
+                    "customer-categories"
                 ],
                 "description": "get Customer_categories\n\u003cbr\u003e",
                 "operationId": "Customer_categoriesController.Get All",
@@ -247,7 +247,7 @@
             },
             "post": {
                 "tags": [
-                    "customer_categories"
+                    "customer-categories"
                 ],
                 "description": "create Customer_categories\n\u003cbr\u003e",
                 "operationId": "Customer_categoriesController.Post",
@@ -272,10 +272,10 @@
                 }
             }
         },
-        "/customer_categories/{id}": {
+        "/customer-categories/{id}": {
             "get": {
                 "tags": [
-                    "customer_categories"
+                    "customer-categories"
                 ],
                 "description": "get Customer_categories by id\n\u003cbr\u003e",
                 "operationId": "Customer_categoriesController.Get One",
@@ -302,7 +302,7 @@
             },
             "put": {
                 "tags": [
-                    "customer_categories"
+                    "customer-categories"
                 ],
                 "description": "update the Customer_categories\n\u003cbr\u003e",
                 "operationId": "Customer_categoriesController.Put",
@@ -338,7 +338,7 @@
             },
             "delete": {
                 "tags": [
-                    "customer_categories"
+                    "customer-categories"
                 ],
                 "description": "delete the Customer_categories\n\u003cbr\u003e",
                 "operationId": "Customer_categoriesController.Delete",
@@ -1209,6 +1209,9 @@
                 },
                 "Password": {
                     "type": "string"
+                },
+                "PhoneNumber": {
+                    "type": "string"
                 }
             }
         },
@@ -1454,7 +1457,7 @@
             "description": "UsersController operations for Users\n"
         },
         {
-            "name": "customer_categories",
+            "name": "customer-categories",
             "description": "Customer_categoriesController operations for Customer_categories\n"
         },
         {
