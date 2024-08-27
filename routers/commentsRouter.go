@@ -325,7 +325,7 @@ func init() {
     beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
         beego.ControllerComments{
             Method: "VerifyUsername",
-            Router: `/:username`,
+            Router: `/get-user-by-username/:username`,
             AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,

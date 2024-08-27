@@ -228,15 +228,19 @@ func (c *UsersController) SignUp() {
 // @Param	username		path 	string	true		"The key for staticblock"
 // @Success 200 {object} models.UsernameDTO
 // @Failure 403 :username is empty
-// @router /:username [get]
+// @router /get-user-by-username/:username [get]
 func (c *UsersController) VerifyUsername() {
 	username := c.Ctx.Input.Param(":username")
 	v, err := models.GetUsersByUsername(username)
 
 	if err != nil {
-		c.Data["json"] = err.Error()
+		logs.Error("Error::", err.Error())
+		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = v
+		logs.Info("User found....sending user data")
+		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

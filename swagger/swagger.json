@@ -801,6 +801,35 @@
                 }
             }
         },
+        "/users/get-user-by-username/{username}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Verify Users by username\n\u003cbr\u003e",
+                "operationId": "UsersController.Verify User by username",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "username",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.UsernameDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":username is empty"
+                    }
+                }
+            }
+        },
         "/users/sign-up": {
             "post": {
                 "tags": [
@@ -917,35 +946,6 @@
                     },
                     "403": {
                         "description": "id is empty"
-                    }
-                }
-            }
-        },
-        "/users/{username}": {
-            "get": {
-                "tags": [
-                    "users"
-                ],
-                "description": "Verify Users by username\n\u003cbr\u003e",
-                "operationId": "UsersController.Verify User by username",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "username",
-                        "description": "The key for staticblock",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.UsernameDTO"
-                        }
-                    },
-                    "403": {
-                        "description": ":username is empty"
                     }
                 }
             }
