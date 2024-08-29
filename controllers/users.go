@@ -3,10 +3,12 @@ package controllers
 import (
 	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
+	"customer_management_service/structs/responses"
 
 	// "customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -226,7 +228,7 @@ func (c *UsersController) SignUp() {
 // @Title Verify User by username
 // @Description Verify Users by username
 // @Param	username		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.UsernameDTO
+// @Success 200 {object} models.UserResponseDTO
 // @Failure 403 :username is empty
 // @router /get-user-by-username/:username [get]
 func (c *UsersController) VerifyUsername() {
@@ -245,6 +247,36 @@ func (c *UsersController) VerifyUsername() {
 	c.ServeJSON()
 }
 
+// Verify User ...
+// @Title Verify User by userid
+// @Description Verify Users by userid
+// @Param	username		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.UserResponseDTO
+// @Failure 403 :username is empty
+// @router /verify-user/:id [get]
+func (c *UsersController) VerifyUser() {
+	idStr := c.Ctx.Input.Param(":id")
+	userid, _ := strconv.ParseInt(idStr, 0, 64)
+	v, err := models.GetUsersById(userid)
+
+	if err != nil {
+		logs.Error("Error::", err.Error())
+		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		c.Data["json"] = resp
+	} else {
+		v.IsVerified = true
+		if err := models.UpdateUsersById(v); err == nil {
+			logs.Info("User found and verified....sending user data")
+			var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User verified"}
+			c.Data["json"] = resp
+		} else {
+			var resp = models.UserResponseDTO{StatusCode: 608, User: v, StatusDesc: "User not verified ::: " + err.Error()}
+			c.Data["json"] = resp
+		}
+	}
+	c.ServeJSON()
+}
+
 // GetOne ...
 // @Title Get One
 // @Description get Users by id
@@ -257,9 +289,11 @@ func (c *UsersController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUsersById(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = v
+		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
@@ -320,9 +354,11 @@ func (c *UsersController) GetAll() {
 
 	l, err := models.GetAllUsers(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = l
+		resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
@@ -345,6 +381,37 @@ func (c *UsersController) Put() {
 
 	logs.Debug("User id is ", id)
 
+	// image of user received
+	file, header, err := c.GetFile("UserImage")
+	var filePath string = ""
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Info("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := header.Filename
+		filePath = "/uploads/users/" + fileName // Define your file path
+		err = c.SaveToFile("Image", "."+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			errorMessage := "Error: Failed to save the image file"
+
+			resp := models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+
+			c.Data["json"] = resp
+			c.ServeJSON()
+			return
+		}
+	}
+
 	v, err := models.GetUsersById(id)
 
 	logs.Debug("About to save", v)
@@ -362,13 +429,14 @@ func (c *UsersController) Put() {
 		// Parse request in Users object
 		// v := models.Users{UserId: id, FullName: h.FullName, Gender: h.Gender, PhoneNumber: h.PhoneNumber, MaritalStatus: h.MaritalStatus, Address: h.Address}
 
-		v.FullName = h.FullName
-		v.Gender = h.Gender
-		v.PhoneNumber = h.PhoneNumber
-		v.MaritalStatus = h.MaritalStatus
-		v.Address = h.Address
+		v.FullName = c.Ctx.Input.Query("FullName")
+		v.Gender = c.Ctx.Input.Query("Gender")
+		v.PhoneNumber = c.Ctx.Input.Query("PhoneNumber")
+		v.MaritalStatus = c.Ctx.Input.Query("MaritalStatus")
+		v.Address = c.Ctx.Input.Query("Address")
+		v.ImagePath = filePath
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02 15:04:05.000", h.Dob)
+		dobm, error := time.Parse("2006-01-02 15:04:05.000", c.Ctx.Input.Query("Dob"))
 
 		logs.Debug("Converted date", dobm)
 
@@ -426,8 +494,20 @@ func (c *UsersController) Put() {
 func (c *UsersController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteUsers(id); err == nil {
-		c.Data["json"] = "OK"
+
+	v, err := models.GetUsersById(id)
+	if err == nil {
+		v.Active = 6
+		if err := models.UpdateUsersById(v); err == nil {
+			// if err := models.DeleteUsers(id); err == nil {
+			// 	c.Data["json"] = "OK"
+			// } else {
+			// 	c.Data["json"] = err.Error()
+			// }
+			c.Data["json"] = "OK"
+		} else {
+			c.Data["json"] = err.Error()
+		}
 	} else {
 		c.Data["json"] = err.Error()
 	}

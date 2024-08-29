@@ -661,7 +661,7 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/models.UsernameDTO'
+            $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: :username is empty
   /users/sign-up:
@@ -686,6 +686,27 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /users/verify-user/{id}:
+    get:
+      tags:
+      - users
+      description: |-
+        Verify Users by userid
+        <br>
+      operationId: UsersController.Verify User by userid
+      parameters:
+      - in: path
+        name: username
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.UserResponseDTO'
+        "403":
+          description: :username is empty
 definitions:
   models.Accounts:
     title: Accounts
@@ -937,12 +958,6 @@ definitions:
         type: string
       UserTypeName:
         type: string
-  models.UsernameDTO:
-    title: UsernameDTO
-    type: object
-    properties:
-      Username:
-        type: string
   models.Users:
     title: Users
     type: object
@@ -973,6 +988,8 @@ definitions:
       IdNumber:
         type: string
       IdType:
+        type: string
+      ImagePath:
         type: string
       IsVerified:
         type: boolean

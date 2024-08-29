@@ -821,7 +821,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.UsernameDTO"
+                            "$ref": "#/definitions/models.UserResponseDTO"
                         }
                     },
                     "403": {
@@ -857,6 +857,35 @@
                     },
                     "403": {
                         "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/users/verify-user/{id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Verify Users by userid\n\u003cbr\u003e",
+                "operationId": "UsersController.Verify User by userid",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "username",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":username is empty"
                     }
                 }
             }
@@ -1306,15 +1335,6 @@
                 }
             }
         },
-        "models.UsernameDTO": {
-            "title": "UsernameDTO",
-            "type": "object",
-            "properties": {
-                "Username": {
-                    "type": "string"
-                }
-            }
-        },
         "models.Users": {
             "title": "Users",
             "type": "object",
@@ -1355,6 +1375,9 @@
                     "type": "string"
                 },
                 "IdType": {
+                    "type": "string"
+                },
+                "ImagePath": {
                     "type": "string"
                 },
                 "IsVerified": {

@@ -7,3 +7,15 @@ type UserResponseDTO struct {
 	User       *models.Users
 	StatusDesc string
 }
+
+type UsersResponseDTO struct {
+	StatusCode int
+	Users      *[]models.Users
+	StatusDesc string
+}
+
+type UsersAllCustomersDTO struct {
+	StatusCode int
+	Users      *[]interface{}
+	StatusDesc string
+}
