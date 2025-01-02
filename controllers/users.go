@@ -152,10 +152,19 @@ func (c *UsersController) SignUp() {
 
 	if err != nil {
 		logs.Debug("About to debug")
+
+		var proceed bool = false
+
 		// Convert dob string to date
 		dobm, error := time.Parse("2006-01-02", v.Dob)
 
 		if error != nil {
+			if v.Dob == "" {
+				proceed = true
+			}
+		}
+
+		if !proceed {
 			logs.Error(error)
 
 			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
