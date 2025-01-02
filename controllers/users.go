@@ -151,6 +151,7 @@ func (c *UsersController) SignUp() {
 	q, err := models.GetUsersByUsername(v.Email)
 
 	if err != nil {
+		logs.Debug("About to debug")
 		// Convert dob string to date
 		dobm, error := time.Parse("2006-01-02", v.Dob)
 
