@@ -1212,8 +1212,8 @@
         }
     },
     "definitions": {
-        "499.\u003cnil\u003e.0x140005510e0": {
-            "title": "0x140005510e0",
+        "499.\u003cnil\u003e.0x14000112450": {
+            "title": "0x14000112450",
             "type": "object"
         },
         "models.Accounts": {
@@ -1791,7 +1791,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x140005510e0"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000112450"
                 },
                 "StatusCode": {
                     "type": "integer",

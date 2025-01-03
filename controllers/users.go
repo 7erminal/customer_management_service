@@ -255,6 +255,7 @@ func (c *UsersController) VerifyUsername() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("User found....sending user data")
+		logs.Info("User data::: ", v)
 		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
