@@ -232,6 +232,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
+        beego.ControllerComments{
+            Method: "GetAllBranches",
+            Router: `/branches`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:UserTypesController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UserTypesController"],
         beego.ControllerComments{
             Method: "Post",

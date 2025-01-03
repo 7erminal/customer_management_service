@@ -515,6 +515,172 @@ paths:
           description: '{string} delete success!'
         "403":
           description: id is empty
+  /shops/:
+    get:
+      tags:
+      - shops
+      description: |-
+        get Shops
+        <br>
+      operationId: ShopsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Shops'
+        "403":
+          description: ""
+    post:
+      tags:
+      - shops
+      description: |-
+        create Shops
+        <br>
+      operationId: ShopsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Shops content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shops'
+      responses:
+        "201":
+          description: '{int} models.Shops'
+        "403":
+          description: body is empty
+  /shops/{id}:
+    get:
+      tags:
+      - shops
+      description: |-
+        get Shops by id
+        <br>
+      operationId: ShopsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Shops'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - shops
+      description: |-
+        update the Shops
+        <br>
+      operationId: ShopsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Shops content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shops'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Shops'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - shops
+      description: |-
+        delete the Shops
+        <br>
+      operationId: ShopsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /shops/branches:
+    get:
+      tags:
+      - shops
+      description: |-
+        get Branches
+        <br>
+      operationId: ShopsController.Get All Branches
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responses.BranchesResponseDTO'
+        "403":
+          description: ""
   /users/:
     get:
       tags:
@@ -708,6 +874,9 @@ paths:
         "403":
           description: :username is empty
 definitions:
+  499.<nil>.0x14000674078:
+    title: "0x14000674078"
+    type: object
   models.Accounts:
     title: Accounts
     type: object
@@ -739,6 +908,60 @@ definitions:
         type: integer
         format: int64
       UserId:
+        type: integer
+        format: int64
+  models.Branches:
+    title: Branches
+    type: object
+    properties:
+      Active:
+        type: integer
+        format: int64
+      Branch:
+        type: string
+      BranchId:
+        type: integer
+        format: int64
+      Country:
+        $ref: '#/definitions/models.Countries'
+      CreatedBy:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      ModifiedBy:
+        type: integer
+        format: int64
+  models.Countries:
+    title: Countries
+    type: object
+    properties:
+      Country:
+        type: string
+      CountryCode:
+        type: string
+      CountryId:
+        type: integer
+        format: int64
+      CreatedBy:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      DefaultCurrency:
+        type: integer
+        format: int64
+      Description:
+        type: string
+      ModifiedBy:
         type: integer
         format: int64
   models.Customer_categories:
@@ -796,6 +1019,8 @@ definitions:
       Active:
         type: integer
         format: int64
+      Branch:
+        $ref: '#/definitions/models.Branches'
       CreatedBy:
         type: integer
         format: int64
@@ -1053,6 +1278,17 @@ definitions:
         type: string
       LastName:
         type: string
+  responses.BranchesResponseDTO:
+    title: BranchesResponseDTO
+    type: object
+    properties:
+      Branches:
+        $ref: '#/definitions/499.<nil>.0x14000674078'
+      StatusCode:
+        type: integer
+        format: int64
+      StatusDesc:
+        type: string
 tags:
 - name: users
   description: |
@@ -1069,3 +1305,6 @@ tags:
 - name: newsletter
   description: |
     Newsletter_customersController operations for Newsletter_customers
+- name: shops
+  description: |
+    ShopsController operations for Shops
