@@ -32,6 +32,8 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("SignUp", c.SignUp)
 	c.Mapping("SignUp2", c.SignUp2)
+	c.Mapping("VerifyUsername", c.VerifyUsername)
+	c.Mapping("VerifyUser", c.VerifyUser)
 }
 
 // SignUp2 ...
@@ -245,6 +247,8 @@ func (c *UsersController) VerifyUsername() {
 	username := c.Ctx.Input.Param(":username")
 	v, err := models.GetUsersByUsername(username)
 
+	logs.Info("Get user request:: ", username)
+
 	if err != nil {
 		logs.Error("Error::", err.Error())
 		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
@@ -268,6 +272,8 @@ func (c *UsersController) VerifyUser() {
 	idStr := c.Ctx.Input.Param(":id")
 	userid, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUsersById(userid)
+
+	logs.Info("Get user by user ID")
 
 	if err != nil {
 		logs.Error("Error::", err.Error())

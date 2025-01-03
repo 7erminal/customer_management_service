@@ -874,8 +874,8 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  499.<nil>.0x14000674078:
-    title: "0x14000674078"
+  499.<nil>.0x140005510e0:
+    title: "0x140005510e0"
     type: object
   models.Accounts:
     title: Accounts
@@ -1283,7 +1283,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/499.<nil>.0x14000674078'
+        $ref: '#/definitions/499.<nil>.0x140005510e0'
       StatusCode:
         type: integer
         format: int64
