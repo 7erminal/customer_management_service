@@ -59,6 +59,24 @@ func init() {
 				&controllers.ShopsController{},
 			),
 		),
+
+		beego.NSNamespace("/roles",
+			beego.NSInclude(
+				&controllers.RolesController{},
+			),
+		),
+
+		beego.NSNamespace("/permissions",
+			beego.NSInclude(
+				&controllers.PermissionsController{},
+			),
+		),
+
+		beego.NSNamespace("/role-permissions",
+			beego.NSInclude(
+				&controllers.Role_permissionsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
