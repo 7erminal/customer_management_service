@@ -1762,16 +1762,16 @@
         }
     },
     "definitions": {
-        "1290.\u003cnil\u003e.0x14000665710": {
-            "title": "0x14000665710",
+        "1290.\u003cnil\u003e.0x14000622ee8": {
+            "title": "0x14000622ee8",
             "type": "object"
         },
-        "2093.\u003cnil\u003e.0x140006658c0": {
-            "title": "0x140006658c0",
+        "2093.\u003cnil\u003e.0x14000623098": {
+            "title": "0x14000623098",
             "type": "object"
         },
-        "499.\u003cnil\u003e.0x14000665560": {
-            "title": "0x14000665560",
+        "499.\u003cnil\u003e.0x14000622d38": {
+            "title": "0x14000622d38",
             "type": "object"
         },
         "models.Accounts": {
@@ -2511,7 +2511,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000665560"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000622d38"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2543,7 +2543,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1290.\u003cnil\u003e.0x14000665710"
+                    "$ref": "#/definitions/1290.\u003cnil\u003e.0x14000622ee8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2575,7 +2575,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2093.\u003cnil\u003e.0x140006658c0"
+                    "$ref": "#/definitions/2093.\u003cnil\u003e.0x14000623098"
                 },
                 "StatusCode": {
                     "type": "integer",
