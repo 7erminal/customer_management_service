@@ -1061,6 +1061,37 @@
                 }
             }
         },
+        "/users/invite-user": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Invite user using email\n\u003cbr\u003e",
+                "operationId": "UsersController.Invite user",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for SignUp content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.RegisterInviteRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StringResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/users/sign-up": {
             "post": {
                 "tags": [
@@ -1212,8 +1243,8 @@
         }
     },
     "definitions": {
-        "499.\u003cnil\u003e.0x14000112450": {
-            "title": "0x14000112450",
+        "499.\u003cnil\u003e.0x140005716b0": {
+            "title": "0x140005716b0",
             "type": "object"
         },
         "models.Accounts": {
@@ -1786,18 +1817,46 @@
                 }
             }
         },
+        "requests.RegisterInviteRequestDTO": {
+            "title": "RegisterInviteRequestDTO",
+            "type": "object",
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "Link": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.BranchesResponseDTO": {
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000112450"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x140005716b0"
                 },
                 "StatusCode": {
                     "type": "integer",
                     "format": "int64"
                 },
                 "StatusDesc": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.StringResponseDTO": {
+            "title": "StringResponseDTO",
+            "type": "object",
+            "properties": {
+                "StatusCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "StatusDesc": {
+                    "type": "string"
+                },
+                "Value": {
                     "type": "string"
                 }
             }

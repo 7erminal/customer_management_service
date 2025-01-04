@@ -3,6 +3,7 @@ package controllers
 import (
 	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
+	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
 
 	// "customer_management_service/structs/responses"
@@ -291,6 +292,28 @@ func (c *UsersController) VerifyUser() {
 			c.Data["json"] = resp
 		}
 	}
+	c.ServeJSON()
+}
+
+// SignUp ...
+// @Title Invite user
+// @Description Invite user using email
+// @Param	body		body 	requests.RegisterInviteRequestDTO	true		"body for SignUp content"
+// @Success 200 {object} responses.StringResponseDTO
+// @Failure 403 body is empty
+// @router /invite-user [post]
+func (c *UsersController) InviteUser() {
+	var v requests.RegisterInviteRequestDTO
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	logs.Info("Received ", v)
+
+	go functions.SendEmail(v.Email, v.Link)
+
+	logs.Info("Email sent")
+
+	var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Sent", StatusDesc: "Sent "}
+	c.Data["json"] = resp
+
 	c.ServeJSON()
 }
 

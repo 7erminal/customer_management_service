@@ -6,22 +6,23 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
-func SendEmail(username string, otp string) {
-	auth := smtp.PlainAuth("", "bede.abbe@solisfinance.com", "dqcmwcuyvfjwcuyd", "smtp.gmail.com")
+func SendEmail(email string, link string) {
+	// Create app password in gmail to use here
+	auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
 
 	// Here we do it all: connect to our server, set up a message and send it
 
-	to := []string{username}
+	to := []string{email}
 
-	msg := []byte("To: " + username + "\r\n" +
+	msg := []byte("To: " + email + "\r\n" +
 
-		"Subject: Your One time pin. Adepa.\r\n" +
+		"Subject: Please click on the link below.\r\n" +
 
 		"\r\n" +
 
-		"Your one time pin is " + otp + ".\r\nThis code will expire in 5 mins.\r\n")
+		link + ".\r\nThis link will expire in 4 hours.\r\n")
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "bede.abbe@solisfinance.com", to, msg)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "bede.abbe@gmail.com", to, msg)
 
 	if err != nil {
 

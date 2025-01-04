@@ -54,3 +54,38 @@ func RegisterAccount(c *beego.Controller, userid int64) {
 	// logs.Info("Scope is ", data.Scope)
 	// logs.Info("Token Type is ", data.Token_type)
 }
+
+func GenerateToken(c *beego.Controller, token string) (resp responses.UserResponseDTO) {
+	host, _ := beego.AppConfig.String("authenticationBaseUrl")
+
+	logs.Info("About to verify token ", token)
+
+	request := api.NewRequest(
+		host,
+		"/v1/auth/token/check",
+		api.POST)
+	request.Params["Value"] = token
+	// request.Params = {"UserId": strconv.Itoa(int(userid))}
+	client := api.Client{
+		Request: request,
+		Type_:   "body",
+	}
+	res, err := client.SendRequest()
+	if err != nil {
+		logs.Error("client.Error: %v", err)
+		c.Data["json"] = err.Error()
+	}
+	defer res.Body.Close()
+	read, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.Data["json"] = err.Error()
+	}
+
+	logs.Info("Raw response received is ", res)
+	// data := map[string]interface{}{}
+	var data responses.UserResponseDTO
+	json.Unmarshal(read, &data)
+	c.Data["json"] = data
+
+	return data
+}
