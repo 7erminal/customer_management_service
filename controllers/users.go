@@ -35,6 +35,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("SignUp2", c.SignUp2)
 	c.Mapping("VerifyUsername", c.VerifyUsername)
 	c.Mapping("VerifyUser", c.VerifyUser)
+	c.Mapping("VerifyInvite", c.VerifyInvite)
 }
 
 // SignUp2 ...
@@ -307,12 +308,85 @@ func (c *UsersController) InviteUser() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
-	go functions.SendEmail(v.Email, v.Link)
+	tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
+
+	logs.Info("Token resp is ", tokenResp.Value.Token)
+
+	i, err := strconv.ParseInt(v.InviteBy, 10, 64)
+
+	if err != nil {
+		return
+	}
+
+	inviteBy, err := models.GetUsersById(i)
+
+	if err != nil {
+		return
+	}
+
+	var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+
+	ui, err := models.AddUserInvites(&userInvite)
+
+	if err != nil {
+		logs.Error("Error response received when adding invite ", err.Error())
+		return
+	}
+
+	logs.Info("User invite added ", ui)
+
+	link := v.Link + tokenResp.Value.Token.Token
+
+	go functions.SendEmail(v.Email, link)
 
 	logs.Info("Email sent")
 
 	var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Sent", StatusDesc: "Sent "}
 	c.Data["json"] = resp
+
+	c.ServeJSON()
+}
+
+// SignUp ...
+// @Title Verify invite
+// @Description Verify invite
+// @Param	body		body 	requests.StringRequestDTO	true		"body for SignUp content"
+// @Success 200 {object} responses.StringResponseDTO
+// @Failure 403 body is empty
+// @router /verify-invite [post]
+func (c *UsersController) VerifyInvite() {
+	var v requests.StringRequestDTO
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	logs.Info("Received ", v)
+
+	if token, err := models.GetUserTokensByToken(v.Value); err == nil {
+		logs.Info("Token fetched from DB")
+		if token.ExpiryDate.After(time.Now()) {
+			logs.Info("Token expiry ")
+			if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
+				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
+				if verifyTokenResp.StatusCode == 200 {
+					var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Token verified successfully", StatusDesc: "Token verified successfully"}
+					c.Data["json"] = resp
+				} else {
+					var resp = responses.StringResponseDTO{StatusCode: 501, Value: "Token verification failed", StatusDesc: "Token verification failed"}
+					c.Data["json"] = resp
+				}
+			} else {
+				logs.Error("Unable to get specified token ", err.Error())
+				var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Unable to get token ::: " + err.Error()}
+				c.Data["json"] = resp
+			}
+		} else {
+			logs.Error("Token expired ")
+			var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Token expired ::: " + err.Error()}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Error("Unable to get specified token ", err.Error())
+		var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Unable to get token ::: " + err.Error()}
+		c.Data["json"] = resp
+	}
 
 	c.ServeJSON()
 }

@@ -1249,6 +1249,28 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /users/verify-invite:
+    post:
+      tags:
+      - users
+      description: |-
+        Verify invite
+        <br>
+      operationId: UsersController.Verify invite
+      parameters:
+      - in: body
+        name: body
+        description: body for SignUp content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.StringRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responses.StringResponseDTO'
+        "403":
+          description: body is empty
   /users/verify-user/{id}:
     get:
       tags:
@@ -1271,14 +1293,14 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  499.<nil>.0x14000622d38:
-    title: "0x14000622d38"
+  499.<nil>.0x1400061b968:
+    title: "0x1400061b968"
     type: object
-  1290.<nil>.0x14000622ee8:
-    title: "0x14000622ee8"
+  1512.<nil>.0x1400061bb90:
+    title: "0x1400061bb90"
     type: object
-  2093.<nil>.0x14000623098:
-    title: "0x14000623098"
+  2315.<nil>.0x1400061bd40:
+    title: "0x1400061bd40"
     type: object
   models.Accounts:
     title: Accounts
@@ -1777,7 +1799,11 @@ definitions:
     properties:
       Email:
         type: string
+      InviteBy:
+        type: string
       Link:
+        type: string
+      Role:
         type: string
   requests.RolePermissionRequest:
     title: RolePermissionRequest
@@ -1795,12 +1821,18 @@ definitions:
         type: string
       Role:
         type: string
+  requests.StringRequestDTO:
+    title: StringRequestDTO
+    type: object
+    properties:
+      Value:
+        type: string
   responses.BranchesResponseDTO:
     title: BranchesResponseDTO
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/499.<nil>.0x14000622d38'
+        $ref: '#/definitions/499.<nil>.0x1400061b968'
       StatusCode:
         type: integer
         format: int64
@@ -1822,7 +1854,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/1290.<nil>.0x14000622ee8'
+        $ref: '#/definitions/1512.<nil>.0x1400061bb90'
       StatusCode:
         type: integer
         format: int64
@@ -1844,7 +1876,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2093.<nil>.0x14000623098'
+        $ref: '#/definitions/2315.<nil>.0x1400061bd40'
       StatusCode:
         type: integer
         format: int64

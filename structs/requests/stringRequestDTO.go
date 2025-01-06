@@ -5,6 +5,8 @@ type StringRequestDTO struct {
 }
 
 type RegisterInviteRequestDTO struct {
-	Email string
-	Link  string
+	InviteBy string
+	Email    string
+	Role     string
+	Link     string
 }

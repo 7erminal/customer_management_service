@@ -1642,6 +1642,37 @@
                 }
             }
         },
+        "/users/verify-invite": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Verify invite\n\u003cbr\u003e",
+                "operationId": "UsersController.Verify invite",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for SignUp content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.StringRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StringResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/users/verify-user/{id}": {
             "get": {
                 "tags": [
@@ -1762,16 +1793,16 @@
         }
     },
     "definitions": {
-        "1290.\u003cnil\u003e.0x14000622ee8": {
-            "title": "0x14000622ee8",
+        "1512.\u003cnil\u003e.0x1400061bb90": {
+            "title": "0x1400061bb90",
             "type": "object"
         },
-        "2093.\u003cnil\u003e.0x14000623098": {
-            "title": "0x14000623098",
+        "2315.\u003cnil\u003e.0x1400061bd40": {
+            "title": "0x1400061bd40",
             "type": "object"
         },
-        "499.\u003cnil\u003e.0x14000622d38": {
-            "title": "0x14000622d38",
+        "499.\u003cnil\u003e.0x1400061b968": {
+            "title": "0x1400061b968",
             "type": "object"
         },
         "models.Accounts": {
@@ -2477,7 +2508,13 @@
                 "Email": {
                     "type": "string"
                 },
+                "InviteBy": {
+                    "type": "string"
+                },
                 "Link": {
+                    "type": "string"
+                },
+                "Role": {
                     "type": "string"
                 }
             }
@@ -2506,12 +2543,21 @@
                 }
             }
         },
+        "requests.StringRequestDTO": {
+            "title": "StringRequestDTO",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.BranchesResponseDTO": {
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000622d38"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x1400061b968"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2543,7 +2589,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1290.\u003cnil\u003e.0x14000622ee8"
+                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x1400061bb90"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2575,7 +2621,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2093.\u003cnil\u003e.0x14000623098"
+                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x1400061bd40"
                 },
                 "StatusCode": {
                     "type": "integer",
