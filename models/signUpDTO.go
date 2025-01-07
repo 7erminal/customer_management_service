@@ -11,6 +11,7 @@ type SignUpDTO struct {
 	Gender      string `orm:"size(255)"`
 	Dob         string `orm:"size(255)"`
 	PhoneNumber string `orm:"size(255)"`
+	Role        string `orm:"size(255)"`
 }
 
 func init() {

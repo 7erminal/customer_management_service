@@ -25,6 +25,7 @@ func (c *RolesController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("GetOneByName", c.GetOneByName)
 }
 
 // Post ...
@@ -60,6 +61,26 @@ func (c *RolesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetRolesById(id)
+	if err != nil {
+		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: v, StatusDesc: "Role fetched"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
+// GetOneByName ...
+// @Title Get One By Role
+// @Description get Roles by name
+// @Param	role		path 	string	true		"The key for staticblock"
+// @Success 200 {object} responses.RoleResponseDTO
+// @Failure 403 :name is empty
+// @router /role/:role [get]
+func (c *RolesController) GetOneByName() {
+	role := c.Ctx.Input.Param(":role")
+	v, err := models.GetRolesByName(role)
 	if err != nil {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp

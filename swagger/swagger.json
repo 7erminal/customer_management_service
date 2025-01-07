@@ -1142,6 +1142,35 @@
                 }
             }
         },
+        "/roles/role/{role}": {
+            "get": {
+                "tags": [
+                    "roles"
+                ],
+                "description": "get Roles by name\n\u003cbr\u003e",
+                "operationId": "RolesController.Get One By Role",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "role",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.RoleResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":name is empty"
+                    }
+                }
+            }
+        },
         "/roles/{id}": {
             "get": {
                 "tags": [
@@ -1642,6 +1671,42 @@
                 }
             }
         },
+        "/users/update-user-image": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "update the User's profile image\n\u003cbr\u003e",
+                "operationId": "UsersController.Update user's profile image",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "UserImage",
+                        "description": "User Image",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "UserId",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/users/verify-invite": {
             "post": {
                 "tags": [
@@ -1793,16 +1858,16 @@
         }
     },
     "definitions": {
-        "1512.\u003cnil\u003e.0x1400061bb90": {
-            "title": "0x1400061bb90",
+        "1512.\u003cnil\u003e.0x14000701668": {
+            "title": "0x14000701668",
             "type": "object"
         },
-        "2315.\u003cnil\u003e.0x1400061bd40": {
-            "title": "0x1400061bd40",
+        "2315.\u003cnil\u003e.0x14000701818": {
+            "title": "0x14000701818",
             "type": "object"
         },
-        "499.\u003cnil\u003e.0x1400061b968": {
-            "title": "0x1400061b968",
+        "499.\u003cnil\u003e.0x14000701440": {
+            "title": "0x14000701440",
             "type": "object"
         },
         "models.Accounts": {
@@ -2254,6 +2319,9 @@
                 },
                 "PhoneNumber": {
                     "type": "string"
+                },
+                "Role": {
+                    "type": "string"
                 }
             }
         },
@@ -2409,6 +2477,9 @@
                 "PhoneNumber": {
                     "type": "string"
                 },
+                "Role": {
+                    "$ref": "#/definitions/models.Roles"
+                },
                 "UserId": {
                     "type": "integer",
                     "format": "int64"
@@ -2557,7 +2628,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x1400061b968"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000701440"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2589,7 +2660,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x1400061bb90"
+                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x14000701668"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2621,7 +2692,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x1400061bd40"
+                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x14000701818"
                 },
                 "StatusCode": {
                     "type": "integer",

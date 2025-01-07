@@ -13,7 +13,7 @@ import (
 type Customers struct {
 	CustomerId       int64                `orm:"auto"`
 	User             *Users               `orm:"rel(fk)"`
-	Branch           *Branches            `orm:"rel(fk);omitempty;null"`
+	Branch           *Branches            `orm:"rel(fk);column(branch);omitempty;null"`
 	Shop             *Shops               `orm:"rel(fk);omitempty;null"`
 	CustomerCategory *Customer_categories `orm:"rel(fk);omitempty;null"`
 	Nickname         string               `orm:"size(100);omitempty;null"`

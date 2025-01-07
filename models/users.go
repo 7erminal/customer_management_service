@@ -26,6 +26,7 @@ type Users struct {
 	IdNumber      string    `orm:"column(id_number);size(100);null"`
 	MaritalStatus string    `orm:"column(marital_status);size(20);null"`
 	Active        int       `orm:"column(active);null"`
+	Role          *Roles    `orm:"rel(fk);column(role);omitempty;null"`
 	IsVerified    bool      `orm:"column(is_verified);null"`
 	DateCreated   time.Time `orm:"column(date_created);type(datetime);null;auto_now_add"`
 	DateModified  time.Time `orm:"column(date_modified);type(datetime);null"`
@@ -70,7 +71,7 @@ func GetUsersByUsername(username string) (v *Users, err error) {
 func GetUsersById(id int64) (v *Users, err error) {
 	o := orm.NewOrm()
 	v = &Users{UserId: id}
-	if err = o.Read(v); err == nil {
+	if err = o.QueryTable(new(Users)).Filter("UserId", id).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err

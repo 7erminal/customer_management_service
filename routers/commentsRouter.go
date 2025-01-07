@@ -322,6 +322,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:RolesController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:RolesController"],
+        beego.ControllerComments{
+            Method: "GetOneByName",
+            Router: `/role/:role`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
         beego.ControllerComments{
             Method: "Post",
@@ -488,6 +497,15 @@ func init() {
         beego.ControllerComments{
             Method: "SignUp",
             Router: `/sign-up`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
+        beego.ControllerComments{
+            Method: "UpdateUserImage",
+            Router: `/update-user-image`,
             AllowHTTPMethods: []string{"post"},
             MethodParams: param.Make(),
             Filters: nil,

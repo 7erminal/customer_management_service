@@ -44,6 +44,17 @@ func GetRolesById(id int64) (v *Roles, err error) {
 	return nil, err
 }
 
+// GetRolesById retrieves Roles by Id. Returns error if
+// Id doesn't exist
+func GetRolesByName(roleName string) (v *Roles, err error) {
+	o := orm.NewOrm()
+	v = &Roles{Role: roleName}
+	if err = o.QueryTable(new(Roles)).Filter("Role", roleName).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllRoles retrieves all Roles matches certain condition. Returns empty list if
 // no records exist
 func GetAllRoles(query map[string]string, fields []string, sortby []string, order []string,

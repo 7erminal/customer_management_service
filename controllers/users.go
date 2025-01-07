@@ -36,6 +36,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("VerifyUsername", c.VerifyUsername)
 	c.Mapping("VerifyUser", c.VerifyUser)
 	c.Mapping("VerifyInvite", c.VerifyInvite)
+	c.Mapping("UpdateUserImage", c.UpdateUserImage)
 }
 
 // SignUp2 ...
@@ -152,6 +153,17 @@ func (c *UsersController) SignUp() {
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
+	role, err := models.GetRolesByName(v.Role)
+
+	// logs.Info("Role in request is ", v.Role)
+
+	if err != nil {
+		logs.Error("Error fetching role:: ", err.Error())
+		role = nil
+	}
+
+	logs.Info("The role fetched is ", role.Role)
+
 	q, err := models.GetUsersByUsername(v.Email)
 
 	if err != nil {
@@ -186,7 +198,7 @@ func (c *UsersController) SignUp() {
 			if gender == "f" || gender == "F" || gender == "female" {
 				gender = "FEMALE"
 			}
-			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, PhoneNumber: v.PhoneNumber, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, PhoneNumber: v.PhoneNumber, Role: role, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddUsers(&addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
@@ -477,6 +489,86 @@ func (c *UsersController) GetAll() {
 	c.ServeJSON()
 }
 
+// UpdateUserImage ...
+// @Title Update user's profile image
+// @Description update the User's profile image
+// @Param	UserImage		formData 	file	true		"User Image"
+// @Param	UserId		formData 	string	true		"User ID"
+// @Success 200 {object} models.UserResponseDTO
+// @Failure 403 body is empty
+// @router /update-user-image [post]
+func (c *UsersController) UpdateUserImage() {
+	// image of user received
+	file, header, err := c.GetFile("UserImage")
+	var filePath string = ""
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Info("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := header.Filename
+		logs.Info("File name is ", fileName)
+		filePath = "/uploads/users/" + fileName // Define your file path
+		logs.Info("File name is ", filePath)
+		err = c.SaveToFile("UserImage", "."+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			errorMessage := "Error: Failed to save the image file"
+
+			resp := models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+
+			c.Data["json"] = resp
+			c.ServeJSON()
+			return
+		}
+	}
+
+	id, _ := strconv.ParseInt(c.Ctx.Input.Query("UserId"), 10, 64)
+
+	v, err := models.GetUsersById(id)
+
+	if err == nil {
+		v.ImagePath = filePath
+
+		if err := models.UpdateUsersById(v); err == nil {
+			v, err := models.GetUsersById(v.UserId)
+
+			if err != nil {
+				c.Data["json"] = err.Error()
+
+				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				c.Data["json"] = resp
+			} else {
+				logs.Debug("Returned user is", v)
+
+				var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Profile image updated successfully"}
+				c.Data["json"] = resp
+			}
+		} else {
+			// c.Data["json"] = err.Error()
+			logs.Debug("Error updating user", err.Error())
+			var resp = models.UserResponseDTO{StatusCode: 602, User: nil, StatusDesc: "Error updating user"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Debug("Error fetching user")
+
+		logs.Debug("Error updating user")
+		var resp = models.UserResponseDTO{StatusCode: 603, User: nil, StatusDesc: "Error updating user"}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
+}
+
 // Put ...
 // @Title Put
 // @Description update the Users
@@ -511,7 +603,7 @@ func (c *UsersController) Put() {
 		// Save the uploaded file
 		fileName := header.Filename
 		filePath = "/uploads/users/" + fileName // Define your file path
-		err = c.SaveToFile("Image", "."+filePath)
+		err = c.SaveToFile("UserImage", "."+filePath)
 		if err != nil {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
