@@ -1340,14 +1340,14 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  499.<nil>.0x14000701440:
-    title: "0x14000701440"
+  499.<nil>.0x140006b07f8:
+    title: "0x140006b07f8"
     type: object
-  1512.<nil>.0x14000701668:
-    title: "0x14000701668"
+  1512.<nil>.0x140006b0a20:
+    title: "0x140006b0a20"
     type: object
-  2315.<nil>.0x14000701818:
-    title: "0x14000701818"
+  2315.<nil>.0x140006b0bd0:
+    title: "0x140006b0bd0"
     type: object
   models.Accounts:
     title: Accounts
@@ -1883,7 +1883,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/499.<nil>.0x14000701440'
+        $ref: '#/definitions/499.<nil>.0x140006b07f8'
       StatusCode:
         type: integer
         format: int64
@@ -1905,7 +1905,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/1512.<nil>.0x14000701668'
+        $ref: '#/definitions/1512.<nil>.0x140006b0a20'
       StatusCode:
         type: integer
         format: int64
@@ -1927,7 +1927,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2315.<nil>.0x14000701818'
+        $ref: '#/definitions/2315.<nil>.0x140006b0bd0'
       StatusCode:
         type: integer
         format: int64

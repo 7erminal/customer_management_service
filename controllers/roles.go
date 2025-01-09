@@ -41,7 +41,7 @@ func (c *RolesController) Post() {
 	var role models.Roles = models.Roles{Role: v.Role, Description: v.Description, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 	if _, err := models.AddRoles(&role); err == nil {
 		c.Ctx.Output.SetStatus(200)
-		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &role, StatusDesc: "Role fetched"}
+		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &role, StatusDesc: "Role added"}
 		c.Data["json"] = resp
 	} else {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}

@@ -5,7 +5,7 @@ package models
 // )
 
 type UserResponseDTO struct {
-	StatusCode int    `orm: "omitempty"`
-	User       *Users `orm: "omitempty"`
-	StatusDesc string `orm:"size(255)"`
+	StatusCode int
+	User       *Users
+	StatusDesc string
 }
