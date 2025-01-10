@@ -20,7 +20,7 @@ func init() {
 // Run the migrations
 func (m *UserInvites_20250106_130630) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
-	m.SQL("CREATE TABLE user_invites(`id` int(11) NOT NULL AUTO_INCREMENT,`invitation_token` int(11) DEFAULT NULL,`invited_by` int(11) DEFAULT NULL,`date_created` datetime NOT NULL,`date_modified` datetime NOT NULL,`created_by` int(11) DEFAULT NULL,`modified_by` int(11) DEFAULT NULL,`active` int(11) DEFAULT NULL,PRIMARY KEY (`id`))")
+	m.SQL("CREATE TABLE user_invites(`user_invite_id` int(11) NOT NULL AUTO_INCREMENT,`invitation_token` int(11) NOT NULL,`invited_by` int(11) DEFAULT NULL,`date_created` datetime DEFAULT CURRENT_TIMESTAMP,`date_modified` datetime ON UPDATE CURRENT_TIMESTAMP,`created_by` int(11) DEFAULT 1,`modified_by` int(11) DEFAULT 1,`active` int(11) DEFAULT 1,PRIMARY KEY (`user_invite_id`), FOREIGN KEY (invited_by) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (invitation_token) REFERENCES user_tokens(user_token_id) ON UPDATE CASCADE ON DELETE CASCADE)")
 }
 
 // Reverse the migrations

@@ -91,7 +91,7 @@ func GenerateToken(c *beego.Controller, email string, role string) (resp respons
 	return data
 }
 
-func VerifyUserToken(c *beego.Controller, token string, nonce string, email string) (resp responses.StringResponseDTO) {
+func VerifyUserToken(c *beego.Controller, token string, nonce string, email string) (resp responses.InviteDecodeResponseDTO) {
 	host, _ := beego.AppConfig.String("authenticationBaseUrl")
 
 	logs.Info("About to verify token ", token)
@@ -121,7 +121,7 @@ func VerifyUserToken(c *beego.Controller, token string, nonce string, email stri
 
 	logs.Info("Raw response received is ", res)
 	// data := map[string]interface{}{}
-	var data responses.StringResponseDTO
+	var data responses.InviteDecodeResponseDTO
 	json.Unmarshal(read, &data)
 	c.Data["json"] = data
 

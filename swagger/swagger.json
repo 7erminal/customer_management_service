@@ -1729,7 +1729,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/responses.StringResponseDTO"
+                            "$ref": "#/definitions/responses.InviteDecodeResponseDTO"
                         }
                     },
                     "403": {
@@ -1858,16 +1858,16 @@
         }
     },
     "definitions": {
-        "1512.\u003cnil\u003e.0x140006b0a20": {
-            "title": "0x140006b0a20",
+        "1512.\u003cnil\u003e.0x14000645ce0": {
+            "title": "0x14000645ce0",
             "type": "object"
         },
-        "2315.\u003cnil\u003e.0x140006b0bd0": {
-            "title": "0x140006b0bd0",
+        "2315.\u003cnil\u003e.0x14000645e90": {
+            "title": "0x14000645e90",
             "type": "object"
         },
-        "499.\u003cnil\u003e.0x140006b07f8": {
-            "title": "0x140006b07f8",
+        "499.\u003cnil\u003e.0x14000645ab8": {
+            "title": "0x14000645ab8",
             "type": "object"
         },
         "models.Accounts": {
@@ -2322,6 +2322,9 @@
                 },
                 "Role": {
                     "type": "string"
+                },
+                "RoleRequired": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2628,7 +2631,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x140006b07f8"
+                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000645ab8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2636,6 +2639,22 @@
                 },
                 "StatusDesc": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.InviteDecodeResponseDTO": {
+            "title": "InviteDecodeResponseDTO",
+            "type": "object",
+            "properties": {
+                "StatusCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "StatusDesc": {
+                    "type": "string"
+                },
+                "Value": {
+                    "$ref": "#/definitions/responses.TokenDestructureResponseDTO"
                 }
             }
         },
@@ -2660,7 +2679,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x140006b0a20"
+                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x14000645ce0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2692,7 +2711,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x140006b0bd0"
+                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x14000645e90"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2715,6 +2734,18 @@
                     "type": "string"
                 },
                 "Value": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.TokenDestructureResponseDTO": {
+            "title": "TokenDestructureResponseDTO",
+            "type": "object",
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "RoleId": {
                     "type": "string"
                 }
             }

@@ -153,23 +153,36 @@ func (c *UsersController) SignUp() {
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
-	role, err := models.GetRolesByName(v.Role)
+	roleId, _ := strconv.ParseInt(v.Role, 10, 64)
+
+	role, err := models.GetRolesById(roleId)
 
 	// logs.Info("Role in request is ", v.Role)
+
+	var proceed bool = false
 
 	if err != nil {
 		logs.Error("Error fetching role:: ", err.Error())
 		role = nil
+
+		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid role specified. Please enter date in the format (YYYY-MM-DD)."}
+		c.Data["json"] = resp
+
+		if !v.RoleRequired {
+			proceed = true
+		}
+	} else {
+		proceed = true
 	}
 
 	logs.Info("The role fetched is ", role.Role)
 
 	q, err := models.GetUsersByUsername(v.Email)
 
-	if err != nil {
+	if err != nil && proceed {
 		logs.Debug("About to debug")
 
-		var proceed bool = false
+		proceed = false
 
 		// Convert dob string to date
 		dobm, error := time.Parse("2006-01-02", v.Dob)
@@ -288,7 +301,7 @@ func (c *UsersController) VerifyUser() {
 	userid, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUsersById(userid)
 
-	logs.Info("Get user by user ID")
+	logs.Info("Get user by user ID", userid)
 
 	if err != nil {
 		logs.Error("Error::", err.Error())
@@ -363,7 +376,7 @@ func (c *UsersController) InviteUser() {
 // @Title Verify invite
 // @Description Verify invite
 // @Param	body		body 	requests.StringRequestDTO	true		"body for SignUp content"
-// @Success 200 {object} responses.StringResponseDTO
+// @Success 200 {object} responses.InviteDecodeResponseDTO
 // @Failure 403 body is empty
 // @router /verify-invite [post]
 func (c *UsersController) VerifyInvite() {
@@ -378,25 +391,25 @@ func (c *UsersController) VerifyInvite() {
 			if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
 				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
 				if verifyTokenResp.StatusCode == 200 {
-					var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Token verified successfully", StatusDesc: "Token verified successfully"}
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: 200, Value: verifyTokenResp.Value, StatusDesc: "Token verified successfully"}
 					c.Data["json"] = resp
 				} else {
-					var resp = responses.StringResponseDTO{StatusCode: 501, Value: "Token verification failed", StatusDesc: "Token verification failed"}
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: 501, Value: nil, StatusDesc: "Token verification failed"}
 					c.Data["json"] = resp
 				}
 			} else {
 				logs.Error("Unable to get specified token ", err.Error())
-				var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Unable to get token ::: " + err.Error()}
+				var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
 				c.Data["json"] = resp
 			}
 		} else {
 			logs.Error("Token expired ")
-			var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Token expired ::: " + err.Error()}
+			var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token expired ::: " + err.Error()}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Error("Unable to get specified token ", err.Error())
-		var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Unable to get token ::: " + err.Error()}
+		var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 

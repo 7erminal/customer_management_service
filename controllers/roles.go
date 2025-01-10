@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -59,12 +60,15 @@ func (c *RolesController) Post() {
 // @router /:id [get]
 func (c *RolesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
+	logs.Info("Role received is ", idStr)
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetRolesById(id)
 	if err != nil {
+		logs.Error("Unable to fetch role ", err.Error())
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		logs.Info("Role fetched")
 		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: v, StatusDesc: "Role fetched"}
 		c.Data["json"] = resp
 	}
