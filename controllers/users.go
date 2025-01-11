@@ -687,7 +687,13 @@ func (c *UsersController) GetAll() {
 		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+		usersResp := []models.Users{}
+		for _, urs := range l {
+			m := urs.(models.Users)
+
+			usersResp = append(usersResp, m)
+		}
+		resp := responses.UsersResponseDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
