@@ -1987,16 +1987,16 @@
             "title": "UserInvitesResp",
             "type": "object"
         },
-        "2047.\u003cnil\u003e.0x140006ddf50": {
-            "title": "0x140006ddf50",
+        "2047.\u003cnil\u003e.0x1400074ed80": {
+            "title": "0x1400074ed80",
             "type": "object"
         },
-        "2850.\u003cnil\u003e.0x14000722180": {
-            "title": "0x14000722180",
+        "2850.\u003cnil\u003e.0x1400074ef30": {
+            "title": "0x1400074ef30",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140006ddc08": {
-            "title": "0x140006ddc08",
+        "494.\u003cnil\u003e.0x1400074ea38": {
+            "title": "0x1400074ea38",
             "type": "object"
         },
         "models.Accounts": {
@@ -2885,7 +2885,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140006ddc08"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x1400074ea38"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2933,7 +2933,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2047.\u003cnil\u003e.0x140006ddf50"
+                    "$ref": "#/definitions/2047.\u003cnil\u003e.0x1400074ed80"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2965,7 +2965,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2850.\u003cnil\u003e.0x14000722180"
+                    "$ref": "#/definitions/2850.\u003cnil\u003e.0x1400074ef30"
                 },
                 "StatusCode": {
                     "type": "integer",

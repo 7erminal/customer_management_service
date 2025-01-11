@@ -584,7 +584,7 @@ func (c *UsersController) GetOne() {
 		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		logs.Info("Getting user details ", v.Customer.Branch.Country)
+		logs.Info("Getting user details ", v.Customer)
 		// cust, err := models.GetCustomersByUser(v.UserId)
 
 		// if err != nil {
