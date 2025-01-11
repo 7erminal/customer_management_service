@@ -14,8 +14,9 @@ type UserInvites struct {
 	UserInviteId    int64       `orm:"auto"`
 	InvitedBy       *Users      `orm:"rel(fk);column(invited_by)"`
 	InvitationToken *UserTokens `orm:"rel(fk);column(invitation_token)"`
-	DateCreated     time.Time   `orm:"type(datetime)"`
-	DateModified    time.Time   `orm:"type(datetime)"`
+	Status          string
+	DateCreated     time.Time `orm:"type(datetime)"`
+	DateModified    time.Time `orm:"type(datetime)"`
 	CreatedBy       int
 	ModifiedBy      int
 	Active          int

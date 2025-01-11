@@ -14,11 +14,13 @@ type Branches struct {
 	BranchId     int64      `orm:"auto"`
 	Branch       string     `orm:"size(80)"`
 	Country      *Countries `orm:"rel(fk);column(country)"`
-	Active       int        `orm:"omitempty"`
-	DateCreated  time.Time  `orm:"type(datetime);omitempty"`
-	DateModified time.Time  `orm:"type(datetime);omitempty"`
-	CreatedBy    int        `orm:"omitempty"`
-	ModifiedBy   int        `orm:"omitempty"`
+	Location     string
+	PhoneNumber  string
+	Active       int       `orm:"omitempty"`
+	DateCreated  time.Time `orm:"type(datetime);omitempty"`
+	DateModified time.Time `orm:"type(datetime);omitempty"`
+	CreatedBy    int       `orm:"omitempty"`
+	ModifiedBy   int       `orm:"omitempty"`
 }
 
 func init() {

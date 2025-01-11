@@ -506,7 +506,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Customers"
+                            "$ref": "#/definitions/models.CustomerResponseDTO"
                         }
                     },
                     "403": {
@@ -1609,6 +1609,64 @@
                 }
             }
         },
+        "/users/get-user-invites": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "get Users\n\u003cbr\u003e",
+                "operationId": "UsersController.Get All",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "Fields returned. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sortby",
+                        "description": "Sorted-by fields. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserInvitesResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/users/invite-user": {
             "post": {
                 "tags": [
@@ -1703,6 +1761,73 @@
                     },
                     "403": {
                         "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/users/update-user-invite/{id}": {
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "description": "update the Users\n\u003cbr\u003e",
+                "operationId": "UsersController.Put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to update",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Users content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateUserInviteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserInvitesResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is not int"
+                    }
+                }
+            }
+        },
+        "/users/user-invite/{token}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "get User invite by token\n\u003cbr\u003e",
+                "operationId": "UsersController.Get One User Invite",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "token",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserInviteResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":token is empty"
                     }
                 }
             }
@@ -1858,16 +1983,20 @@
         }
     },
     "definitions": {
-        "1512.\u003cnil\u003e.0x14000645ce0": {
-            "title": "0x14000645ce0",
+        "1097.\u003cnil\u003e.0x140006f0390": {
+            "title": "0x140006f0390",
             "type": "object"
         },
-        "2315.\u003cnil\u003e.0x14000645e90": {
-            "title": "0x14000645e90",
+        "1995.\u003cnil\u003e.0x140006f0588": {
+            "title": "0x140006f0588",
             "type": "object"
         },
-        "499.\u003cnil\u003e.0x14000645ab8": {
-            "title": "0x14000645ab8",
+        "2798.\u003cnil\u003e.0x140006f0738": {
+            "title": "0x140006f0738",
+            "type": "object"
+        },
+        "494.\u003cnil\u003e.0x140006f0228": {
+            "title": "0x140006f0228",
             "type": "object"
         },
         "models.Accounts": {
@@ -1945,9 +2074,15 @@
                     "type": "string",
                     "format": "datetime"
                 },
+                "Location": {
+                    "type": "string"
+                },
                 "ModifiedBy": {
                     "type": "integer",
                     "format": "int64"
+                },
+                "PhoneNumber": {
+                    "type": "string"
                 }
             }
         },
@@ -1978,8 +2113,7 @@
                     "format": "datetime"
                 },
                 "DefaultCurrency": {
-                    "type": "integer",
-                    "format": "int64"
+                    "$ref": "#/definitions/models.Currencies"
                 },
                 "Description": {
                     "type": "string"
@@ -1987,6 +2121,42 @@
                 "ModifiedBy": {
                     "type": "integer",
                     "format": "int64"
+                }
+            }
+        },
+        "models.Currencies": {
+            "title": "Currencies",
+            "type": "object",
+            "properties": {
+                "Active": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "CreatedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Currency": {
+                    "type": "string"
+                },
+                "CurrencyId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DateCreated": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "DateModified": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "ModifiedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Symbol": {
+                    "type": "string"
                 }
             }
         },
@@ -2099,7 +2269,8 @@
                     "$ref": "#/definitions/models.Shops"
                 },
                 "User": {
-                    "$ref": "#/definitions/models.Users"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -2335,6 +2506,10 @@
                 "Address": {
                     "type": "string"
                 },
+                "BranchId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
                 "Dob": {
                     "type": "string"
                 },
@@ -2367,19 +2542,86 @@
                 }
             }
         },
-        "models.UserResponseDTO": {
-            "title": "UserResponseDTO",
+        "models.UserInvites": {
+            "title": "UserInvites",
             "type": "object",
             "properties": {
-                "StatusCode": {
+                "Active": {
                     "type": "integer",
                     "format": "int64"
                 },
-                "StatusDesc": {
+                "CreatedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DateCreated": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "DateModified": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "InvitationToken": {
+                    "$ref": "#/definitions/models.UserTokens"
+                },
+                "InvitedBy": {
+                    "$ref": "#/definitions/models.Users"
+                },
+                "ModifiedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Status": {
                     "type": "string"
                 },
-                "User": {
-                    "$ref": "#/definitions/models.Users"
+                "UserInviteId": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.UserResponseDTO": {
+            "title": "UserResponseDTO",
+            "type": "object"
+        },
+        "models.UserTokens": {
+            "title": "UserTokens",
+            "type": "object",
+            "properties": {
+                "Active": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "CreatedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DateCreated": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "DateModified": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "ExpiryDate": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "ModifiedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Nonce": {
+                    "type": "string"
+                },
+                "Token": {
+                    "type": "string"
+                },
+                "UserTokenId": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -2433,6 +2675,9 @@
                 "CreatedBy": {
                     "type": "integer",
                     "format": "int64"
+                },
+                "Customer": {
+                    "$ref": "#/definitions/models.Customers"
                 },
                 "DateCreated": {
                     "type": "string",
@@ -2626,12 +2871,21 @@
                 }
             }
         },
+        "requests.UpdateUserInviteRequest": {
+            "title": "UpdateUserInviteRequest",
+            "type": "object",
+            "properties": {
+                "Status": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.BranchesResponseDTO": {
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/499.\u003cnil\u003e.0x14000645ab8"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140006f0228"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2679,7 +2933,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1512.\u003cnil\u003e.0x14000645ce0"
+                    "$ref": "#/definitions/1995.\u003cnil\u003e.0x140006f0588"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2711,7 +2965,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2315.\u003cnil\u003e.0x14000645e90"
+                    "$ref": "#/definitions/2798.\u003cnil\u003e.0x140006f0738"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2747,6 +3001,38 @@
                 },
                 "RoleId": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.UserInviteResponseDTO": {
+            "title": "UserInviteResponseDTO",
+            "type": "object",
+            "properties": {
+                "StatusCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "StatusDesc": {
+                    "type": "string"
+                },
+                "UserInvite": {
+                    "$ref": "#/definitions/models.UserInvites"
+                }
+            }
+        },
+        "responses.UserInvitesResponseDTO": {
+            "title": "UserInvitesResponseDTO",
+            "type": "object",
+            "properties": {
+                "StatusCode": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "StatusDesc": {
+                    "type": "string"
+                },
+                "UserInvites": {
+                    "$ref": "#/definitions/1097.\u003cnil\u003e.0x140006f0390"
                 }
             }
         }

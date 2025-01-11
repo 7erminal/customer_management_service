@@ -151,7 +151,7 @@ func (c *CustomersController) AddCustomer() {
 
 	if !proceed {
 
-		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+		var resp = models.CustomerResponseDTO{StatusCode: 606, Customer: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
 		// c.Data["json"] = error.Error()
@@ -173,7 +173,7 @@ func (c *CustomersController) AddCustomer() {
 
 				logs.Error(err.Error())
 
-				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user. " + err.Error()}
+				var resp = models.CustomerResponseDTO{StatusCode: 601, Customer: nil, StatusDesc: "Error fetching user. " + err.Error()}
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned user is", ru)
@@ -184,7 +184,7 @@ func (c *CustomersController) AddCustomer() {
 
 					ccid, _ := strconv.ParseInt(v.Category, 0, 64)
 					if cc, errr := models.GetCustomer_categoriesById(ccid); errr == nil {
-						var cust = models.Customers{User: ru, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
+						var cust = models.Customers{User: ru.UserId, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
 						if _, err := models.AddCustomers(&cust); err == nil {
 							c.Ctx.Output.SetStatus(200)
@@ -202,7 +202,7 @@ func (c *CustomersController) AddCustomer() {
 
 				} else {
 					// c.Data["json"] = err.Error()
-					var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
+					var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
 					c.Data["json"] = resp
 				}
 				// c.Data["json"] = v
@@ -210,7 +210,7 @@ func (c *CustomersController) AddCustomer() {
 		} else {
 			logs.Error(err.Error())
 
-			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user" + err.Error()}
+			var resp = models.CustomerResponseDTO{StatusCode: 606, Customer: nil, StatusDesc: "Error adding user" + err.Error()}
 			c.Data["json"] = resp
 
 			// c.Data["json"] = err.Error()
@@ -309,7 +309,7 @@ func (c *CustomersController) GetAll() {
 // @Description update the Customers
 // @Param	id		path 	string	true		"The id you want to update"
 // @Param	body		body 	models.Customers	true		"body for Customers content"
-// @Success 200 {object} models.Customers
+// @Success 200 {object} models.CustomerResponseDTO
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *CustomersController) Put() {
@@ -318,9 +318,13 @@ func (c *CustomersController) Put() {
 	v := models.Customers{CustomerId: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	if err := models.UpdateCustomersById(&v); err == nil {
-		c.Data["json"] = "OK"
+		c.Ctx.Output.SetStatus(200)
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &v, StatusDesc: "Customer updated successfully"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = err.Error()
+		logs.Error("Customer update failed ", err.Error())
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: &v, StatusDesc: "Customer update failed"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

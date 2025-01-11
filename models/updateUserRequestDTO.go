@@ -8,4 +8,5 @@ type UpdateUserRequestDTO struct {
 	Dob           string `orm:"size(50); omitempty; null"`
 	Address       string `orm:"size(255); omitempty; null"`
 	MaritalStatus string `orm:"size(255); omitempty; null"`
+	BranchId      int64
 }

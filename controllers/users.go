@@ -37,6 +37,8 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("VerifyUser", c.VerifyUser)
 	c.Mapping("VerifyInvite", c.VerifyInvite)
 	c.Mapping("UpdateUserImage", c.UpdateUserImage)
+	c.Mapping("UpdateUserInvite", c.UpdateUserInvite)
+	c.Mapping("GetUserInvite", c.GetUserInvite)
 }
 
 // SignUp2 ...
@@ -85,14 +87,14 @@ func (c *UsersController) SignUp2() {
 
 			logs.Error(err.Error())
 
-			var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+			var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
 			c.Data["json"] = resp
 		} else {
 			logs.Debug("Returned user B is", v)
 
 			// Shop here will be amended to cater for the shop that the customer is registering for
 
-			var cust = models.Customers{User: v, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var cust = models.Customers{User: v.UserId, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddCustomers(&cust); err == nil {
 				// Check application and register
@@ -101,14 +103,54 @@ func (c *UsersController) SignUp2() {
 				if application == "RIDE" {
 					functions.RegisterAccount(&c.Controller, addUserModel.UserId)
 				}
-				c.Ctx.Output.SetStatus(200)
-				var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User created successfully"}
 
-				c.Data["json"] = resp
+				if err != nil {
+					c.Data["json"] = err.Error()
+
+					var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+					c.Data["json"] = resp
+				} else {
+					addUserModel.Customer = &cust
+					if err := models.UpdateUsersById(&addUserModel); err == nil {
+
+						// userResp := responses.UserResp{
+						// 	UserId:        v.UserId,
+						// 	ImagePath:     v.ImagePath,
+						// 	UserType:      v.UserType,
+						// 	FullName:      v.FullName,
+						// 	Username:      v.Username,
+						// 	Password:      v.Password,
+						// 	Email:         v.Email,
+						// 	PhoneNumber:   v.PhoneNumber,
+						// 	Gender:        v.Gender,
+						// 	Dob:           v.Dob,
+						// 	Address:       v.Address,
+						// 	IdType:        v.IdType,
+						// 	IdNumber:      v.IdNumber,
+						// 	MaritalStatus: v.MaritalStatus,
+						// 	Active:        v.Active,
+						// 	Role:          v.Role,
+						// 	IsVerified:    v.IsVerified,
+						// 	DateCreated:   v.DateCreated,
+						// 	DateModified:  v.DateModified,
+						// 	CreatedBy:     v.CreatedBy,
+						// 	ModifiedBy:    v.ModifiedBy,
+						// 	Branch:        cust.Branch,
+						// }
+						c.Ctx.Output.SetStatus(200)
+						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
+
+						c.Data["json"] = resp
+					} else {
+						logs.Error("Error updating customer ID for user ")
+						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						c.Data["json"] = resp
+					}
+				}
 			} else {
 				// c.Data["json"] = err.Error()\
 				logs.Error(err.Error())
-				var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
+				var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
 				c.Data["json"] = resp
 			}
 
@@ -117,7 +159,7 @@ func (c *UsersController) SignUp2() {
 	} else {
 		logs.Error(err.Error())
 
-		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+		var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
 		// c.Data["json"] = err.Error()
@@ -165,7 +207,7 @@ func (c *UsersController) SignUp() {
 		logs.Error("Error fetching role:: ", err.Error())
 		role = nil
 
-		var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid role specified. Please enter date in the format (YYYY-MM-DD)."}
+		var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid role specified. Please enter date in the format (YYYY-MM-DD)."}
 		c.Data["json"] = resp
 
 		if !v.RoleRequired {
@@ -177,9 +219,7 @@ func (c *UsersController) SignUp() {
 
 	logs.Info("The role fetched is ", role.Role)
 
-	q, err := models.GetUsersByUsername(v.Email)
-
-	if err != nil && proceed {
+	if _, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
 		logs.Debug("About to debug")
 
 		proceed = false
@@ -196,7 +236,7 @@ func (c *UsersController) SignUp() {
 		if !proceed {
 			logs.Error(error)
 
-			var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
+			var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
 			c.Data["json"] = resp
 
 			// c.Data["json"] = error.Error()
@@ -213,7 +253,7 @@ func (c *UsersController) SignUp() {
 			}
 			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, PhoneNumber: v.PhoneNumber, Role: role, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
-			if _, err := models.AddUsers(&addUserModel); err == nil {
+			if uid, err := models.AddUsers(&addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
 
 				logs.Debug("User is ", addUserModel)
@@ -224,7 +264,7 @@ func (c *UsersController) SignUp() {
 
 				// logs.Debug("Returned user is", v)
 
-				var cust = models.Customers{User: &addUserModel, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var cust = models.Customers{User: uid, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 				if _, err := models.AddCustomers(&cust); err == nil {
 					c.Ctx.Output.SetStatus(200)
@@ -235,12 +275,52 @@ func (c *UsersController) SignUp() {
 					if application == "RIDE" {
 						functions.RegisterAccount(&c.Controller, addUserModel.UserId)
 					}
-					var resp = models.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
-					c.Data["json"] = resp
+
+					if err != nil {
+						c.Data["json"] = err.Error()
+
+						var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+						c.Data["json"] = resp
+					} else {
+						addUserModel.Customer = &cust
+						if err := models.UpdateUsersById(&addUserModel); err == nil {
+
+							// userResp := responses.UserResp{
+							// 	UserId:        addUserModel.UserId,
+							// 	ImagePath:     addUserModel.ImagePath,
+							// 	UserType:      addUserModel.UserType,
+							// 	FullName:      addUserModel.FullName,
+							// 	Username:      addUserModel.Username,
+							// 	Password:      addUserModel.Password,
+							// 	Email:         addUserModel.Email,
+							// 	PhoneNumber:   addUserModel.PhoneNumber,
+							// 	Gender:        addUserModel.Gender,
+							// 	Dob:           addUserModel.Dob,
+							// 	Address:       addUserModel.Address,
+							// 	IdType:        addUserModel.IdType,
+							// 	IdNumber:      addUserModel.IdNumber,
+							// 	MaritalStatus: addUserModel.MaritalStatus,
+							// 	Active:        addUserModel.Active,
+							// 	Role:          addUserModel.Role,
+							// 	IsVerified:    addUserModel.IsVerified,
+							// 	DateCreated:   addUserModel.DateCreated,
+							// 	DateModified:  addUserModel.DateModified,
+							// 	CreatedBy:     addUserModel.CreatedBy,
+							// 	ModifiedBy:    addUserModel.ModifiedBy,
+							// 	Branch:        cust.Branch,
+							// }
+							var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
+							c.Data["json"] = resp
+						} else {
+							logs.Error("Error updating customer ID for user ")
+							var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+							c.Data["json"] = resp
+						}
+					}
 				} else {
 					// c.Data["json"] = err.Error()
 					logs.Error("Error adding customer, ", err.Error())
-					var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
+					var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
 					c.Data["json"] = resp
 				}
 				// c.Data["json"] = v
@@ -248,7 +328,7 @@ func (c *UsersController) SignUp() {
 			} else {
 				logs.Error(err.Error())
 
-				var resp = models.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = err.Error()
@@ -256,7 +336,7 @@ func (c *UsersController) SignUp() {
 		}
 	} else {
 		// c.Data["json"] = err.Error()
-		var resp = models.UserResponseDTO{StatusCode: 604, User: q, StatusDesc: "User already exists. Username, email or mobile number already exists."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
 		c.Data["json"] = resp
 	}
 
@@ -278,12 +358,48 @@ func (c *UsersController) VerifyUsername() {
 
 	if err != nil {
 		logs.Error("Error::", err.Error())
-		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
 		c.Data["json"] = resp
 	} else {
 		logs.Info("User found....sending user data")
 		logs.Info("User data::: ", v)
-		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		// cust, err := models.GetCustomersByUser(v.UserId)
+
+		// if err != nil {
+		// 	c.Data["json"] = err.Error()
+
+		// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+		// 	c.Data["json"] = resp
+		// } else {
+
+		// 	userResp := responses.UserResp{
+		// 		UserId:        v.UserId,
+		// 		ImagePath:     v.ImagePath,
+		// 		UserType:      v.UserType,
+		// 		FullName:      v.FullName,
+		// 		Username:      v.Username,
+		// 		Password:      v.Password,
+		// 		Email:         v.Email,
+		// 		PhoneNumber:   v.PhoneNumber,
+		// 		Gender:        v.Gender,
+		// 		Dob:           v.Dob,
+		// 		Address:       v.Address,
+		// 		IdType:        v.IdType,
+		// 		IdNumber:      v.IdNumber,
+		// 		MaritalStatus: v.MaritalStatus,
+		// 		Active:        v.Active,
+		// 		Role:          v.Role,
+		// 		IsVerified:    v.IsVerified,
+		// 		DateCreated:   v.DateCreated,
+		// 		DateModified:  v.DateModified,
+		// 		CreatedBy:     v.CreatedBy,
+		// 		ModifiedBy:    v.ModifiedBy,
+		// 		Branch:        cust.Branch,
+		// 	}
+		// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User details fetched"}
+		// 	c.Data["json"] = resp
+		// }
+		var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -305,16 +421,53 @@ func (c *UsersController) VerifyUser() {
 
 	if err != nil {
 		logs.Error("Error::", err.Error())
-		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
 		c.Data["json"] = resp
 	} else {
 		v.IsVerified = true
 		if err := models.UpdateUsersById(v); err == nil {
 			logs.Info("User found and verified....sending user data")
-			var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User verified"}
+			// cust, err := models.GetCustomersByUser(v.UserId)
+
+			// if err != nil {
+			// 	c.Data["json"] = err.Error()
+
+			// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+			// 	c.Data["json"] = resp
+			// } else {
+			// 	logs.Info("Customer found ", cust)
+
+			// 	userResp := responses.UserResp{
+			// 		UserId:        v.UserId,
+			// 		ImagePath:     v.ImagePath,
+			// 		UserType:      v.UserType,
+			// 		FullName:      v.FullName,
+			// 		Username:      v.Username,
+			// 		Password:      v.Password,
+			// 		Email:         v.Email,
+			// 		PhoneNumber:   v.PhoneNumber,
+			// 		Gender:        v.Gender,
+			// 		Dob:           v.Dob,
+			// 		Address:       v.Address,
+			// 		IdType:        v.IdType,
+			// 		IdNumber:      v.IdNumber,
+			// 		MaritalStatus: v.MaritalStatus,
+			// 		Active:        v.Active,
+			// 		Role:          v.Role,
+			// 		IsVerified:    v.IsVerified,
+			// 		DateCreated:   v.DateCreated,
+			// 		DateModified:  v.DateModified,
+			// 		CreatedBy:     v.CreatedBy,
+			// 		ModifiedBy:    v.ModifiedBy,
+			// 		Branch:        cust.Branch,
+			// 	}
+			// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User verified"}
+			// 	c.Data["json"] = resp
+			// }
+			var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User verified"}
 			c.Data["json"] = resp
 		} else {
-			var resp = models.UserResponseDTO{StatusCode: 608, User: v, StatusDesc: "User not verified ::: " + err.Error()}
+			var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "User not verified ::: " + err.Error()}
 			c.Data["json"] = resp
 		}
 	}
@@ -428,10 +581,47 @@ func (c *UsersController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUsersById(id)
 	if err != nil {
-		var resp = models.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		// cust, err := models.GetCustomersByUser(v.UserId)
+
+		// if err != nil {
+		// 	c.Data["json"] = err.Error()
+
+		// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+		// 	c.Data["json"] = resp
+		// } else {
+		// 	logs.Info("Getting the customer ", cust.Branch.Country.DefaultCurrency.CurrencyId)
+
+		// 	userResp := responses.UserResp{
+		// 		UserId:        v.UserId,
+		// 		ImagePath:     v.ImagePath,
+		// 		UserType:      v.UserType,
+		// 		FullName:      v.FullName,
+		// 		Username:      v.Username,
+		// 		Password:      v.Password,
+		// 		Email:         v.Email,
+		// 		PhoneNumber:   v.PhoneNumber,
+		// 		Gender:        v.Gender,
+		// 		Dob:           v.Dob,
+		// 		Address:       v.Address,
+		// 		IdType:        v.IdType,
+		// 		IdNumber:      v.IdNumber,
+		// 		MaritalStatus: v.MaritalStatus,
+		// 		Active:        v.Active,
+		// 		Role:          v.Role,
+		// 		IsVerified:    v.IsVerified,
+		// 		DateCreated:   v.DateCreated,
+		// 		DateModified:  v.DateModified,
+		// 		CreatedBy:     v.CreatedBy,
+		// 		ModifiedBy:    v.ModifiedBy,
+		// 		Branch:        cust.Branch,
+		// 	}
+		// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User details fetched"}
+		// 	c.Data["json"] = resp
+		// }
+		var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -502,6 +692,71 @@ func (c *UsersController) GetAll() {
 	c.ServeJSON()
 }
 
+// GetUserInvites ...
+// @Title Get All
+// @Description get Users
+// @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
+// @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
+// @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
+// @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
+// @Param	offset	query	string	false	"Start position of result set. Must be an integer"
+// @Success 200 {object} responses.UserInvitesResponseDTO
+// @Failure 403
+// @router /get-user-invites [get]
+func (c *UsersController) GetUserInvites() {
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var limit int64 = 10
+	var offset int64
+
+	// fields: col1,col2,entity.col3
+	if v := c.GetString("fields"); v != "" {
+		fields = strings.Split(v, ",")
+	}
+	// limit: 10 (default is 10)
+	if v, err := c.GetInt64("limit"); err == nil {
+		limit = v
+	}
+	// offset: 0 (default is 0)
+	if v, err := c.GetInt64("offset"); err == nil {
+		offset = v
+	}
+	// sortby: col1,col2
+	if v := c.GetString("sortby"); v != "" {
+		sortby = strings.Split(v, ",")
+	}
+	// order: desc,asc
+	if v := c.GetString("order"); v != "" {
+		order = strings.Split(v, ",")
+	}
+	// query: k:v,k:v
+	if v := c.GetString("query"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
+	l, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		resp := responses.UserInvitesResponseDTO{StatusCode: 301, UserInvites: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &l, StatusDesc: "Users fetched successfully"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
 // UpdateUserImage ...
 // @Title Update user's profile image
 // @Description update the User's profile image
@@ -536,7 +791,7 @@ func (c *UsersController) UpdateUserImage() {
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
 			errorMessage := "Error: Failed to save the image file"
 
-			resp := models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+			resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
 
 			c.Data["json"] = resp
 			c.ServeJSON()
@@ -557,25 +812,62 @@ func (c *UsersController) UpdateUserImage() {
 			if err != nil {
 				c.Data["json"] = err.Error()
 
-				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned user is", v)
 
-				var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Profile image updated successfully"}
+				// cust, err := models.GetCustomersByUser(v)
+
+				// if err != nil {
+				// 	c.Data["json"] = err.Error()
+
+				// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				// 	c.Data["json"] = resp
+				// } else {
+
+				// 	userResp := responses.UserResp{
+				// 		UserId:        v.UserId,
+				// 		ImagePath:     v.ImagePath,
+				// 		UserType:      v.UserType,
+				// 		FullName:      v.FullName,
+				// 		Username:      v.Username,
+				// 		Password:      v.Password,
+				// 		Email:         v.Email,
+				// 		PhoneNumber:   v.PhoneNumber,
+				// 		Gender:        v.Gender,
+				// 		Dob:           v.Dob,
+				// 		Address:       v.Address,
+				// 		IdType:        v.IdType,
+				// 		IdNumber:      v.IdNumber,
+				// 		MaritalStatus: v.MaritalStatus,
+				// 		Active:        v.Active,
+				// 		Role:          v.Role,
+				// 		IsVerified:    v.IsVerified,
+				// 		DateCreated:   v.DateCreated,
+				// 		DateModified:  v.DateModified,
+				// 		CreatedBy:     v.CreatedBy,
+				// 		ModifiedBy:    v.ModifiedBy,
+				// 		Branch:        cust.Branch,
+				// 	}
+
+				// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "Profile image updated successfully"}
+				// 	c.Data["json"] = resp
+				// }
+				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Profile image updated successfully"}
 				c.Data["json"] = resp
 			}
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = models.UserResponseDTO{StatusCode: 602, User: nil, StatusDesc: "Error updating user"}
+			var resp = responses.UserResponseDTO{StatusCode: 602, User: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = models.UserResponseDTO{StatusCode: 603, User: nil, StatusDesc: "Error updating user"}
+		var resp = responses.UserResponseDTO{StatusCode: 603, User: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
@@ -597,6 +889,8 @@ func (c *UsersController) Put() {
 
 	// get the request
 	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
+
+	logs.Info("Update user request received ", h)
 
 	logs.Debug("User id is ", id)
 
@@ -623,7 +917,7 @@ func (c *UsersController) Put() {
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
 			errorMessage := "Error: Failed to save the image file"
 
-			resp := models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+			resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
 
 			c.Data["json"] = resp
 			c.ServeJSON()
@@ -648,14 +942,14 @@ func (c *UsersController) Put() {
 		// Parse request in Users object
 		// v := models.Users{UserId: id, FullName: h.FullName, Gender: h.Gender, PhoneNumber: h.PhoneNumber, MaritalStatus: h.MaritalStatus, Address: h.Address}
 
-		v.FullName = c.Ctx.Input.Query("FullName")
-		v.Gender = c.Ctx.Input.Query("Gender")
-		v.PhoneNumber = c.Ctx.Input.Query("PhoneNumber")
-		v.MaritalStatus = c.Ctx.Input.Query("MaritalStatus")
-		v.Address = c.Ctx.Input.Query("Address")
+		v.FullName = h.FullName
+		v.Gender = h.Gender
+		v.PhoneNumber = h.PhoneNumber
+		v.MaritalStatus = h.MaritalStatus
+		v.Address = h.Address
 		v.ImagePath = filePath
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02 15:04:05.000", c.Ctx.Input.Query("Dob"))
+		dobm, error := time.Parse("2006-01-02 15:04:05.000", h.Dob)
 
 		logs.Debug("Converted date", dobm)
 
@@ -671,17 +965,61 @@ func (c *UsersController) Put() {
 		logs.Debug("is verified?", v.IsVerified)
 
 		if err := models.UpdateUsersById(v); err == nil {
-			v, err := models.GetUsersById(v.UserId)
+			cust, err := models.GetCustomersByUser(v.UserId)
 
 			if err != nil {
+				logs.Error("Error returned fetching customer ", err.Error())
 				c.Data["json"] = err.Error()
 
-				var resp = models.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
 				c.Data["json"] = resp
 			} else {
-				logs.Debug("Returned user is", v)
+				logs.Debug("Returned customer is", cust)
+				branch, err := models.GetBranchesById(h.BranchId)
 
-				var resp = models.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Profile updated successfully"}
+				if err != nil {
+					logs.Error("Error fetching branch specified")
+					branch = nil
+				}
+
+				cust.Branch = branch
+
+				message := "Profile updated successfully"
+
+				if err := models.UpdateCustomersById(cust); err != nil {
+					logs.Error("Failed to update customer branch")
+					message = "Failed to update branch"
+				}
+
+				logs.Info("Branch saved for user is ", cust)
+				// logs.Info("Branch saved for user is ", cust.Branch.)
+
+				// userResp := responses.UserResp{
+				// 	UserId:        v.UserId,
+				// 	ImagePath:     v.ImagePath,
+				// 	UserType:      v.UserType,
+				// 	FullName:      v.FullName,
+				// 	Username:      v.Username,
+				// 	Password:      v.Password,
+				// 	Email:         v.Email,
+				// 	PhoneNumber:   v.PhoneNumber,
+				// 	Gender:        v.Gender,
+				// 	Dob:           v.Dob,
+				// 	Address:       v.Address,
+				// 	IdType:        v.IdType,
+				// 	IdNumber:      v.IdNumber,
+				// 	MaritalStatus: v.MaritalStatus,
+				// 	Active:        v.Active,
+				// 	Role:          v.Role,
+				// 	IsVerified:    v.IsVerified,
+				// 	DateCreated:   v.DateCreated,
+				// 	DateModified:  v.DateModified,
+				// 	CreatedBy:     v.CreatedBy,
+				// 	ModifiedBy:    v.ModifiedBy,
+				// 	Branch:        cust.Branch,
+				// }
+
+				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = v
@@ -689,17 +1027,98 @@ func (c *UsersController) Put() {
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = models.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+			var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = models.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+		var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
+	c.ServeJSON()
+}
+
+// GetOneUserInvite ...
+// @Title Get One User Invite
+// @Description get User invite by token
+// @Param	token		path 	string	true		"The key for staticblock"
+// @Success 200 {object} responses.UserInviteResponseDTO
+// @Failure 403 :token is empty
+// @router /user-invite/:token [get]
+func (c *UsersController) GetUserInvite() {
+	token := c.Ctx.Input.Param(":token")
+	v, err := models.GetUserTokensByToken(token)
+	if err != nil {
+		logs.Error("Error getting user invite", err.Error())
+		c.Ctx.Output.SetStatus(200)
+		var resp = responses.UserInviteResponseDTO{StatusCode: 608, UserInvite: nil, StatusDesc: "Error getting user invite"}
+		c.Data["json"] = resp
+	} else {
+		if q, err := models.GetUserInvitesByToken(v); err == nil {
+			c.Ctx.Output.SetStatus(200)
+			var resp = responses.UserInviteResponseDTO{StatusCode: 200, UserInvite: q, StatusDesc: "User invite fetch successful"}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Error getting user invite")
+			c.Ctx.Output.SetStatus(200)
+			var resp = responses.UserInviteResponseDTO{StatusCode: 608, UserInvite: nil, StatusDesc: "Error getting user invite"}
+			c.Data["json"] = resp
+		}
+
+	}
+	c.ServeJSON()
+}
+
+// UpdateUserInvite ...
+// @Title Put
+// @Description update the Users
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	requests.UpdateUserInviteRequest	true		"body for Users content"
+// @Success 200 {object} responses.UserInvitesResponseDTO
+// @Failure 403 :id is not int
+// @router /update-user-invite/:id [put]
+func (c *UsersController) UpdateUserInvite() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	var h requests.UpdateUserInviteRequest
+	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
+
+	if ui, err := models.GetUserInvitesById(id); err == nil {
+		statuses := [3]string{"PENDING", "SUCCESS", "FAILED"}
+		proceed := false
+		for _, st := range statuses {
+			if h.Status == st {
+				proceed = true
+			}
+		}
+
+		if proceed {
+			ui.Status = h.Status
+
+			if err := models.UpdateUserInvitesById(ui); err == nil {
+				logs.Debug("User invite updated successfully")
+				logs.Debug(ui.InvitedBy.FullName)
+				c.Ctx.Output.SetStatus(200)
+				var resp = responses.UserInviteResponseDTO{StatusCode: 200, UserInvite: ui, StatusDesc: "User invite successfully updated"}
+				c.Data["json"] = resp
+			} else {
+				logs.Debug("Error updating user invite", err.Error())
+				var resp = responses.UserInviteResponseDTO{StatusCode: 608, UserInvite: nil, StatusDesc: "Error updating user invite"}
+				c.Data["json"] = resp
+			}
+		} else {
+			logs.Debug("Error updating status")
+			var resp = responses.UserInviteResponseDTO{StatusCode: 503, UserInvite: nil, StatusDesc: "Please enter a valid status"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Debug("Error getting user invite", err.Error())
+		var resp = responses.UserInviteResponseDTO{StatusCode: 608, UserInvite: nil, StatusDesc: "Error updating user invite"}
+		c.Data["json"] = resp
+	}
 	c.ServeJSON()
 }
 

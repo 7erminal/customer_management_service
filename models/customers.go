@@ -12,7 +12,7 @@ import (
 
 type Customers struct {
 	CustomerId       int64                `orm:"auto"`
-	User             *Users               `orm:"rel(fk)"`
+	User             int64                `orm:"column(user_id)"`
 	Branch           *Branches            `orm:"rel(fk);column(branch);omitempty;null"`
 	Shop             *Shops               `orm:"rel(fk);omitempty;null"`
 	CustomerCategory *Customer_categories `orm:"rel(fk);omitempty;null"`
@@ -42,6 +42,17 @@ func GetCustomersById(id int64) (v *Customers, err error) {
 	o := orm.NewOrm()
 	v = &Customers{CustomerId: id}
 	if err = o.QueryTable(new(Customers)).Filter("CustomerId", id).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
+// GetCustomersByUserId retrieves Customers by User Id. Returns error if
+// Id doesn't exist
+func GetCustomersByUser(user int64) (v *Customers, err error) {
+	o := orm.NewOrm()
+	v = &Customers{User: user}
+	if err = o.QueryTable(new(Customers)).Filter("User", user).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err

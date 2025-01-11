@@ -1,8 +1,6 @@
 package responses
 
-import (
-	"customer_management_service/models"
-)
+import "customer_management_service/models"
 
 type AccountDTO struct {
 	StatusCode int
