@@ -1983,20 +1983,20 @@
         }
     },
     "definitions": {
-        "1097.\u003cnil\u003e.0x140006f0390": {
-            "title": "0x140006f0390",
+        "1145.\u003cnil\u003e.UserInvitesResp": {
+            "title": "UserInvitesResp",
             "type": "object"
         },
-        "1995.\u003cnil\u003e.0x140006f0588": {
-            "title": "0x140006f0588",
+        "2047.\u003cnil\u003e.0x140006ddf50": {
+            "title": "0x140006ddf50",
             "type": "object"
         },
-        "2798.\u003cnil\u003e.0x140006f0738": {
-            "title": "0x140006f0738",
+        "2850.\u003cnil\u003e.0x14000722180": {
+            "title": "0x14000722180",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140006f0228": {
-            "title": "0x140006f0228",
+        "494.\u003cnil\u003e.0x140006ddc08": {
+            "title": "0x140006ddc08",
             "type": "object"
         },
         "models.Accounts": {
@@ -2885,7 +2885,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140006f0228"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140006ddc08"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2933,7 +2933,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/1995.\u003cnil\u003e.0x140006f0588"
+                    "$ref": "#/definitions/2047.\u003cnil\u003e.0x140006ddf50"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -2965,7 +2965,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2798.\u003cnil\u003e.0x140006f0738"
+                    "$ref": "#/definitions/2850.\u003cnil\u003e.0x14000722180"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3032,7 +3032,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1097.\u003cnil\u003e.0x140006f0390"
+                    "$ref": "#/definitions/1145.\u003cnil\u003e.UserInvitesResp"
                 }
             }
         }

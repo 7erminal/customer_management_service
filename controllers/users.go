@@ -584,6 +584,7 @@ func (c *UsersController) GetOne() {
 		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		logs.Info("Getting user details ", v.Customer.Branch.Country)
 		// cust, err := models.GetCustomersByUser(v.UserId)
 
 		// if err != nil {
@@ -748,10 +749,105 @@ func (c *UsersController) GetUserInvites() {
 
 	l, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		resp := responses.UserInvitesResponseDTO{StatusCode: 301, UserInvites: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		resp := responses.UserInvitesResponseDTO{StatusCode: 301, UserInvites: nil, StatusDesc: "Fetch user invites failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &l, StatusDesc: "Users fetched successfully"}
+		// userInvites := []models.UserInvites{}
+		userInvitesResp := []responses.UserInvitesResp{}
+		for _, ui := range l {
+			m := ui.(models.UserInvites)
+			// logs.Info("User invite:: ", ui)
+			// var userInvite models.UserInvites = models.UserInvites{}
+			// if name, ok := m["Active"]; ok {
+			// 	userInvite.Active = name.(int)
+			// }
+			// if name, ok := m["UserInviteId"]; ok {
+			// 	userInvite.UserInviteId = name.(int64)
+			// }
+			// if name, ok := m["InvitedBy"]; ok {
+			// 	userInvite.InvitedBy = name.(*models.Users)
+			// }
+			// if name, ok := m["InvitationToken"]; ok {
+			// 	userInvite.InvitationToken = name.(*models.UserTokens)
+			// }
+			// if name, ok := m["Status"]; ok {
+			// 	userInvite.Status = name.(string)
+			// }
+			// if name, ok := m["DateCreated"]; ok {
+			// 	userInvite.DateCreated = name.(time.Time)
+			// }
+			// if name, ok := m["DateModified"]; ok {
+			// 	userInvite.DateModified = name.(time.Time)
+			// }
+			// if name, ok := m["CreatedBy"]; ok {
+			// 	userInvite.CreatedBy = name.(int)
+			// }
+			// if name, ok := m["ModifiedBy"]; ok {
+			// 	userInvite.ModifiedBy = name.(int)
+			// }
+
+			token, err := functions.GetAESDecrypted(m.InvitationToken.Token, m.InvitationToken.Nonce)
+
+			userInviteResp := responses.UserInvitesResp{}
+
+			if err == nil {
+				splitToken := strings.Split(string(token), "___")
+
+				logs.Info("Split Token is ", splitToken[0], " and ", splitToken[1])
+
+				roleId, _ := strconv.ParseInt(splitToken[1], 10, 64)
+
+				role, err := models.GetRolesById(roleId)
+
+				if err == nil {
+					userInviteResp = responses.UserInvitesResp{
+						UserInviteId:    m.UserInviteId,
+						InvitedBy:       m.InvitedBy,
+						InvitationToken: m.InvitationToken,
+						Email:           splitToken[0],
+						Role:            role.Role,
+						Status:          m.Status,
+						DateCreated:     m.DateCreated,
+						DateModified:    m.DateModified,
+						CreatedBy:       m.CreatedBy,
+						ModifiedBy:      m.ModifiedBy,
+						Active:          m.Active,
+					}
+				} else {
+					userInviteResp = responses.UserInvitesResp{
+						UserInviteId:    m.UserInviteId,
+						InvitedBy:       m.InvitedBy,
+						InvitationToken: m.InvitationToken,
+						Email:           "",
+						Role:            "",
+						Status:          m.Status,
+						DateCreated:     m.DateCreated,
+						DateModified:    m.DateModified,
+						CreatedBy:       m.CreatedBy,
+						ModifiedBy:      m.ModifiedBy,
+						Active:          m.Active,
+					}
+				}
+			} else {
+				userInviteResp = responses.UserInvitesResp{
+					UserInviteId:    m.UserInviteId,
+					InvitedBy:       m.InvitedBy,
+					InvitationToken: m.InvitationToken,
+					Email:           "",
+					Role:            "",
+					Status:          m.Status,
+					DateCreated:     m.DateCreated,
+					DateModified:    m.DateModified,
+					CreatedBy:       m.CreatedBy,
+					ModifiedBy:      m.ModifiedBy,
+					Active:          m.Active,
+				}
+			}
+
+			userInvitesResp = append(userInvitesResp, userInviteResp)
+
+		}
+		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &userInvitesResp, StatusDesc: "User invites fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

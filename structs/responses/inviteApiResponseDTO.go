@@ -19,6 +19,8 @@ type UserInvitesResp struct {
 	UserInviteId    int64
 	InvitedBy       *models.Users
 	InvitationToken *models.UserTokens
+	Email           string
+	Role            string
 	Status          string
 	DateCreated     time.Time
 	DateModified    time.Time
@@ -29,7 +31,7 @@ type UserInvitesResp struct {
 
 type UserInvitesResponseDTO struct {
 	StatusCode  int
-	UserInvites *[]interface{}
+	UserInvites *[]UserInvitesResp
 	StatusDesc  string
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 type Countries struct {
-	CountryId       int64       `orm:"auto"`
+	CountryId       int64       `orm:"auto;column(country_id)"`
 	Country         string      `orm:"size(255)"`
 	Description     string      `orm:"size(500)"`
 	CountryCode     string      `orm:"size(20)"`

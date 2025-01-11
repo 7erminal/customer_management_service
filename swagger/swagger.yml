@@ -1429,17 +1429,17 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140006f0228:
-    title: "0x140006f0228"
+  494.<nil>.0x140006ddc08:
+    title: "0x140006ddc08"
     type: object
-  1097.<nil>.0x140006f0390:
-    title: "0x140006f0390"
+  1145.<nil>.UserInvitesResp:
+    title: UserInvitesResp
     type: object
-  1995.<nil>.0x140006f0588:
-    title: "0x140006f0588"
+  2047.<nil>.0x140006ddf50:
+    title: "0x140006ddf50"
     type: object
-  2798.<nil>.0x140006f0738:
-    title: "0x140006f0738"
+  2850.<nil>.0x14000722180:
+    title: "0x14000722180"
     type: object
   models.Accounts:
     title: Accounts
@@ -2067,7 +2067,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140006f0228'
+        $ref: '#/definitions/494.<nil>.0x140006ddc08'
       StatusCode:
         type: integer
         format: int64
@@ -2100,7 +2100,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/1995.<nil>.0x140006f0588'
+        $ref: '#/definitions/2047.<nil>.0x140006ddf50'
       StatusCode:
         type: integer
         format: int64
@@ -2122,7 +2122,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2798.<nil>.0x140006f0738'
+        $ref: '#/definitions/2850.<nil>.0x14000722180'
       StatusCode:
         type: integer
         format: int64
@@ -2168,7 +2168,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1097.<nil>.0x140006f0390'
+        $ref: '#/definitions/1145.<nil>.UserInvitesResp'
 tags:
 - name: users
   description: |
