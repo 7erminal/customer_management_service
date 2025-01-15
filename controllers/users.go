@@ -454,19 +454,67 @@ func (c *UsersController) VerifyUser() {
 // @Failure 403 body is empty
 // @router /invite-user [post]
 func (c *UsersController) InviteUser() {
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var limit int64 = 10
+	var offset int64
+
+	// fields: col1,col2,entity.col3
+	if v := c.GetString("fields"); v != "" {
+		fields = strings.Split(v, ",")
+	}
+	// limit: 10 (default is 10)
+	if v, err := c.GetInt64("limit"); err == nil {
+		limit = v
+	}
+	// offset: 0 (default is 0)
+	if v, err := c.GetInt64("offset"); err == nil {
+		offset = v
+	}
+	// sortby: col1,col2
+	if v := c.GetString("sortby"); v != "" {
+		sortby = strings.Split(v, ",")
+	}
+	// order: desc,asc
+	if v := c.GetString("order"); v != "" {
+		order = strings.Split(v, ",")
+	}
+	// query: k:v,k:v
+	if v := c.GetString("query"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
 	var v requests.RegisterInviteRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
 	if _, err := models.GetUsersByUsername(v.Email); err != nil {
+		logs.Info("User not found")
 		proceed := false
-		if ui, errr := models.GetUserInvitesByEmail(v.Email); errr == nil {
-			verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
-			if verifyToken.StatusCode == 200 && ui.Status != "PENDING" && ui.Status != "ACCEPTED" {
-				proceed = true
-			} else {
-				proceed = false
+		if uis, errr := models.GetAllUserInvitesByEmail(v.Email, query, fields, sortby, order, offset, limit); errr == nil {
+			logs.Info("User invites returned ", uis)
+			proceed = true
+			for _, ui := range uis {
+				m := ui.(models.UserInvites)
+				if m.Status == "PENDING" {
+					proceed = false
+				}
 			}
+
+			// if proceed == true{
+			// 	verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
+			// }
 		} else {
 			logs.Error("User not found in users. Proceed. ", errr.Error())
 			proceed = true
@@ -518,7 +566,7 @@ func (c *UsersController) InviteUser() {
 			c.Data["json"] = resp
 		} else {
 			logs.Error("Unable to generate token ")
-			var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token "}
+			var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token. Email exists. "}
 			c.Data["json"] = resp
 		}
 
