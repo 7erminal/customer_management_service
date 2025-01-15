@@ -472,12 +472,13 @@ func (c *UsersController) InviteUser() {
 			proceed = true
 		}
 
-		if proceed == true {
+		if proceed {
 			tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
 
 			logs.Info("Token resp is ", tokenResp.Value.Token)
 
 			i, err := strconv.ParseInt(v.InviteBy, 10, 64)
+			status := "PENDING"
 
 			if err != nil {
 				return
@@ -491,7 +492,7 @@ func (c *UsersController) InviteUser() {
 
 			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
 
-			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: roleid, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: roleid, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
 
 			ui, err := models.AddUserInvites(&userInvite)
 
