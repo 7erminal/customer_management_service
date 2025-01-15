@@ -14,6 +14,8 @@ type UserInvites struct {
 	UserInviteId    int64       `orm:"auto"`
 	InvitedBy       *Users      `orm:"rel(fk);column(invited_by)"`
 	InvitationToken *UserTokens `orm:"rel(fk);column(invitation_token)"`
+	Email           string      `orm:"column(email)"`
+	Role            int64
 	Status          string
 	DateCreated     time.Time `orm:"type(datetime)"`
 	DateModified    time.Time `orm:"type(datetime)"`
@@ -51,6 +53,17 @@ func GetUserInvitesByToken(token *UserTokens) (v *UserInvites, err error) {
 	o := orm.NewOrm()
 	v = &UserInvites{InvitationToken: token}
 	if err = o.QueryTable(new(UserInvites)).Filter("InvitationToken", token).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
+// GetUserInvitesByTokenId retrieves UserInvites by Id. Returns error if
+// Id doesn't exist
+func GetUserInvitesByEmail(email string) (v *UserInvites, err error) {
+	o := orm.NewOrm()
+	v = &UserInvites{Email: email}
+	if err = o.QueryTable(new(UserInvites)).Filter("Email", email).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err

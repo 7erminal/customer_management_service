@@ -31,7 +31,7 @@ type UserInvitesResp struct {
 
 type UserInvitesResponseDTO struct {
 	StatusCode  int
-	UserInvites *[]UserInvitesResp
+	UserInvites *[]interface{}
 	StatusDesc  string
 }
 

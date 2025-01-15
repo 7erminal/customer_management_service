@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -38,15 +39,28 @@ func (c *Role_permissionsController) Post() {
 	var v requests.RolePermissionRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
-	var rolePermission models.Role_permissions = models.Role_permissions{Role: v.Role, Permission: v.Permission, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
-	if _, err := models.AddRole_permissions(&rolePermission); err == nil {
-		c.Ctx.Output.SetStatus(200)
-		var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: &rolePermission, StatusDesc: "Role Permission added"}
-		c.Data["json"] = resp
+	if role, err := models.GetRolesById(v.Role); err == nil {
+		if permission, err := models.GetPermissionsByCode(v.PermissionCode); err == nil {
+			var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			if _, err := models.AddRole_permissions(&rolePermission); err == nil {
+				c.Ctx.Output.SetStatus(200)
+				var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: &rolePermission, StatusDesc: "Role Permission added"}
+				c.Data["json"] = resp
+			} else {
+				var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+				c.Data["json"] = resp
+			}
+		} else {
+			logs.Error("Unbable to fetch permission using code ", v.PermissionCode)
+			var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
+			c.Data["json"] = resp
+		}
 	} else {
-		var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+		logs.Error("Unbable to fetch role using id ", v.Role)
+		var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
+
 	c.ServeJSON()
 }
 

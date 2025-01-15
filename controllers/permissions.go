@@ -37,15 +37,22 @@ func (c *PermissionsController) URLMapping() {
 func (c *PermissionsController) Post() {
 	var v requests.PermissionRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	permission := models.Permissions{Permission: v.Permission, PermissionDescription: v.Description, PermissionCode: v.PermissionCode, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
-	if _, err := models.AddPermissions(&permission); err == nil {
-		c.Ctx.Output.SetStatus(200)
-		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &permission, StatusDesc: "Permission added"}
-		c.Data["json"] = resp
+	if action, err := models.GetActionsByName(v.Action); err == nil {
+		permissionCode := strings.ToUpper(v.Permission) + "_" + strings.ToUpper(v.Action)
+		permission := models.Permissions{Permission: v.Permission, PermissionDescription: v.Description, PermissionCode: permissionCode, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+		if _, err := models.AddPermissions(&permission); err == nil {
+			c.Ctx.Output.SetStatus(200)
+			var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &permission, StatusDesc: "Permission added"}
+			c.Data["json"] = resp
+		} else {
+			var resp = responses.PermissionResponseDTO{StatusCode: 604, Permission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+			c.Data["json"] = resp
+		}
 	} else {
 		var resp = responses.PermissionResponseDTO{StatusCode: 604, Permission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
+
 	c.ServeJSON()
 }
 

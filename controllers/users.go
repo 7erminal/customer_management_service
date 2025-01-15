@@ -39,6 +39,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("UpdateUserImage", c.UpdateUserImage)
 	c.Mapping("UpdateUserInvite", c.UpdateUserInvite)
 	c.Mapping("GetUserInvite", c.GetUserInvite)
+	// c.Mapping("GetUsersUnderBranch", c.GetUsersUnderBranch)
 }
 
 // SignUp2 ...
@@ -273,50 +274,21 @@ func (c *UsersController) SignUp() {
 					// If application is rides then create an account
 					// Formulate request to send to create account
 					if application == "RIDE" {
+						logs.Info("Ride application. Registering account")
 						functions.RegisterAccount(&c.Controller, addUserModel.UserId)
 					}
 
-					if err != nil {
-						c.Data["json"] = err.Error()
+					addUserModel.Customer = &cust
+					if err := models.UpdateUsersById(&addUserModel); err == nil {
 
-						var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
-						addUserModel.Customer = &cust
-						if err := models.UpdateUsersById(&addUserModel); err == nil {
-
-							// userResp := responses.UserResp{
-							// 	UserId:        addUserModel.UserId,
-							// 	ImagePath:     addUserModel.ImagePath,
-							// 	UserType:      addUserModel.UserType,
-							// 	FullName:      addUserModel.FullName,
-							// 	Username:      addUserModel.Username,
-							// 	Password:      addUserModel.Password,
-							// 	Email:         addUserModel.Email,
-							// 	PhoneNumber:   addUserModel.PhoneNumber,
-							// 	Gender:        addUserModel.Gender,
-							// 	Dob:           addUserModel.Dob,
-							// 	Address:       addUserModel.Address,
-							// 	IdType:        addUserModel.IdType,
-							// 	IdNumber:      addUserModel.IdNumber,
-							// 	MaritalStatus: addUserModel.MaritalStatus,
-							// 	Active:        addUserModel.Active,
-							// 	Role:          addUserModel.Role,
-							// 	IsVerified:    addUserModel.IsVerified,
-							// 	DateCreated:   addUserModel.DateCreated,
-							// 	DateModified:  addUserModel.DateModified,
-							// 	CreatedBy:     addUserModel.CreatedBy,
-							// 	ModifiedBy:    addUserModel.ModifiedBy,
-							// 	Branch:        cust.Branch,
-							// }
-							var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
-							c.Data["json"] = resp
-						} else {
-							logs.Error("Error updating customer ID for user ")
-							var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
-							c.Data["json"] = resp
-						}
+						logs.Error("Error updating customer ID for user ")
+						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						c.Data["json"] = resp
 					}
+
 				} else {
 					// c.Data["json"] = err.Error()
 					logs.Error("Error adding customer, ", err.Error())
@@ -486,41 +458,69 @@ func (c *UsersController) InviteUser() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
-	tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
+	if _, err := models.GetUsersByUsername(v.Email); err != nil {
+		proceed := false
+		if ui, errr := models.GetUserInvitesByEmail(v.Email); errr == nil {
+			verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
+			if verifyToken.StatusCode == 200 {
+				proceed = true
+			} else {
+				proceed = false
+			}
+		} else {
+			logs.Error("User not found in users. Proceed. ", errr.Error())
+			proceed = true
+		}
 
-	logs.Info("Token resp is ", tokenResp.Value.Token)
+		if proceed == true {
+			tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
 
-	i, err := strconv.ParseInt(v.InviteBy, 10, 64)
+			logs.Info("Token resp is ", tokenResp.Value.Token)
 
-	if err != nil {
-		return
+			i, err := strconv.ParseInt(v.InviteBy, 10, 64)
+
+			if err != nil {
+				return
+			}
+
+			inviteBy, err := models.GetUsersById(i)
+
+			if err != nil {
+				return
+			}
+
+			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
+
+			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: roleid, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+
+			ui, err := models.AddUserInvites(&userInvite)
+
+			if err != nil {
+				logs.Error("Error response received when adding invite ", err.Error())
+				return
+			}
+
+			logs.Info("User invite added ", ui)
+
+			link := v.Link + tokenResp.Value.Token.Token
+
+			go functions.SendEmail(v.Email, link)
+
+			logs.Info("Email sent")
+
+			var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Sent", StatusDesc: "Sent "}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Unable to generate token ")
+			var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token "}
+			c.Data["json"] = resp
+		}
+
+	} else {
+		logs.Error("User already exists. Invite token not generated")
+		var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token "}
+		c.Data["json"] = resp
 	}
-
-	inviteBy, err := models.GetUsersById(i)
-
-	if err != nil {
-		return
-	}
-
-	var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
-
-	ui, err := models.AddUserInvites(&userInvite)
-
-	if err != nil {
-		logs.Error("Error response received when adding invite ", err.Error())
-		return
-	}
-
-	logs.Info("User invite added ", ui)
-
-	link := v.Link + tokenResp.Value.Token.Token
-
-	go functions.SendEmail(v.Email, link)
-
-	logs.Info("Email sent")
-
-	var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Sent", StatusDesc: "Sent "}
-	c.Data["json"] = resp
 
 	c.ServeJSON()
 }
@@ -544,6 +544,8 @@ func (c *UsersController) VerifyInvite() {
 			if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
 				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
 				if verifyTokenResp.StatusCode == 200 {
+					userInvite.Status = "ACCEPTED"
+					models.UpdateUserInvitesById(userInvite)
 					var resp = responses.InviteDecodeResponseDTO{StatusCode: 200, Value: verifyTokenResp.Value, StatusDesc: "Token verified successfully"}
 					c.Data["json"] = resp
 				} else {
@@ -699,6 +701,174 @@ func (c *UsersController) GetAll() {
 	c.ServeJSON()
 }
 
+// GetAllUsersWithRoleId ...
+// @Title Get All Users with role Id
+// @Description get Users with a role Id
+// @Param	role_id		path 	string	true		"The key for staticblock"
+// @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
+// @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
+// @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
+// @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
+// @Param	offset	query	string	false	"Start position of result set. Must be an integer"
+// @Success 200 {object} responses.UsersAllCustomersDTO
+// @Failure 403
+// @router /role/:role_id [get]
+func (c *UsersController) GetUsersWithRole() {
+	role_idStr := c.Ctx.Input.Param(":role_id")
+	role_id, _ := strconv.ParseInt(role_idStr, 0, 64)
+
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var limit int64 = 10
+	var offset int64
+
+	// fields: col1,col2,entity.col3
+	if v := c.GetString("fields"); v != "" {
+		fields = strings.Split(v, ",")
+	}
+	// limit: 10 (default is 10)
+	if v, err := c.GetInt64("limit"); err == nil {
+		limit = v
+	}
+	// offset: 0 (default is 0)
+	if v, err := c.GetInt64("offset"); err == nil {
+		offset = v
+	}
+	// sortby: col1,col2
+	if v := c.GetString("sortby"); v != "" {
+		sortby = strings.Split(v, ",")
+	}
+	// order: desc,asc
+	if v := c.GetString("order"); v != "" {
+		order = strings.Split(v, ",")
+	}
+	// query: k:v,k:v
+	if v := c.GetString("query"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
+	if role, err := models.GetRolesById(role_id); err == nil {
+		logs.Info("Role fetched ", role.Role)
+		l, err := models.GetAllUsersWithRole(role, query, fields, sortby, order, offset, limit)
+		if err != nil {
+			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+			c.Data["json"] = resp
+		} else {
+			logs.Info("Users fetched ", l)
+			// usersResp := []models.Users{}
+			// for _, urs := range l {
+			// 	m := urs.(models.Users)
+
+			// 	usersResp = append(usersResp, m)
+			// }
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Error("Error getting role ", err.Error())
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
+}
+
+// GetAllUsersUnderBranch ...
+// @Title Get All Users under branch
+// @Description get Users under a branch
+// @Param	role_id		path 	string	true		"The key for staticblock"
+// @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
+// @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
+// @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
+// @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
+// @Param	offset	query	string	false	"Start position of result set. Must be an integer"
+// @Success 200 {object} responses.UsersAllCustomersDTO
+// @Failure 403
+// @router /branch/:branch_id [get]
+// func (c *UsersController) GetUsersUnderBranch() {
+// 	branch_idStr := c.Ctx.Input.Param(":branch_id")
+// 	branch_id, _ := strconv.ParseInt(branch_idStr, 0, 64)
+
+// 	var fields []string
+// 	var sortby []string
+// 	var order []string
+// 	var query = make(map[string]string)
+// 	var limit int64 = 10
+// 	var offset int64
+
+// 	// fields: col1,col2,entity.col3
+// 	if v := c.GetString("fields"); v != "" {
+// 		fields = strings.Split(v, ",")
+// 	}
+// 	// limit: 10 (default is 10)
+// 	if v, err := c.GetInt64("limit"); err == nil {
+// 		limit = v
+// 	}
+// 	// offset: 0 (default is 0)
+// 	if v, err := c.GetInt64("offset"); err == nil {
+// 		offset = v
+// 	}
+// 	// sortby: col1,col2
+// 	if v := c.GetString("sortby"); v != "" {
+// 		sortby = strings.Split(v, ",")
+// 	}
+// 	// order: desc,asc
+// 	if v := c.GetString("order"); v != "" {
+// 		order = strings.Split(v, ",")
+// 	}
+// 	// query: k:v,k:v
+// 	if v := c.GetString("query"); v != "" {
+// 		for _, cond := range strings.Split(v, ",") {
+// 			kv := strings.SplitN(cond, ":", 2)
+// 			if len(kv) != 2 {
+// 				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+// 				c.ServeJSON()
+// 				return
+// 			}
+// 			k, v := kv[0], kv[1]
+// 			query[k] = v
+// 		}
+// 	}
+
+// 	if branch, err := models.GetBranchesById(branch_id); err == nil {
+// 		logs.Info("Branch fetched ", branch.Branch)
+// 		l, err := models.GetCustomersByBranch(branch)
+// 		if err != nil {
+// 			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+// 			c.Data["json"] = resp
+// 		} else {
+// 			logs.Info("Users fetched ", l)
+// 			// usersResp := []models.Users{}
+// 			// for _, urs := range l {
+// 			// 	m := urs.(models.Users)
+
+// 			// 	usersResp = append(usersResp, m)
+// 			// }
+// 			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l.User, StatusDesc: "Users fetched successfully"}
+// 			c.Data["json"] = resp
+// 		}
+// 	} else {
+// 		logs.Error("Error getting role ", err.Error())
+// 		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+// 		c.Data["json"] = resp
+// 	}
+
+// 	c.ServeJSON()
+// }
+
 // GetUserInvites ...
 // @Title Get All
 // @Description get Users
@@ -759,101 +929,8 @@ func (c *UsersController) GetUserInvites() {
 		c.Data["json"] = resp
 	} else {
 		// userInvites := []models.UserInvites{}
-		userInvitesResp := []responses.UserInvitesResp{}
-		for _, ui := range l {
-			m := ui.(models.UserInvites)
-			// logs.Info("User invite:: ", ui)
-			// var userInvite models.UserInvites = models.UserInvites{}
-			// if name, ok := m["Active"]; ok {
-			// 	userInvite.Active = name.(int)
-			// }
-			// if name, ok := m["UserInviteId"]; ok {
-			// 	userInvite.UserInviteId = name.(int64)
-			// }
-			// if name, ok := m["InvitedBy"]; ok {
-			// 	userInvite.InvitedBy = name.(*models.Users)
-			// }
-			// if name, ok := m["InvitationToken"]; ok {
-			// 	userInvite.InvitationToken = name.(*models.UserTokens)
-			// }
-			// if name, ok := m["Status"]; ok {
-			// 	userInvite.Status = name.(string)
-			// }
-			// if name, ok := m["DateCreated"]; ok {
-			// 	userInvite.DateCreated = name.(time.Time)
-			// }
-			// if name, ok := m["DateModified"]; ok {
-			// 	userInvite.DateModified = name.(time.Time)
-			// }
-			// if name, ok := m["CreatedBy"]; ok {
-			// 	userInvite.CreatedBy = name.(int)
-			// }
-			// if name, ok := m["ModifiedBy"]; ok {
-			// 	userInvite.ModifiedBy = name.(int)
-			// }
 
-			token, err := functions.GetAESDecrypted(m.InvitationToken.Token, m.InvitationToken.Nonce)
-
-			userInviteResp := responses.UserInvitesResp{}
-
-			if err == nil {
-				splitToken := strings.Split(string(token), "___")
-
-				logs.Info("Split Token is ", splitToken[0], " and ", splitToken[1])
-
-				roleId, _ := strconv.ParseInt(splitToken[1], 10, 64)
-
-				role, err := models.GetRolesById(roleId)
-
-				if err == nil {
-					userInviteResp = responses.UserInvitesResp{
-						UserInviteId:    m.UserInviteId,
-						InvitedBy:       m.InvitedBy,
-						InvitationToken: m.InvitationToken,
-						Email:           splitToken[0],
-						Role:            role.Role,
-						Status:          m.Status,
-						DateCreated:     m.DateCreated,
-						DateModified:    m.DateModified,
-						CreatedBy:       m.CreatedBy,
-						ModifiedBy:      m.ModifiedBy,
-						Active:          m.Active,
-					}
-				} else {
-					userInviteResp = responses.UserInvitesResp{
-						UserInviteId:    m.UserInviteId,
-						InvitedBy:       m.InvitedBy,
-						InvitationToken: m.InvitationToken,
-						Email:           "",
-						Role:            "",
-						Status:          m.Status,
-						DateCreated:     m.DateCreated,
-						DateModified:    m.DateModified,
-						CreatedBy:       m.CreatedBy,
-						ModifiedBy:      m.ModifiedBy,
-						Active:          m.Active,
-					}
-				}
-			} else {
-				userInviteResp = responses.UserInvitesResp{
-					UserInviteId:    m.UserInviteId,
-					InvitedBy:       m.InvitedBy,
-					InvitationToken: m.InvitationToken,
-					Email:           "",
-					Role:            "",
-					Status:          m.Status,
-					DateCreated:     m.DateCreated,
-					DateModified:    m.DateModified,
-					CreatedBy:       m.CreatedBy,
-					ModifiedBy:      m.ModifiedBy,
-					Active:          m.Active,
-				}
-			}
-
-			userInvitesResp = append(userInvitesResp, userInviteResp)
-
-		}
-		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &userInvitesResp, StatusDesc: "User invites fetched successfully"}
+		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &l, StatusDesc: "User invites fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -1189,7 +1266,7 @@ func (c *UsersController) UpdateUserInvite() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
 
 	if ui, err := models.GetUserInvitesById(id); err == nil {
-		statuses := [3]string{"PENDING", "SUCCESS", "FAILED"}
+		statuses := [3]string{"PENDING", "ACCEPTED", "CANCELLED"}
 		proceed := false
 		for _, st := range statuses {
 			if h.Status == st {

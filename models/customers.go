@@ -58,6 +58,17 @@ func GetCustomersByUser(user int64) (v *Customers, err error) {
 	return nil, err
 }
 
+// GetCustomersByUserId retrieves Customers by User Id. Returns error if
+// Id doesn't exist
+func GetCustomersByBranch(branch *Branches) (v *Customers, err error) {
+	o := orm.NewOrm()
+	v = &Customers{Branch: branch}
+	if err = o.QueryTable(new(Customers)).Filter("Branch", branch).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllCustomers retrieves all Customers matches certain condition. Returns empty list if
 // no records exist
 func GetAllCustomers(query map[string]string, fields []string, sortby []string, order []string,

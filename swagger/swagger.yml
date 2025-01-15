@@ -1289,6 +1289,52 @@ paths:
             $ref: '#/definitions/responses.StringResponseDTO'
         "403":
           description: body is empty
+  /users/role/{role_id}:
+    get:
+      tags:
+      - users
+      description: |-
+        get Users with a role Id
+        <br>
+      operationId: UsersController.Get All Users with role Id
+      parameters:
+      - in: path
+        name: role_id
+        description: The key for staticblock
+        required: true
+        type: string
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responses.UsersAllCustomersDTO'
+        "403":
+          description: ""
   /users/sign-up:
     post:
       tags:
@@ -1429,17 +1475,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140006c3ed8:
-    title: "0x140006c3ed8"
+  494.<nil>.0x14000724738:
+    title: "0x14000724738"
     type: object
-  1145.<nil>.UserInvitesResp:
-    title: UserInvitesResp
+  1145.<nil>.0x140007248a0:
+    title: "0x140007248a0"
     type: object
-  2047.<nil>.0x140007222a0:
-    title: "0x140007222a0"
+  2043.<nil>.0x14000724a98:
+    title: "0x14000724a98"
     type: object
-  2850.<nil>.0x14000722450:
-    title: "0x14000722450"
+  2846.<nil>.0x14000724c48:
+    title: "0x14000724c48"
+    type: object
+  4035.<nil>.0x14000724e40:
+    title: "0x14000724e40"
     type: object
   models.Accounts:
     title: Accounts
@@ -1472,6 +1521,32 @@ definitions:
         type: integer
         format: int64
       UserId:
+        type: integer
+        format: int64
+  models.Actions:
+    title: Actions
+    type: object
+    properties:
+      Action:
+        type: string
+      ActionId:
+        type: integer
+        format: int64
+      Active:
+        type: integer
+        format: int64
+      CreatedBy:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      Description:
+        type: string
+      ModifiedBy:
         type: integer
         format: int64
   models.Branches:
@@ -1670,6 +1745,8 @@ definitions:
     title: Permissions
     type: object
     properties:
+      Action:
+        $ref: '#/definitions/models.Actions'
       Active:
         type: integer
         format: int64
@@ -1843,11 +1920,16 @@ definitions:
       DateModified:
         type: string
         format: datetime
+      Email:
+        type: string
       InvitationToken:
         $ref: '#/definitions/models.UserTokens'
       InvitedBy:
         $ref: '#/definitions/models.Users'
       ModifiedBy:
+        type: integer
+        format: int64
+      Role:
         type: integer
         format: int64
       Status:
@@ -2016,11 +2098,11 @@ definitions:
     title: PermissionRequest
     type: object
     properties:
+      Action:
+        type: string
       Description:
         type: string
       Permission:
-        type: string
-      PermissionCode:
         type: string
   requests.RegisterInviteRequestDTO:
     title: RegisterInviteRequestDTO
@@ -2038,10 +2120,11 @@ definitions:
     title: RolePermissionRequest
     type: object
     properties:
-      Permission:
-        $ref: '#/definitions/models.Permissions'
+      PermissionCode:
+        type: string
       Role:
-        $ref: '#/definitions/models.Roles'
+        type: integer
+        format: int64
   requests.RolesRequest:
     title: RolesRequest
     type: object
@@ -2067,7 +2150,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140006c3ed8'
+        $ref: '#/definitions/494.<nil>.0x14000724738'
       StatusCode:
         type: integer
         format: int64
@@ -2100,7 +2183,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2047.<nil>.0x140007222a0'
+        $ref: '#/definitions/2043.<nil>.0x14000724a98'
       StatusCode:
         type: integer
         format: int64
@@ -2122,7 +2205,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2850.<nil>.0x14000722450'
+        $ref: '#/definitions/2846.<nil>.0x14000724c48'
       StatusCode:
         type: integer
         format: int64
@@ -2168,7 +2251,18 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.UserInvitesResp'
+        $ref: '#/definitions/1145.<nil>.0x140007248a0'
+  responses.UsersAllCustomersDTO:
+    title: UsersAllCustomersDTO
+    type: object
+    properties:
+      StatusCode:
+        type: integer
+        format: int64
+      StatusDesc:
+        type: string
+      Users:
+        $ref: '#/definitions/4035.<nil>.0x14000724e40'
 tags:
 - name: users
   description: |

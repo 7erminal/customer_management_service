@@ -14,6 +14,7 @@ type Permissions struct {
 	PermissionId          int64     `orm:"auto"`
 	Permission            string    `orm:"size(100)"`
 	PermissionCode        string    `orm:"size(10)"`
+	Action                *Actions  `orm:"rel(fk);column(action_id)"`
 	PermissionDescription string    `orm:"size(500)"`
 	DateCreated           time.Time `orm:"type(datetime)"`
 	DateModified          time.Time `orm:"type(datetime)"`
@@ -40,6 +41,17 @@ func GetPermissionsById(id int64) (v *Permissions, err error) {
 	o := orm.NewOrm()
 	v = &Permissions{PermissionId: id}
 	if err = o.QueryTable(new(Permissions)).Filter("PermissionId", id).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
+// GetPermissionsByCode retrieves Permissions by code. Returns error if
+// Id doesn't exist
+func GetPermissionsByCode(code string) (v *Permissions, err error) {
+	o := orm.NewOrm()
+	v = &Permissions{PermissionCode: code}
+	if err = o.QueryTable(new(Permissions)).Filter("PermissionCode", code).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err
