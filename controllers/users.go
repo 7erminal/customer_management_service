@@ -462,7 +462,7 @@ func (c *UsersController) InviteUser() {
 		proceed := false
 		if ui, errr := models.GetUserInvitesByEmail(v.Email); errr == nil {
 			verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
-			if verifyToken.StatusCode == 200 {
+			if verifyToken.StatusCode == 200 && ui.Status != "PENDING" && ui.Status != "ACCEPTED" {
 				proceed = true
 			} else {
 				proceed = false
