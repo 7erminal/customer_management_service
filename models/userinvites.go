@@ -15,7 +15,7 @@ type UserInvites struct {
 	InvitedBy       *Users      `orm:"rel(fk);column(invited_by)"`
 	InvitationToken *UserTokens `orm:"rel(fk);column(invitation_token)"`
 	Email           string      `orm:"column(email)"`
-	Role            int64
+	Role            *Roles      `orm:"rel(fk);column(role)"`
 	Status          string
 	DateCreated     time.Time `orm:"type(datetime)"`
 	DateModified    time.Time `orm:"type(datetime)"`

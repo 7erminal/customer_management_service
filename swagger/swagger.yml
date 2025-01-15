@@ -1233,7 +1233,7 @@ paths:
       description: |-
         get Users
         <br>
-      operationId: UsersController.Get All
+      operationId: UsersController.Get User Invites
       parameters:
       - in: query
         name: query
@@ -1475,20 +1475,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140007d3800:
-    title: "0x140007d3800"
+  494.<nil>.0x140007c04f8:
+    title: "0x140007c04f8"
     type: object
-  1145.<nil>.0x140007d3968:
-    title: "0x140007d3968"
+  1145.<nil>.0x140007c0660:
+    title: "0x140007c0660"
     type: object
-  2043.<nil>.0x140007d3b60:
-    title: "0x140007d3b60"
+  2043.<nil>.0x140007c0858:
+    title: "0x140007c0858"
     type: object
-  2846.<nil>.0x140007d3d10:
-    title: "0x140007d3d10"
+  2846.<nil>.0x140007c0a08:
+    title: "0x140007c0a08"
     type: object
-  4035.<nil>.0x140007d3f08:
-    title: "0x140007d3f08"
+  4035.<nil>.0x140007c0c00:
+    title: "0x140007c0c00"
     type: object
   models.Accounts:
     title: Accounts
@@ -1930,8 +1930,7 @@ definitions:
         type: integer
         format: int64
       Role:
-        type: integer
-        format: int64
+        $ref: '#/definitions/models.Roles'
       Status:
         type: string
       UserInviteId:
@@ -2150,7 +2149,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140007d3800'
+        $ref: '#/definitions/494.<nil>.0x140007c04f8'
       StatusCode:
         type: integer
         format: int64
@@ -2183,7 +2182,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x140007d3b60'
+        $ref: '#/definitions/2043.<nil>.0x140007c0858'
       StatusCode:
         type: integer
         format: int64
@@ -2205,7 +2204,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x140007d3d10'
+        $ref: '#/definitions/2846.<nil>.0x140007c0a08'
       StatusCode:
         type: integer
         format: int64
@@ -2251,7 +2250,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x140007d3968'
+        $ref: '#/definitions/1145.<nil>.0x140007c0660'
   responses.UsersAllCustomersDTO:
     title: UsersAllCustomersDTO
     type: object
@@ -2262,7 +2261,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4035.<nil>.0x140007d3f08'
+        $ref: '#/definitions/4035.<nil>.0x140007c0c00'
 tags:
 - name: users
   description: |

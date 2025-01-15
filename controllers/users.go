@@ -492,7 +492,12 @@ func (c *UsersController) InviteUser() {
 
 			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
 
-			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: roleid, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+			role, err := models.GetRolesById(roleid)
+			if err != nil {
+				logs.Error("Role provided not found for token ", tokenResp.Value.Token)
+			}
+
+			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
 
 			ui, err := models.AddUserInvites(&userInvite)
 
@@ -871,7 +876,7 @@ func (c *UsersController) GetUsersWithRole() {
 // }
 
 // GetUserInvites ...
-// @Title Get All
+// @Title Get User Invites
 // @Description get Users
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
