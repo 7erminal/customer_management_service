@@ -47,3 +47,9 @@ type UsersAllCustomersDTO struct {
 	Users      *[]interface{}
 	StatusDesc string
 }
+
+type UsersBranchResponseDTO struct {
+	StatusCode int
+	Users      *[]models.Users
+	StatusDesc string
+}

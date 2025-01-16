@@ -39,7 +39,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("UpdateUserImage", c.UpdateUserImage)
 	c.Mapping("UpdateUserInvite", c.UpdateUserInvite)
 	c.Mapping("GetUserInvite", c.GetUserInvite)
-	// c.Mapping("GetUsersUnderBranch", c.GetUsersUnderBranch)
+	c.Mapping("GetUsersUnderBranch", c.GetUsersUnderBranch)
 }
 
 // SignUp2 ...
@@ -507,14 +507,14 @@ func (c *UsersController) InviteUser() {
 			proceed = true
 			for _, ui := range uis {
 				m := ui.(models.UserInvites)
-				if m.Status == "PENDING" {
+				if m.Status == "PENDING" || m.Status == "ACCEPTED" {
 					proceed = false
+				} else {
+					// if proceed == true{
+					// 	verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
+					// }
 				}
 			}
-
-			// if proceed == true{
-			// 	verifyToken := functions.VerifyUserToken(&c.Controller, ui.InvitationToken.Token, ui.InvitationToken.Nonce, v.Email)
-			// }
 		} else {
 			logs.Error("User not found in users. Proceed. ", errr.Error())
 			proceed = true
@@ -572,7 +572,7 @@ func (c *UsersController) InviteUser() {
 
 	} else {
 		logs.Error("User already exists. Invite token not generated")
-		var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token "}
+		var resp = responses.StringResponseDTO{StatusCode: 502, Value: "", StatusDesc: "Unable to generate token. User exists."}
 		c.Data["json"] = resp
 	}
 
@@ -842,7 +842,7 @@ func (c *UsersController) GetUsersWithRole() {
 // GetAllUsersUnderBranch ...
 // @Title Get All Users under branch
 // @Description get Users under a branch
-// @Param	role_id		path 	string	true		"The key for staticblock"
+// @Param	branch_id		path 	string	true		"The key for staticblock"
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
@@ -852,76 +852,76 @@ func (c *UsersController) GetUsersWithRole() {
 // @Success 200 {object} responses.UsersAllCustomersDTO
 // @Failure 403
 // @router /branch/:branch_id [get]
-// func (c *UsersController) GetUsersUnderBranch() {
-// 	branch_idStr := c.Ctx.Input.Param(":branch_id")
-// 	branch_id, _ := strconv.ParseInt(branch_idStr, 0, 64)
+func (c *UsersController) GetUsersUnderBranch() {
+	branch_idStr := c.Ctx.Input.Param(":branch_id")
+	branch_id, _ := strconv.ParseInt(branch_idStr, 0, 64)
 
-// 	var fields []string
-// 	var sortby []string
-// 	var order []string
-// 	var query = make(map[string]string)
-// 	var limit int64 = 10
-// 	var offset int64
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var limit int64 = 10
+	var offset int64
 
-// 	// fields: col1,col2,entity.col3
-// 	if v := c.GetString("fields"); v != "" {
-// 		fields = strings.Split(v, ",")
-// 	}
-// 	// limit: 10 (default is 10)
-// 	if v, err := c.GetInt64("limit"); err == nil {
-// 		limit = v
-// 	}
-// 	// offset: 0 (default is 0)
-// 	if v, err := c.GetInt64("offset"); err == nil {
-// 		offset = v
-// 	}
-// 	// sortby: col1,col2
-// 	if v := c.GetString("sortby"); v != "" {
-// 		sortby = strings.Split(v, ",")
-// 	}
-// 	// order: desc,asc
-// 	if v := c.GetString("order"); v != "" {
-// 		order = strings.Split(v, ",")
-// 	}
-// 	// query: k:v,k:v
-// 	if v := c.GetString("query"); v != "" {
-// 		for _, cond := range strings.Split(v, ",") {
-// 			kv := strings.SplitN(cond, ":", 2)
-// 			if len(kv) != 2 {
-// 				c.Data["json"] = errors.New("Error: invalid query key/value pair")
-// 				c.ServeJSON()
-// 				return
-// 			}
-// 			k, v := kv[0], kv[1]
-// 			query[k] = v
-// 		}
-// 	}
+	// fields: col1,col2,entity.col3
+	if v := c.GetString("fields"); v != "" {
+		fields = strings.Split(v, ",")
+	}
+	// limit: 10 (default is 10)
+	if v, err := c.GetInt64("limit"); err == nil {
+		limit = v
+	}
+	// offset: 0 (default is 0)
+	if v, err := c.GetInt64("offset"); err == nil {
+		offset = v
+	}
+	// sortby: col1,col2
+	if v := c.GetString("sortby"); v != "" {
+		sortby = strings.Split(v, ",")
+	}
+	// order: desc,asc
+	if v := c.GetString("order"); v != "" {
+		order = strings.Split(v, ",")
+	}
+	// query: k:v,k:v
+	if v := c.GetString("query"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
 
-// 	if branch, err := models.GetBranchesById(branch_id); err == nil {
-// 		logs.Info("Branch fetched ", branch.Branch)
-// 		l, err := models.GetCustomersByBranch(branch)
-// 		if err != nil {
-// 			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
-// 			c.Data["json"] = resp
-// 		} else {
-// 			logs.Info("Users fetched ", l)
-// 			// usersResp := []models.Users{}
-// 			// for _, urs := range l {
-// 			// 	m := urs.(models.Users)
+	if branch, err := models.GetBranchesById(branch_id); err == nil {
+		logs.Info("Branch fetched ", branch.Branch)
+		l, err := models.GetAllUsersByBranch(branch, query, fields, sortby, order, offset, limit)
+		if err != nil {
+			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+			c.Data["json"] = resp
+		} else {
+			logs.Info("Users fetched ", l)
+			// usersResp := []models.Users{}
+			// for _, urs := range l {
+			// 	m := urs.(models.Users)
 
-// 			// 	usersResp = append(usersResp, m)
-// 			// }
-// 			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l.User, StatusDesc: "Users fetched successfully"}
-// 			c.Data["json"] = resp
-// 		}
-// 	} else {
-// 		logs.Error("Error getting role ", err.Error())
-// 		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
-// 		c.Data["json"] = resp
-// 	}
+			// 	usersResp = append(usersResp, m)
+			// }
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Error("Error getting role ", err.Error())
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		c.Data["json"] = resp
+	}
 
-// 	c.ServeJSON()
-// }
+	c.ServeJSON()
+}
 
 // GetUserInvites ...
 // @Title Get User Invites

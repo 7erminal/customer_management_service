@@ -1205,6 +1205,52 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /users/branch/{branch_id}:
+    get:
+      tags:
+      - users
+      description: |-
+        get Users under a branch
+        <br>
+      operationId: UsersController.Get All Users under branch
+      parameters:
+      - in: path
+        name: branch_id
+        description: The key for staticblock
+        required: true
+        type: string
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responses.UsersAllCustomersDTO'
+        "403":
+          description: ""
   /users/get-user-by-username/{username}:
     get:
       tags:
@@ -1475,20 +1521,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x14000779cf8:
-    title: "0x14000779cf8"
+  494.<nil>.0x14000748dc8:
+    title: "0x14000748dc8"
     type: object
-  1145.<nil>.0x14000779e60:
-    title: "0x14000779e60"
+  1145.<nil>.0x14000748f30:
+    title: "0x14000748f30"
     type: object
-  2043.<nil>.0x140007dc0d8:
-    title: "0x140007dc0d8"
+  2043.<nil>.0x14000749128:
+    title: "0x14000749128"
     type: object
-  2846.<nil>.0x140007dc288:
-    title: "0x140007dc288"
+  2846.<nil>.0x140007492d8:
+    title: "0x140007492d8"
     type: object
-  4035.<nil>.0x140007dc480:
-    title: "0x140007dc480"
+  4035.<nil>.0x140007494d0:
+    title: "0x140007494d0"
     type: object
   models.Accounts:
     title: Accounts
@@ -2149,7 +2195,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x14000779cf8'
+        $ref: '#/definitions/494.<nil>.0x14000748dc8'
       StatusCode:
         type: integer
         format: int64
@@ -2182,7 +2228,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x140007dc0d8'
+        $ref: '#/definitions/2043.<nil>.0x14000749128'
       StatusCode:
         type: integer
         format: int64
@@ -2204,7 +2250,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x140007dc288'
+        $ref: '#/definitions/2846.<nil>.0x140007492d8'
       StatusCode:
         type: integer
         format: int64
@@ -2250,7 +2296,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x14000779e60'
+        $ref: '#/definitions/1145.<nil>.0x14000748f30'
   responses.UsersAllCustomersDTO:
     title: UsersAllCustomersDTO
     type: object
@@ -2261,7 +2307,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4035.<nil>.0x140007dc480'
+        $ref: '#/definitions/4035.<nil>.0x140007494d0'
 tags:
 - name: users
   description: |
