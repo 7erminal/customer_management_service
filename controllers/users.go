@@ -1143,7 +1143,7 @@ func (c *UsersController) Put() {
 		// Save the uploaded file
 		fileName := header.Filename
 		filePath = "/uploads/users/" + fileName // Define your file path
-		err = c.SaveToFile("UserImage", "."+filePath)
+		err = c.SaveToFile("UserImage", "../images/"+filePath)
 		if err != nil {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
