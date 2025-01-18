@@ -2113,24 +2113,24 @@
         }
     },
     "definitions": {
-        "1145.\u003cnil\u003e.0x140008045e8": {
-            "title": "0x140008045e8",
+        "1145.\u003cnil\u003e.0x140007f6708": {
+            "title": "0x140007f6708",
             "type": "object"
         },
-        "2043.\u003cnil\u003e.0x140008047e0": {
-            "title": "0x140008047e0",
+        "2043.\u003cnil\u003e.0x140007f6900": {
+            "title": "0x140007f6900",
             "type": "object"
         },
-        "2846.\u003cnil\u003e.0x14000804990": {
-            "title": "0x14000804990",
+        "2846.\u003cnil\u003e.0x140007f6ab0": {
+            "title": "0x140007f6ab0",
             "type": "object"
         },
-        "4035.\u003cnil\u003e.0x14000804b88": {
-            "title": "0x14000804b88",
+        "4035.\u003cnil\u003e.0x140007f6ca8": {
+            "title": "0x140007f6ca8",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x14000804480": {
-            "title": "0x14000804480",
+        "494.\u003cnil\u003e.0x140007f65a0": {
+            "title": "0x140007f65a0",
             "type": "object"
         },
         "models.Accounts": {
@@ -2692,11 +2692,18 @@
                 "Gender": {
                     "type": "string"
                 },
+                "ImagePath": {
+                    "type": "string"
+                },
                 "MaritalStatus": {
                     "type": "string"
                 },
                 "PhoneNumber": {
                     "type": "string"
+                },
+                "RoleId": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "Username": {
                     "type": "string"
@@ -3065,7 +3072,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000804480"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140007f65a0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3113,7 +3120,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2043.\u003cnil\u003e.0x140008047e0"
+                    "$ref": "#/definitions/2043.\u003cnil\u003e.0x140007f6900"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3145,7 +3152,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2846.\u003cnil\u003e.0x14000804990"
+                    "$ref": "#/definitions/2846.\u003cnil\u003e.0x140007f6ab0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3212,7 +3219,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1145.\u003cnil\u003e.0x140008045e8"
+                    "$ref": "#/definitions/1145.\u003cnil\u003e.0x140007f6708"
                 }
             }
         },
@@ -3228,7 +3235,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4035.\u003cnil\u003e.0x14000804b88"
+                    "$ref": "#/definitions/4035.\u003cnil\u003e.0x140007f6ca8"
                 }
             }
         }

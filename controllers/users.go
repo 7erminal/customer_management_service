@@ -1171,6 +1171,11 @@ func (c *UsersController) Put() {
 		logs.Debug("Gender", h.Gender)
 		logs.Debug("Phone number", h.PhoneNumber)
 		logs.Debug("Date of birth", h.Dob)
+		logs.Debug("Role fetched is ", h.RoleId)
+
+		if filePath == "" && v.ImagePath == "" {
+			filePath = v.ImagePath
+		}
 
 		// Parse request in Users object
 		// v := models.Users{UserId: id, FullName: h.FullName, Gender: h.Gender, PhoneNumber: h.PhoneNumber, MaritalStatus: h.MaritalStatus, Address: h.Address}
@@ -1196,6 +1201,14 @@ func (c *UsersController) Put() {
 		logs.Debug("About to save", v)
 		logs.Debug("DOB", dobm)
 		logs.Debug("is verified?", v.IsVerified)
+
+		// about to get role to update with
+		if role, err := models.GetRolesById(h.RoleId); err == nil {
+			logs.Info("Role fetched for ", h.RoleId)
+			v.Role = role
+		} else {
+			logs.Error("There was an error getting the provided role")
+		}
 
 		if err := models.UpdateUsersById(v); err == nil {
 			cust, err := models.GetCustomersByUser(v.UserId)

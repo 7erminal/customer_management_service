@@ -9,4 +9,6 @@ type UpdateUserRequestDTO struct {
 	Address       string `orm:"size(255); omitempty; null"`
 	MaritalStatus string `orm:"size(255); omitempty; null"`
 	BranchId      int64
+	RoleId        int64
+	ImagePath     string
 }

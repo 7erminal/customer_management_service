@@ -1521,20 +1521,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x14000804480:
-    title: "0x14000804480"
+  494.<nil>.0x140007f65a0:
+    title: "0x140007f65a0"
     type: object
-  1145.<nil>.0x140008045e8:
-    title: "0x140008045e8"
+  1145.<nil>.0x140007f6708:
+    title: "0x140007f6708"
     type: object
-  2043.<nil>.0x140008047e0:
-    title: "0x140008047e0"
+  2043.<nil>.0x140007f6900:
+    title: "0x140007f6900"
     type: object
-  2846.<nil>.0x14000804990:
-    title: "0x14000804990"
+  2846.<nil>.0x140007f6ab0:
+    title: "0x140007f6ab0"
     type: object
-  4035.<nil>.0x14000804b88:
-    title: "0x14000804b88"
+  4035.<nil>.0x140007f6ca8:
+    title: "0x140007f6ca8"
     type: object
   models.Accounts:
     title: Accounts
@@ -1936,10 +1936,15 @@ definitions:
         type: string
       Gender:
         type: string
+      ImagePath:
+        type: string
       MaritalStatus:
         type: string
       PhoneNumber:
         type: string
+      RoleId:
+        type: integer
+        format: int64
       Username:
         type: string
   models.UserCredentialsDTO:
@@ -2195,7 +2200,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x14000804480'
+        $ref: '#/definitions/494.<nil>.0x140007f65a0'
       StatusCode:
         type: integer
         format: int64
@@ -2228,7 +2233,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x140008047e0'
+        $ref: '#/definitions/2043.<nil>.0x140007f6900'
       StatusCode:
         type: integer
         format: int64
@@ -2250,7 +2255,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x14000804990'
+        $ref: '#/definitions/2846.<nil>.0x140007f6ab0'
       StatusCode:
         type: integer
         format: int64
@@ -2296,7 +2301,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x140008045e8'
+        $ref: '#/definitions/1145.<nil>.0x140007f6708'
   responses.UsersAllCustomersDTO:
     title: UsersAllCustomersDTO
     type: object
@@ -2307,7 +2312,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4035.<nil>.0x14000804b88'
+        $ref: '#/definitions/4035.<nil>.0x140007f6ca8'
 tags:
 - name: users
   description: |
