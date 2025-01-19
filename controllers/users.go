@@ -5,6 +5,7 @@ import (
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
+	"path/filepath"
 
 	// "customer_management_service/structs/responses"
 	"encoding/json"
@@ -1141,8 +1142,8 @@ func (c *UsersController) Put() {
 		defer file.Close()
 
 		// Save the uploaded file
-		fileName := header.Filename
-		filePath = "/uploads/users/" + fileName // Define your file path
+		fileName := filepath.Base(header.Filename)
+		filePath = "/uploads/users/" + time.Now().Format("20060102150405") + fileName // Define your file path
 		err = c.SaveToFile("UserImage", "../images/"+filePath)
 		if err != nil {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
