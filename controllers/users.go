@@ -522,21 +522,20 @@ func (c *UsersController) InviteUser() {
 		}
 
 		if proceed {
+			proceed = false
+			message := "An error occurred"
+			statCode := 608
 			tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
 
 			logs.Info("Token resp is ", tokenResp.Value.Token)
 
-			i, err := strconv.ParseInt(v.InviteBy, 10, 64)
+			i, _ := strconv.ParseInt(v.InviteBy, 10, 64)
 			status := "PENDING"
-
-			if err != nil {
-				return
-			}
 
 			inviteBy, err := models.GetUsersById(i)
 
 			if err != nil {
-				return
+				message = "User not found"
 			}
 
 			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
@@ -544,26 +543,38 @@ func (c *UsersController) InviteUser() {
 			role, err := models.GetRolesById(roleid)
 			if err != nil {
 				logs.Error("Role provided not found for token ", tokenResp.Value.Token)
+				message = "Role provided not found"
+			} else {
+				proceed = true
 			}
 
-			var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+			if proceed {
+				proceed = false
+				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
 
-			ui, err := models.AddUserInvites(&userInvite)
+				ui, err := models.AddUserInvites(&userInvite)
 
-			if err != nil {
-				logs.Error("Error response received when adding invite ", err.Error())
-				return
+				if err != nil {
+					logs.Error("Error response received when adding invite ", err.Error())
+					return
+				} else {
+					proceed = true
+					message = "Sent"
+				}
+
+				if proceed {
+					logs.Info("User invite added ", ui)
+					logs.Info("Token to be sent is ", tokenResp.Value.Token.Token)
+
+					link := v.Link + tokenResp.Value.Token.Token
+
+					go functions.SendEmail(v.Email, link)
+
+					logs.Info("Email sent")
+				}
 			}
 
-			logs.Info("User invite added ", ui)
-
-			link := v.Link + tokenResp.Value.Token.Token
-
-			go functions.SendEmail(v.Email, link)
-
-			logs.Info("Email sent")
-
-			var resp = responses.StringResponseDTO{StatusCode: 200, Value: "Sent", StatusDesc: "Sent "}
+			var resp = responses.StringResponseDTO{StatusCode: statCode, Value: message, StatusDesc: message}
 			c.Data["json"] = resp
 		} else {
 			logs.Error("Unable to generate token ")
@@ -597,15 +608,20 @@ func (c *UsersController) VerifyInvite() {
 		if token.ExpiryDate.After(time.Now()) {
 			logs.Info("Token expiry ")
 			if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
-				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
-				if verifyTokenResp.StatusCode == 200 {
-					userInvite.Status = "ACCEPTED"
-					models.UpdateUserInvitesById(userInvite)
-					var resp = responses.InviteDecodeResponseDTO{StatusCode: 200, Value: verifyTokenResp.Value, StatusDesc: "Token verified successfully"}
+				if userInvite.Status != "PENDING" {
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token verified failed. Token has been used already."}
 					c.Data["json"] = resp
 				} else {
-					var resp = responses.InviteDecodeResponseDTO{StatusCode: 501, Value: nil, StatusDesc: "Token verification failed"}
-					c.Data["json"] = resp
+					verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
+					if verifyTokenResp.StatusCode == 200 {
+						userInvite.Status = "ACCEPTED"
+						models.UpdateUserInvitesById(userInvite)
+						var resp = responses.InviteDecodeResponseDTO{StatusCode: 200, Value: verifyTokenResp.Value, StatusDesc: "Token verified successfully"}
+						c.Data["json"] = resp
+					} else {
+						var resp = responses.InviteDecodeResponseDTO{StatusCode: 501, Value: nil, StatusDesc: "Token verification failed"}
+						c.Data["json"] = resp
+					}
 				}
 			} else {
 				logs.Error("Unable to get specified token ", err.Error())
@@ -1174,7 +1190,9 @@ func (c *UsersController) Put() {
 		logs.Debug("Date of birth", h.Dob)
 		logs.Debug("Role fetched is ", h.RoleId)
 
-		if filePath == "" && v.ImagePath == "" {
+		logs.Debug("File path is ", filePath, " and image path is ", v.ImagePath)
+
+		if filePath == "" && v.ImagePath != "" {
 			filePath = v.ImagePath
 		}
 
@@ -1188,19 +1206,20 @@ func (c *UsersController) Put() {
 		v.Address = h.Address
 		v.ImagePath = filePath
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02 15:04:05.000", h.Dob)
+		dobm, error := time.Parse("2006-01-02", h.Dob)
 
 		logs.Debug("Converted date", dobm)
 
 		if error != nil {
-			logs.Debug("Converted date error", error)
+			logs.Debug("Converted date error", error.Error())
 		} else {
 			// Assign dob
+			logs.Debug("DOB assigned")
 			v.Dob = dobm
 		}
 
 		logs.Debug("About to save", v)
-		logs.Debug("DOB", dobm)
+		logs.Debug("DOB", dobm, v.Dob)
 		logs.Debug("is verified?", v.IsVerified)
 
 		// about to get role to update with
