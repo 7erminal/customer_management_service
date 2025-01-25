@@ -41,6 +41,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("UpdateUserInvite", c.UpdateUserInvite)
 	c.Mapping("GetUserInvite", c.GetUserInvite)
 	c.Mapping("GetUsersUnderBranch", c.GetUsersUnderBranch)
+	c.Mapping("UpdateUserRole", c.UpdateUserRole)
 }
 
 // SignUp2 ...
@@ -1290,6 +1291,66 @@ func (c *UsersController) Put() {
 
 				// c.Data["json"] = v
 			}
+		} else {
+			// c.Data["json"] = err.Error()
+			logs.Debug("Error updating user", err.Error())
+			var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Debug("Error fetching user")
+
+		logs.Debug("Error updating user")
+		var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
+}
+
+// Update User Role...
+// @Title Update User Role
+// @Description update the Users
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.UpdateUserRequestDTO	true		"body for Users content"
+// @Success 200 {object} models.UserResponseDTO
+// @Failure 403 :id is not int
+// @router /role/:id [put]
+func (c *UsersController) UpdateUserRole() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	var h models.UpdateUserRoleRequestDTO
+
+	// get the request
+	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
+
+	logs.Info("Update user request received ", h)
+
+	logs.Debug("User id is ", id)
+
+	v, err := models.GetUsersById(id)
+
+	logs.Debug("About to save", v)
+	logs.Debug("And error is ", err)
+
+	if err == nil {
+		logs.Debug("User fetched successfully")
+
+		// about to get role to update with
+		if role, err := models.GetRolesById(h.RoleId); err == nil {
+			logs.Info("Role fetched for ", h.RoleId)
+			v.Role = role
+		} else {
+			logs.Error("There was an error getting the provided role")
+		}
+
+		if err := models.UpdateUsersById(v); err == nil {
+			message := "Profile updated successfully"
+			var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+			c.Data["json"] = resp
+
+			// c.Data["json"] = v
+
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())

@@ -12,3 +12,7 @@ type UpdateUserRequestDTO struct {
 	RoleId        int64
 	ImagePath     string
 }
+
+type UpdateUserRoleRequestDTO struct {
+	RoleId int64
+}
