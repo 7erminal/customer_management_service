@@ -1521,20 +1521,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140007878f0:
-    title: "0x140007878f0"
+  494.<nil>.0x14000770450:
+    title: "0x14000770450"
     type: object
-  1145.<nil>.0x14000787a58:
-    title: "0x14000787a58"
+  1145.<nil>.0x140007705b8:
+    title: "0x140007705b8"
     type: object
-  2043.<nil>.0x14000787c50:
-    title: "0x14000787c50"
+  2043.<nil>.0x140007707b0:
+    title: "0x140007707b0"
     type: object
-  2846.<nil>.0x14000787e00:
-    title: "0x14000787e00"
+  2846.<nil>.0x14000770960:
+    title: "0x14000770960"
     type: object
-  4035.<nil>.0x140007e0078:
-    title: "0x140007e0078"
+  4035.<nil>.0x14000770b58:
+    title: "0x14000770b58"
     type: object
   models.Accounts:
     title: Accounts
@@ -2200,7 +2200,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140007878f0'
+        $ref: '#/definitions/494.<nil>.0x14000770450'
       StatusCode:
         type: integer
         format: int64
@@ -2233,7 +2233,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x14000787c50'
+        $ref: '#/definitions/2043.<nil>.0x140007707b0'
       StatusCode:
         type: integer
         format: int64
@@ -2255,7 +2255,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x14000787e00'
+        $ref: '#/definitions/2846.<nil>.0x14000770960'
       StatusCode:
         type: integer
         format: int64
@@ -2301,7 +2301,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x14000787a58'
+        $ref: '#/definitions/1145.<nil>.0x140007705b8'
   responses.UsersAllCustomersDTO:
     title: UsersAllCustomersDTO
     type: object
@@ -2312,7 +2312,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4035.<nil>.0x140007e0078'
+        $ref: '#/definitions/4035.<nil>.0x14000770b58'
 tags:
 - name: users
   description: |
