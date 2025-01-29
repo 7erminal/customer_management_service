@@ -186,7 +186,7 @@ func (c *CustomersController) AddCustomer() {
 					if cc, errr := models.GetCustomer_categoriesById(ccid); errr == nil {
 						var cust = models.Customers{User: ru.UserId, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
-						if _, err := models.AddCustomers(&cust); err == nil {
+						if _, err := models.AddCustomer(&cust); err == nil {
 							c.Ctx.Output.SetStatus(200)
 							var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &cust, StatusDesc: "User created successfully"}
 							c.Data["json"] = resp
@@ -230,7 +230,7 @@ func (c *CustomersController) AddCustomer() {
 func (c *CustomersController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetCustomersById(id)
+	v, err := models.GetCustomerById(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -317,7 +317,7 @@ func (c *CustomersController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v := models.Customers{CustomerId: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateCustomersById(&v); err == nil {
+	if err := models.UpdateCustomerById(&v); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &v, StatusDesc: "Customer updated successfully"}
 		c.Data["json"] = resp
@@ -339,7 +339,7 @@ func (c *CustomersController) Put() {
 func (c *CustomersController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteCustomers(id); err == nil {
+	if err := models.DeleteCustomer(id); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()

@@ -1251,6 +1251,33 @@ paths:
             $ref: '#/definitions/responses.UsersAllCustomersDTO'
         "403":
           description: ""
+  /users/branch/{id}:
+    put:
+      tags:
+      - users
+      description: |-
+        update the Users branch
+        <br>
+      operationId: UsersController.Update User Branch
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Users content
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserBranchRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responses.UserResponseDTO'
+        "403":
+          description: :id is not int
   /users/get-user-by-username/{username}:
     get:
       tags:
@@ -1335,6 +1362,33 @@ paths:
             $ref: '#/definitions/responses.StringResponseDTO'
         "403":
           description: body is empty
+  /users/role/{id}:
+    put:
+      tags:
+      - users
+      description: |-
+        update the Users
+        <br>
+      operationId: UsersController.Update User Role
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Users content
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.UserResponseDTO'
+        "403":
+          description: :id is not int
   /users/role/{role_id}:
     get:
       tags:
@@ -1521,20 +1575,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x14000786480:
-    title: "0x14000786480"
+  494.<nil>.0x14000794a68:
+    title: "0x14000794a68"
     type: object
-  1145.<nil>.0x140007865e8:
-    title: "0x140007865e8"
+  1145.<nil>.0x14000794bd0:
+    title: "0x14000794bd0"
     type: object
-  2043.<nil>.0x140007867e0:
-    title: "0x140007867e0"
+  2043.<nil>.0x14000794dc8:
+    title: "0x14000794dc8"
     type: object
-  2846.<nil>.0x14000786990:
-    title: "0x14000786990"
+  2846.<nil>.0x14000794f78:
+    title: "0x14000794f78"
     type: object
-  4035.<nil>.0x14000786b88:
-    title: "0x14000786b88"
+  4219.<nil>.0x140007951b8:
+    title: "0x140007951b8"
     type: object
   models.Accounts:
     title: Accounts
@@ -1921,6 +1975,13 @@ definitions:
         type: string
       RoleRequired:
         type: boolean
+  models.UpdateUserBranchRequestDTO:
+    title: UpdateUserBranchRequestDTO
+    type: object
+    properties:
+      BranchId:
+        type: integer
+        format: int64
   models.UpdateUserRequestDTO:
     title: UpdateUserRequestDTO
     type: object
@@ -1955,6 +2016,37 @@ definitions:
         type: string
       Username:
         type: string
+  models.UserExtraDetails:
+    title: UserExtraDetails
+    type: object
+    properties:
+      Active:
+        type: integer
+        format: int64
+      Branch:
+        $ref: '#/definitions/models.Branches'
+      CreatedBy:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      ModifiedBy:
+        type: integer
+        format: int64
+      Nickname:
+        type: string
+      Shop:
+        $ref: '#/definitions/models.Shops'
+      User:
+        type: integer
+        format: int64
+      UserDetailsId:
+        type: integer
+        format: int64
   models.UserInvites:
     title: UserInvites
     type: object
@@ -2057,8 +2149,6 @@ definitions:
       CreatedBy:
         type: integer
         format: int64
-      Customer:
-        $ref: '#/definitions/models.Customers'
       DateCreated:
         type: string
         format: datetime
@@ -2093,6 +2183,8 @@ definitions:
         type: string
       Role:
         $ref: '#/definitions/models.Roles'
+      UserDetails:
+        $ref: '#/definitions/models.UserExtraDetails'
       UserId:
         type: integer
         format: int64
@@ -2200,7 +2292,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x14000786480'
+        $ref: '#/definitions/494.<nil>.0x14000794a68'
       StatusCode:
         type: integer
         format: int64
@@ -2233,7 +2325,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x140007867e0'
+        $ref: '#/definitions/2043.<nil>.0x14000794dc8'
       StatusCode:
         type: integer
         format: int64
@@ -2255,7 +2347,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x14000786990'
+        $ref: '#/definitions/2846.<nil>.0x14000794f78'
       StatusCode:
         type: integer
         format: int64
@@ -2301,7 +2393,18 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x140007865e8'
+        $ref: '#/definitions/1145.<nil>.0x14000794bd0'
+  responses.UserResponseDTO:
+    title: UserResponseDTO
+    type: object
+    properties:
+      StatusCode:
+        type: integer
+        format: int64
+      StatusDesc:
+        type: string
+      User:
+        $ref: '#/definitions/models.Users'
   responses.UsersAllCustomersDTO:
     title: UsersAllCustomersDTO
     type: object
@@ -2312,7 +2415,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4035.<nil>.0x14000786b88'
+        $ref: '#/definitions/4219.<nil>.0x140007951b8'
 tags:
 - name: users
   description: |

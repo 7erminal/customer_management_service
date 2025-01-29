@@ -16,3 +16,7 @@ type UpdateUserRequestDTO struct {
 type UpdateUserRoleRequestDTO struct {
 	RoleId int64
 }
+
+type UpdateUserBranchRequestDTO struct {
+	BranchId int64
+}
