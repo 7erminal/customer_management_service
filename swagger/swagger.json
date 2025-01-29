@@ -2189,24 +2189,24 @@
         }
     },
     "definitions": {
-        "1145.\u003cnil\u003e.0x14000794bd0": {
-            "title": "0x14000794bd0",
+        "1145.\u003cnil\u003e.0x14000877320": {
+            "title": "0x14000877320",
             "type": "object"
         },
-        "2043.\u003cnil\u003e.0x14000794dc8": {
-            "title": "0x14000794dc8",
+        "2043.\u003cnil\u003e.0x14000877518": {
+            "title": "0x14000877518",
             "type": "object"
         },
-        "2846.\u003cnil\u003e.0x14000794f78": {
-            "title": "0x14000794f78",
+        "2846.\u003cnil\u003e.0x140008776c8": {
+            "title": "0x140008776c8",
             "type": "object"
         },
-        "4219.\u003cnil\u003e.0x140007951b8": {
-            "title": "0x140007951b8",
+        "4219.\u003cnil\u003e.0x14000877908": {
+            "title": "0x14000877908",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x14000794a68": {
-            "title": "0x14000794a68",
+        "494.\u003cnil\u003e.0x140008771b8": {
+            "title": "0x140008771b8",
             "type": "object"
         },
         "models.Accounts": {
@@ -2504,6 +2504,25 @@
                     "type": "string",
                     "format": "datetime"
                 },
+                "Dob": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "FullName": {
+                    "type": "string"
+                },
+                "IdentificationNumber": {
+                    "type": "string"
+                },
+                "IdentificationType": {
+                    "$ref": "#/definitions/models.Identification_types"
+                },
+                "Location": {
+                    "type": "string"
+                },
                 "ModifiedBy": {
                     "type": "integer",
                     "format": "int64"
@@ -2511,12 +2530,50 @@
                 "Nickname": {
                     "type": "string"
                 },
+                "PhoneNumber": {
+                    "type": "string"
+                },
                 "Shop": {
                     "$ref": "#/definitions/models.Shops"
                 },
                 "User": {
+                    "$ref": "#/definitions/models.Users"
+                }
+            }
+        },
+        "models.Identification_types": {
+            "title": "Identification_types",
+            "type": "object",
+            "properties": {
+                "Active": {
                     "type": "integer",
                     "format": "int64"
+                },
+                "Code": {
+                    "type": "string"
+                },
+                "CreatedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DateCreated": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "DateModified": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "IdentificationTypeId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ModifiedBy": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Name": {
+                    "type": "string"
                 }
             }
         },
@@ -3072,7 +3129,10 @@
                 "Email": {
                     "type": "string"
                 },
-                "Gender": {
+                "IdNumber": {
+                    "type": "string"
+                },
+                "IdType": {
                     "type": "string"
                 },
                 "Name": {
@@ -3082,15 +3142,6 @@
                     "type": "string"
                 },
                 "PhoneNumber": {
-                    "type": "string"
-                },
-                "ShopAssistantName": {
-                    "type": "string"
-                },
-                "ShopAssistantNumber": {
-                    "type": "string"
-                },
-                "ShopName": {
                     "type": "string"
                 }
             }
@@ -3201,7 +3252,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000794a68"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008771b8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3249,7 +3300,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2043.\u003cnil\u003e.0x14000794dc8"
+                    "$ref": "#/definitions/2043.\u003cnil\u003e.0x14000877518"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3281,7 +3332,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/2846.\u003cnil\u003e.0x14000794f78"
+                    "$ref": "#/definitions/2846.\u003cnil\u003e.0x140008776c8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3348,7 +3399,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1145.\u003cnil\u003e.0x14000794bd0"
+                    "$ref": "#/definitions/1145.\u003cnil\u003e.0x14000877320"
                 }
             }
         },
@@ -3380,7 +3431,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4219.\u003cnil\u003e.0x140007951b8"
+                    "$ref": "#/definitions/4219.\u003cnil\u003e.0x14000877908"
                 }
             }
         }

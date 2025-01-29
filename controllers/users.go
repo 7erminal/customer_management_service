@@ -229,17 +229,30 @@ func (c *UsersController) SignUp() {
 		proceed = false
 
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02", v.Dob)
+		// dobm, error := time.Parse("2006-01-02", v.Dob)
+		var dobm time.Time
 
-		if error != nil {
-			if v.Dob == "" {
+		var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000"}
+
+		for _, date_ := range allowedDateList {
+			logs.Debug("About to convert ", v.Dob)
+			logs.Debug("About to convert ", c.Ctx.Input.Query("Dob"))
+			// Convert dob string to date
+			tdobm, error := time.Parse(date_, v.Dob)
+
+			if error != nil {
+				logs.Error("Error parsing date", error)
+				proceed = false
+			} else {
+				logs.Error("Date converted to time successfully", tdobm)
+				dobm = tdobm
 				proceed = true
+
+				break
 			}
 		}
 
 		if !proceed {
-			logs.Error(error)
-
 			var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
 			c.Data["json"] = resp
 

@@ -6,7 +6,6 @@ import (
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -75,55 +74,9 @@ func (c *CustomersController) AddCustomer() {
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
 
-	logs.Info("Unmarshalled already:::", v.Dob, " ::: ", v.Category, " ::: ", v.Email, " ::: ", v.Name, " ::: ", v.Gender, " ::: ", v.Nickname)
+	logs.Info("Unmarshalled already:::", v.Dob, " ::: ", v.Category, " ::: ", v.Email, " ::: ", v.Name, " ::: ", " ::: ", v.Nickname)
 
-	v.Dob = c.Ctx.Input.Query("Dob")
-	v.Category = c.Ctx.Input.Query("Category")
-	v.Email = c.Ctx.Input.Query("Email")
-	v.Gender = c.Ctx.Input.Query("Gender")
-	v.Name = c.Ctx.Input.Query("Name")
-	v.Nickname = c.Ctx.Input.Query("Nickname")
-	v.PhoneNumber = c.Ctx.Input.Query("PhoneNumber")
-	v.ShopAssistantName = c.Ctx.Input.Query("ShopAssistantName")
-	v.ShopAssistantNumber = c.Ctx.Input.Query("ShopAssistantNumber")
-	v.ShopName = c.Ctx.Input.Query("ShopName")
-	v.AddedBy = c.Ctx.Input.Query("AddedBy")
 	addedBy, _ := strconv.Atoi(v.AddedBy)
-
-	filePath := ""
-
-	// Handle file
-	file, header, err := c.GetFile("Image")
-	logs.Info("Data received is ", file)
-
-	if err != nil {
-		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		// c.Data["json"] = map[string]string{"error": "Failed to get image file."}
-		logs.Error("Failed to get the file ", err)
-		// c.ServeJSON()
-		// return
-	} else {
-		defer file.Close()
-
-		// Save the uploaded file
-		fileName := header.Filename
-		logs.Info("File Name Extracted is ", fileName)
-		filePath = "/uploads/" + fileName // Define your file path
-		logs.Info("File Path Extracted is ", filePath)
-		err = c.SaveToFile("Image", "."+filePath)
-		if err != nil {
-			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-			logs.Error("Error saving file", err)
-			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
-			errorMessage := "Error: Failed to save the image file"
-
-			resp := responses.StringResponseDTO{StatusCode: http.StatusInternalServerError, Value: errorMessage, StatusDesc: "Internal Server Error"}
-
-			c.Data["json"] = resp
-			c.ServeJSON()
-			return
-		}
-	}
 
 	var proceed bool = true
 
@@ -158,63 +111,35 @@ func (c *CustomersController) AddCustomer() {
 
 	} else {
 		// Assign dob
-		var addUserModel = models.Users{FullName: v.Name, PhoneNumber: v.PhoneNumber, UserType: 1, Gender: v.Gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
-
-		if r, err := models.AddUsers(&addUserModel); err == nil {
-			c.Ctx.Output.SetStatus(201)
-
-			// logs.Debug("Returned user is", r)
-
-			// id, _ := strconv.ParseInt(idStr, 0, 64)
-			ru, err := models.GetUsersById(r)
-
-			if err != nil {
-				c.Data["json"] = err.Error()
-
-				logs.Error(err.Error())
-
-				var resp = models.CustomerResponseDTO{StatusCode: 601, Customer: nil, StatusDesc: "Error fetching user. " + err.Error()}
-				c.Data["json"] = resp
-			} else {
-				logs.Debug("Returned user is", ru)
-
-				var shop = models.Shops{ShopName: v.ShopName, ShopDescription: v.ShopName, ShopAssistantName: v.ShopAssistantName, ShopAssistantNumber: v.ShopAssistantNumber, DateCreated: time.Now(), DateModified: time.Now(), Image: filePath, Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
-
-				if _, err := models.AddShops(&shop); err == nil {
-
-					ccid, _ := strconv.ParseInt(v.Category, 0, 64)
-					if cc, errr := models.GetCustomer_categoriesById(ccid); errr == nil {
-						var cust = models.Customers{User: ru.UserId, Shop: &shop, Nickname: v.Nickname, CustomerCategory: cc, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
-
-						if _, err := models.AddCustomer(&cust); err == nil {
-							c.Ctx.Output.SetStatus(200)
-							var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &cust, StatusDesc: "User created successfully"}
-							c.Data["json"] = resp
-						} else {
-							// c.Data["json"] = err.Error()
-							var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
-							c.Data["json"] = resp
-						}
-					} else {
-						var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Customer Category does not exist"}
-						c.Data["json"] = resp
-					}
-
-				} else {
-					// c.Data["json"] = err.Error()
-					var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
-					c.Data["json"] = resp
-				}
-				// c.Data["json"] = v
-			}
+		category := models.Customer_categories{}
+		ccid, _ := strconv.ParseInt(v.Category, 0, 64)
+		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
+			logs.Error("Customer category does not exist")
 		} else {
-			logs.Error(err.Error())
-
-			var resp = models.CustomerResponseDTO{StatusCode: 606, Customer: nil, StatusDesc: "Error adding user" + err.Error()}
-			c.Data["json"] = resp
-
-			// c.Data["json"] = err.Error()
+			category = *cc
 		}
+
+		idType := models.Identification_types{}
+		idT, _ := strconv.ParseInt(v.IdType, 10, 64)
+		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
+			logs.Error("ID Type provided does not exist")
+		} else {
+			idType = *idtype
+		}
+		var cust = models.Customers{FullName: v.Name, PhoneNumber: v.PhoneNumber, Email: v.Email, Dob: dobm, IdentificationType: &idType, IdentificationNumber: v.IdNumber, Shop: nil, Nickname: v.Nickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
+
+		if _, err := models.AddCustomer(&cust); err == nil {
+			c.Ctx.Output.SetStatus(200)
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &cust, StatusDesc: "User created successfully"}
+			c.Data["json"] = resp
+		} else {
+			// c.Data["json"] = err.Error()
+			var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
+			c.Data["json"] = resp
+		}
+
+		// c.Data["json"] = v
+
 	}
 
 	c.ServeJSON()
@@ -232,9 +157,12 @@ func (c *CustomersController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetCustomerById(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		logs.Error("An error occurred fetching customer")
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = v
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "User created successfully"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
@@ -315,17 +243,33 @@ func (c *CustomersController) GetAll() {
 func (c *CustomersController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := models.Customers{CustomerId: id}
+	v := requests.UpdateCustomerRequestDTO{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateCustomerById(&v); err == nil {
-		c.Ctx.Output.SetStatus(200)
-		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &v, StatusDesc: "Customer updated successfully"}
-		c.Data["json"] = resp
-	} else {
-		logs.Error("Customer update failed ", err.Error())
-		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: &v, StatusDesc: "Customer update failed"}
-		c.Data["json"] = resp
+
+	if cust, err := models.GetCustomerById(id); err == nil {
+		cust.FullName = v.Name
+		cust.Email = v.Email
+		cust.PhoneNumber = v.PhoneNumber
+		cust.IdentificationNumber = v.IdNumber
+		cust.Nickname = v.Nickname
+		idT, _ := strconv.ParseInt(v.IdType, 10, 64)
+		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
+
+			logs.Error("ID Type provided does not exist")
+		} else {
+			cust.IdentificationType = idtype
+		}
+		if err := models.UpdateCustomerById(cust); err == nil {
+			c.Ctx.Output.SetStatus(200)
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Customer update failed ", err.Error())
+			var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Customer update failed"}
+			c.Data["json"] = resp
+		}
 	}
+
 	c.ServeJSON()
 }
 
