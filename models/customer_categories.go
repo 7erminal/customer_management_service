@@ -44,6 +44,17 @@ func GetCustomer_categoriesById(id int64) (v *Customer_categories, err error) {
 	return nil, err
 }
 
+// GetCustomer_categoriesById retrieves Customer_categories by Id. Returns error if
+// Id doesn't exist
+func GetCustomer_categoriesByName(name string) (v *Customer_categories, err error) {
+	o := orm.NewOrm()
+	v = &Customer_categories{Category: name}
+	if err = o.QueryTable(new(Customer_categories)).Filter("Category", name).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllCustomer_categories retrieves all Customer_categories matches certain condition. Returns empty list if
 // no records exist
 func GetAllCustomer_categories(query map[string]string, fields []string, sortby []string, order []string,

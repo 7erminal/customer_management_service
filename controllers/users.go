@@ -1143,6 +1143,7 @@ func (c *UsersController) UpdateUserImage() {
 // @Title Put
 // @Description update the Users
 // @Param	id		path 	string	true		"The id you want to update"
+// @Param	UserImage		formData 	file	true		"User Image"
 // @Param	body		body 	models.UpdateUserRequestDTO	true		"body for Users content"
 // @Success 200 {object} models.UserResponseDTO
 // @Failure 403 :id is not int

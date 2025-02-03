@@ -13,6 +13,7 @@ import (
 type Customers struct {
 	CustomerId           int64                 `orm:"auto"`
 	FullName             string                `orm:"column(full_name);size(255)"`
+	ImagePath            string                `orm:"column(image_path);size(255)"`
 	Email                string                `orm:"column(email);size(255);null"`
 	PhoneNumber          string                `orm:"column(phone_number);size(255);null"`
 	Location             string                `orm:"column(location);size(255);null"`

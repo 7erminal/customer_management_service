@@ -44,6 +44,17 @@ func GetIdentification_typesById(id int64) (v *Identification_types, err error) 
 	return nil, err
 }
 
+// GetIdentification_typesById retrieves Identification_types by Id. Returns error if
+// Id doesn't exist
+func GetIdentification_typesByCode(code string) (v *Identification_types, err error) {
+	o := orm.NewOrm()
+	v = &Identification_types{Code: code}
+	if err = o.QueryTable(new(Identification_types)).Filter("Code", code).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllIdentification_types retrieves all Identification_types matches certain condition. Returns empty list if
 // no records exist
 func GetAllIdentification_types(query map[string]string, fields []string, sortby []string, order []string,

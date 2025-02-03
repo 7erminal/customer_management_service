@@ -6,6 +6,8 @@ import (
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -27,6 +29,7 @@ func (c *CustomersController) URLMapping() {
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("AddCustomer", c.AddCustomer)
+	c.Mapping("UpdateCustomerImage", c.UpdateCustomerImage)
 }
 
 // Post ...
@@ -52,6 +55,7 @@ func (c *CustomersController) URLMapping() {
 // @Title AddCustomer
 // @Description Add customer
 // @Param	body		body 	requests.AddCustomerRequestDTO	true		"body for add customer content"
+// @Param	CustomerImage		formData 	file	true		"Customer Image"
 // @Success 201 {object} models.CustomerResponseDTO
 // @Failure 403 body is empty
 // @router /add-customer [post]
@@ -60,6 +64,37 @@ func (c *CustomersController) AddCustomer() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
+	// image of user received
+	file, header, err := c.GetFile("CustomerImage")
+	var filePath string = ""
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Info("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := filepath.Base(header.Filename)
+		filePath = "/uploads/customers/" + time.Now().Format("20060102150405") + fileName // Define your file path
+		err = c.SaveToFile("CustomerImage", "../images/"+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			// errorMessage := "Error: Failed to save the image file"
+
+			// resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+
+			// c.Data["json"] = resp
+			// c.ServeJSON()
+			// return
+		}
+	}
+
 	defaultPassword := "password1234"
 
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(defaultPassword), 8)
@@ -67,7 +102,7 @@ func (c *CustomersController) AddCustomer() {
 	if errr == nil {
 		logs.Debug(hashedPassword)
 
-		defaultPassword = string(hashedPassword)
+		// defaultPassword = string(hashedPassword)
 
 		logs.Debug("Category received is ", c.Ctx.Input.Query("Category"))
 
@@ -94,7 +129,7 @@ func (c *CustomersController) AddCustomer() {
 			logs.Error("Error parsing date", error)
 			proceed = false
 		} else {
-			logs.Error("Date converted to time successfully", tdobm)
+			logs.Info("Date converted to time successfully", tdobm)
 			dobm = tdobm
 			proceed = true
 
@@ -115,6 +150,11 @@ func (c *CustomersController) AddCustomer() {
 		ccid, _ := strconv.ParseInt(v.Category, 0, 64)
 		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
 			logs.Error("Customer category does not exist")
+			if cc, errr := models.GetCustomer_categoriesByName(v.Category); errr != nil {
+				logs.Error("Customer category does not exist")
+			} else {
+				category = *cc
+			}
 		} else {
 			category = *cc
 		}
@@ -122,11 +162,17 @@ func (c *CustomersController) AddCustomer() {
 		idType := models.Identification_types{}
 		idT, _ := strconv.ParseInt(v.IdType, 10, 64)
 		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
-			logs.Error("ID Type provided does not exist")
+			logs.Error("ID Type provided: ", v.IdType, " does not exist ", err.Error())
+			if idtype, err := models.GetIdentification_typesByCode(v.IdType); err != nil {
+				logs.Error("ID Type provided: ", v.IdType, " does not exist ", err.Error())
+			} else {
+				idType = *idtype
+			}
 		} else {
 			idType = *idtype
 		}
-		var cust = models.Customers{FullName: v.Name, PhoneNumber: v.PhoneNumber, Email: v.Email, Dob: dobm, IdentificationType: &idType, IdentificationNumber: v.IdNumber, Shop: nil, Nickname: v.Nickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
+
+		var cust = models.Customers{FullName: v.Name, ImagePath: filePath, PhoneNumber: v.PhoneNumber, Location: v.Location, Email: v.Email, Dob: dobm, IdentificationType: &idType, IdentificationNumber: v.IdNumber, Shop: nil, Nickname: v.Nickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: addedBy, ModifiedBy: addedBy}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
@@ -237,6 +283,7 @@ func (c *CustomersController) GetAll() {
 // @Description update the Customers
 // @Param	id		path 	string	true		"The id you want to update"
 // @Param	body		body 	models.Customers	true		"body for Customers content"
+// @Param	CustomerImage		formData 	file	true		"Customer Image"
 // @Success 200 {object} models.CustomerResponseDTO
 // @Failure 403 :id is not int
 // @router /:id [put]
@@ -246,12 +293,48 @@ func (c *CustomersController) Put() {
 	v := requests.UpdateCustomerRequestDTO{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
+	// image of user received
+	file, header, err := c.GetFile("CustomerImage")
+	var filePath string = ""
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Info("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := filepath.Base(header.Filename)
+		filePath = "/uploads/customers/" + time.Now().Format("20060102150405") + fileName // Define your file path
+		err = c.SaveToFile("CustomerImage", "../images/"+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			// errorMessage := "Error: Failed to save the image file"
+
+			// resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+
+			// c.Data["json"] = resp
+			// c.ServeJSON()
+			// return
+		}
+	}
+
 	if cust, err := models.GetCustomerById(id); err == nil {
+		if filePath == "" {
+			filePath = cust.ImagePath
+		}
 		cust.FullName = v.Name
 		cust.Email = v.Email
 		cust.PhoneNumber = v.PhoneNumber
 		cust.IdentificationNumber = v.IdNumber
 		cust.Nickname = v.Nickname
+		cust.Location = v.Location
+		cust.ImagePath = filePath
 		idT, _ := strconv.ParseInt(v.IdType, 10, 64)
 		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
 
@@ -268,6 +351,78 @@ func (c *CustomersController) Put() {
 			var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Customer update failed"}
 			c.Data["json"] = resp
 		}
+	}
+
+	c.ServeJSON()
+}
+
+// UpdateCustomerImage ...
+// @Title Update customer's profile image
+// @Description update the customer's profile image
+// @Param	CustomerImage		formData 	file	true		"Customer Image"
+// @Param	CustomerId		formData 	string	true		"Customer ID"
+// @Success 200 {object} models.UserResponseDTO
+// @Failure 403 body is empty
+// @router /update-customer-image [post]
+func (c *CustomersController) UpdateCustomerImage() {
+	// image of user received
+	file, header, err := c.GetFile("CustomerImage")
+	var filePath string = ""
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Info("Failed to get the file ", err)
+		// c.ServeJSON()
+		// return
+	} else {
+		defer file.Close()
+
+		// Save the uploaded file
+		fileName := header.Filename
+		logs.Info("File name is ", fileName)
+		filePath = "/uploads/customers/" + fileName // Define your file path
+		logs.Info("File name is ", filePath)
+		err = c.SaveToFile("UserImage", "."+filePath)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			logs.Error("Error saving file", err)
+			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+			errorMessage := "Error: Failed to save the image file"
+
+			resp := models.CustomerResponseDTO{StatusCode: 601, Customer: nil, StatusDesc: "Error updating user. " + errorMessage}
+
+			c.Data["json"] = resp
+			c.ServeJSON()
+			return
+		}
+	}
+
+	id, _ := strconv.ParseInt(c.Ctx.Input.Query("UserId"), 10, 64)
+
+	v, err := models.GetCustomerById(id)
+
+	if err == nil {
+		v.ImagePath = filePath
+
+		if err := models.UpdateCustomerById(v); err == nil {
+
+			logs.Debug("Returned customer is", v)
+
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Profile image updated successfully"}
+			c.Data["json"] = resp
+		} else {
+			// c.Data["json"] = err.Error()
+			logs.Debug("Error updating user", err.Error())
+			var resp = models.CustomerResponseDTO{StatusCode: 602, Customer: nil, StatusDesc: "Error updating user"}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Debug("Error fetching user")
+
+		logs.Debug("Error updating user")
+		var resp = models.CustomerResponseDTO{StatusCode: 603, Customer: nil, StatusDesc: "Error updating user"}
+		c.Data["json"] = resp
 	}
 
 	c.ServeJSON()

@@ -343,6 +343,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Customers'
+      - in: formData
+        name: CustomerImage
+        description: Customer Image
+        required: true
+        type: file
       responses:
         "200":
           description: ""
@@ -383,11 +388,42 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/requests.AddCustomerRequestDTO'
+      - in: formData
+        name: CustomerImage
+        description: Customer Image
+        required: true
+        type: file
       responses:
         "201":
           description: ""
           schema:
             $ref: '#/definitions/models.CustomerResponseDTO'
+        "403":
+          description: body is empty
+  /customers/update-customer-image:
+    post:
+      tags:
+      - customers
+      description: |-
+        update the customer's profile image
+        <br>
+      operationId: CustomersController.Update customer's profile image
+      parameters:
+      - in: formData
+        name: CustomerImage
+        description: Customer Image
+        required: true
+        type: file
+      - in: formData
+        name: CustomerId
+        description: Customer ID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
   /newsletter/:
@@ -1152,6 +1188,11 @@ paths:
         description: The id you want to update
         required: true
         type: string
+      - in: formData
+        name: UserImage
+        description: User Image
+        required: true
+        type: file
       - in: body
         name: body
         description: body for Users content
@@ -1575,20 +1616,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140008771b8:
-    title: "0x140008771b8"
+  494.<nil>.0x140007ef500:
+    title: "0x140007ef500"
     type: object
-  1145.<nil>.0x14000877320:
-    title: "0x14000877320"
+  1145.<nil>.0x140007ef668:
+    title: "0x140007ef668"
     type: object
-  2043.<nil>.0x14000877518:
-    title: "0x14000877518"
+  2043.<nil>.0x140007ef860:
+    title: "0x140007ef860"
     type: object
-  2846.<nil>.0x140008776c8:
-    title: "0x140008776c8"
+  2846.<nil>.0x140007efa10:
+    title: "0x140007efa10"
     type: object
-  4219.<nil>.0x14000877908:
-    title: "0x14000877908"
+  4219.<nil>.0x140007efc50:
+    title: "0x140007efc50"
     type: object
   models.Accounts:
     title: Accounts
@@ -1814,6 +1855,8 @@ definitions:
         type: string
       IdentificationType:
         $ref: '#/definitions/models.Identification_types'
+      ImagePath:
+        type: string
       Location:
         type: string
       ModifiedBy:
@@ -2249,6 +2292,8 @@ definitions:
         type: string
       IdType:
         type: string
+      Location:
+        type: string
       Name:
         type: string
       Nickname:
@@ -2328,7 +2373,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140008771b8'
+        $ref: '#/definitions/494.<nil>.0x140007ef500'
       StatusCode:
         type: integer
         format: int64
@@ -2361,7 +2406,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x14000877518'
+        $ref: '#/definitions/2043.<nil>.0x140007ef860'
       StatusCode:
         type: integer
         format: int64
@@ -2383,7 +2428,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x140008776c8'
+        $ref: '#/definitions/2846.<nil>.0x140007efa10'
       StatusCode:
         type: integer
         format: int64
@@ -2429,7 +2474,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x14000877320'
+        $ref: '#/definitions/1145.<nil>.0x140007ef668'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2451,7 +2496,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4219.<nil>.0x14000877908'
+        $ref: '#/definitions/4219.<nil>.0x140007efc50'
 tags:
 - name: users
   description: |

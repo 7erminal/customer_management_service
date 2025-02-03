@@ -4,16 +4,13 @@ type AddCustomerRequestDTO struct {
 	Name        string
 	Category    string
 	PhoneNumber string
-	// ShopName            string
-	IdType   string
-	IdNumber string
-	Nickname string
-	// ShopAssistantName   string
-	// ShopAssistantNumber string
-	// Password string
-	Email   string
-	Dob     string
-	AddedBy string
+	IdType      string
+	IdNumber    string
+	Nickname    string
+	Location    string
+	Email       string
+	Dob         string
+	AddedBy     string
 }
 
 type UpdateCustomerRequestDTO struct {
@@ -22,12 +19,9 @@ type UpdateCustomerRequestDTO struct {
 	PhoneNumber string
 	IdType      string
 	IdNumber    string
-	// ShopName            string
-	Nickname string
-	// ShopAssistantName   string
-	// ShopAssistantNumber string
-	// Password string
-	Email   string
-	Dob     string
-	AddedBy string
+	Nickname    string
+	Location    string
+	Email       string
+	Dob         string
+	AddedBy     string
 }
