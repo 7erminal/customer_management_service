@@ -30,6 +30,7 @@ func (c *CustomersController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("AddCustomer", c.AddCustomer)
 	c.Mapping("UpdateCustomerImage", c.UpdateCustomerImage)
+	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
 }
 
 // Post ...
@@ -286,7 +287,7 @@ func (c *CustomersController) GetAll() {
 // @Title Put
 // @Description update the Customers
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Customers	true		"body for Customers content"
+// @Param	body		body 	models.UpdateCustomerRequestDTO	true		"body for Customers content"
 // @Param	CustomerImage		formData 	file	true		"Customer Image"
 // @Success 200 {object} models.CustomerResponseDTO
 // @Failure 403 :id is not int
@@ -346,6 +347,56 @@ func (c *CustomersController) Put() {
 		} else {
 			cust.IdentificationType = idtype
 		}
+		if err := models.UpdateCustomerById(cust); err == nil {
+			c.Ctx.Output.SetStatus(200)
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Customer update failed ", err.Error())
+			var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Customer update failed"}
+			c.Data["json"] = resp
+		}
+	}
+
+	c.ServeJSON()
+}
+
+// Update Customer last Txn date ...
+// @Title Update Customer's last txn date
+// @Description update the Customer's least txn dat
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.UpdateCustomerLastTxnRequest	true		"body for Customers content"
+// @Param	CustomerImage		formData 	file	true		"Customer Image"
+// @Success 200 {object} models.CustomerResponseDTO
+// @Failure 403 :id is not int
+// @router /last-txn/:id [put]
+func (c *CustomersController) UpdateCustomerLastTxnDate() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	v := requests.UpdateCustomerLastTxnRequest{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+
+	if cust, err := models.GetCustomerById(id); err == nil {
+		var lastTxnDate time.Time
+
+		var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000"}
+
+		for _, date_ := range allowedDateList {
+			logs.Debug("About to convert ", v.TransactionDate)
+			// Convert dob string to date
+			tlastTxnDate, error := time.Parse(date_, v.TransactionDate)
+
+			if error != nil {
+				logs.Error("Error parsing date", error)
+			} else {
+				logs.Error("Date converted to time successfully", tlastTxnDate)
+				lastTxnDate = tlastTxnDate
+
+				break
+			}
+		}
+
+		cust.LastTxnDate = lastTxnDate
 		if err := models.UpdateCustomerById(cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}

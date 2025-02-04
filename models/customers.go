@@ -29,7 +29,8 @@ type Customers struct {
 	CreatedBy            int
 	ModifiedBy           int
 	Active               int
-	User                 *Users `orm:"rel(fk);omitempty;null"`
+	User                 *Users    `orm:"rel(fk);omitempty;null"`
+	LastTxnDate          time.Time `orm:"type(datetime)"`
 }
 
 func init() {

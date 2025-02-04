@@ -342,7 +342,7 @@ paths:
         description: body for Customers content
         required: true
         schema:
-          $ref: '#/definitions/models.Customers'
+          $ref: '#/definitions/models.UpdateCustomerRequestDTO'
       - in: formData
         name: CustomerImage
         description: Customer Image
@@ -400,6 +400,38 @@ paths:
             $ref: '#/definitions/models.CustomerResponseDTO'
         "403":
           description: body is empty
+  /customers/last-txn/{id}:
+    put:
+      tags:
+      - customers
+      description: |-
+        update the Customer's least txn dat
+        <br>
+      operationId: CustomersController.Update Customer's last txn date
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customers content
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCustomerLastTxnRequest'
+      - in: formData
+        name: CustomerImage
+        description: Customer Image
+        required: true
+        type: file
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.CustomerResponseDTO'
+        "403":
+          description: :id is not int
   /customers/update-customer-image:
     post:
       tags:
@@ -1741,20 +1773,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x14000830948:
-    title: "0x14000830948"
+  494.<nil>.0x140007c7908:
+    title: "0x140007c7908"
     type: object
-  1380.<nil>.0x14000830b10:
-    title: "0x14000830b10"
+  1380.<nil>.0x140007c7ad0:
+    title: "0x140007c7ad0"
     type: object
-  2278.<nil>.0x14000830d08:
-    title: "0x14000830d08"
+  2278.<nil>.0x140007c7cc8:
+    title: "0x140007c7cc8"
     type: object
-  3081.<nil>.0x14000830eb8:
-    title: "0x14000830eb8"
+  3081.<nil>.0x140007c7e78:
+    title: "0x140007c7e78"
     type: object
-  4454.<nil>.0x140008310f8:
-    title: "0x140008310f8"
+  4454.<nil>.0x14000820138:
+    title: "0x14000820138"
     type: object
   models.Accounts:
     title: Accounts
@@ -1982,6 +2014,9 @@ definitions:
         $ref: '#/definitions/models.Identification_types'
       ImagePath:
         type: string
+      LastTxnDate:
+        type: string
+        format: datetime
       Location:
         type: string
       ModifiedBy:
@@ -2183,6 +2218,12 @@ definitions:
         type: string
       RoleRequired:
         type: boolean
+  models.UpdateCustomerLastTxnRequest:
+    title: UpdateCustomerLastTxnRequest
+    type: object
+  models.UpdateCustomerRequestDTO:
+    title: UpdateCustomerRequestDTO
+    type: object
   models.UpdateUserBranchRequestDTO:
     title: UpdateUserBranchRequestDTO
     type: object
@@ -2498,7 +2539,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x14000830948'
+        $ref: '#/definitions/494.<nil>.0x140007c7908'
       StatusCode:
         type: integer
         format: int64
@@ -2531,7 +2572,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x14000830d08'
+        $ref: '#/definitions/2278.<nil>.0x140007c7cc8'
       StatusCode:
         type: integer
         format: int64
@@ -2553,7 +2594,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x14000830eb8'
+        $ref: '#/definitions/3081.<nil>.0x140007c7e78'
       StatusCode:
         type: integer
         format: int64
@@ -2599,7 +2640,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x14000830b10'
+        $ref: '#/definitions/1380.<nil>.0x140007c7ad0'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2621,7 +2662,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4454.<nil>.0x140008310f8'
+        $ref: '#/definitions/4454.<nil>.0x14000820138'
 tags:
 - name: users
   description: |

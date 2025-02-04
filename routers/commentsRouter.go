@@ -144,6 +144,15 @@ func init() {
 
     beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
         beego.ControllerComments{
+            Method: "UpdateCustomerLastTxnDate",
+            Router: `/last-txn/:id`,
+            AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
+        beego.ControllerComments{
             Method: "UpdateCustomerImage",
             Router: `/update-customer-image`,
             AllowHTTPMethods: []string{"post"},

@@ -25,3 +25,7 @@ type UpdateCustomerRequestDTO struct {
 	Dob         string
 	AddedBy     string
 }
+
+type UpdateCustomerLastTxnRequest struct {
+	TransactionDate string
+}
