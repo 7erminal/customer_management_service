@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"customer_management_service/models"
+	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -118,9 +120,22 @@ func (c *Identification_typesController) GetAll() {
 
 	l, err := models.GetAllIdentification_types(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		logs.Error("Error fetching ID Types ", err.Error())
+		resp := responses.IDTypesResponseDTO{StatusCode: 301, IdTypes: nil, StatusDesc: "ID Type not fetched"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = l
+		// idResp := []responses.IDTypeResponse{}
+		// for _, urs := range l {
+		// 	m := urs.(models.Identification_types)
+
+		// 	idResp = append(idResp, m)
+		// }
+		if l == nil {
+			l = []interface{}{}
+		}
+
+		resp := responses.IDTypesResponseDTO{StatusCode: 200, IdTypes: &l, StatusDesc: "Users fetched successfully"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

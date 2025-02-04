@@ -426,6 +426,131 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /id-types/:
+    get:
+      tags:
+      - id-types
+      description: |-
+        get Identification_types
+        <br>
+      operationId: Identification_typesController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Identification_types'
+        "403":
+          description: ""
+    post:
+      tags:
+      - id-types
+      description: |-
+        create Identification_types
+        <br>
+      operationId: Identification_typesController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Identification_types content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Identification_types'
+      responses:
+        "201":
+          description: '{int} models.Identification_types'
+        "403":
+          description: body is empty
+  /id-types/{id}:
+    get:
+      tags:
+      - id-types
+      description: |-
+        get Identification_types by id
+        <br>
+      operationId: Identification_typesController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Identification_types'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - id-types
+      description: |-
+        update the Identification_types
+        <br>
+      operationId: Identification_typesController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Identification_types content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Identification_types'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Identification_types'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - id-types
+      description: |-
+        delete the Identification_types
+        <br>
+      operationId: Identification_typesController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /newsletter/:
     get:
       tags:
@@ -1616,20 +1741,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x1400075b2f0:
-    title: "0x1400075b2f0"
+  494.<nil>.0x14000830948:
+    title: "0x14000830948"
     type: object
-  1145.<nil>.0x1400075b458:
-    title: "0x1400075b458"
+  1380.<nil>.0x14000830b10:
+    title: "0x14000830b10"
     type: object
-  2043.<nil>.0x1400075b650:
-    title: "0x1400075b650"
+  2278.<nil>.0x14000830d08:
+    title: "0x14000830d08"
     type: object
-  2846.<nil>.0x1400075b800:
-    title: "0x1400075b800"
+  3081.<nil>.0x14000830eb8:
+    title: "0x14000830eb8"
     type: object
-  4219.<nil>.0x1400075ba40:
-    title: "0x1400075ba40"
+  4454.<nil>.0x140008310f8:
+    title: "0x140008310f8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2373,7 +2498,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x1400075b2f0'
+        $ref: '#/definitions/494.<nil>.0x14000830948'
       StatusCode:
         type: integer
         format: int64
@@ -2406,7 +2531,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x1400075b650'
+        $ref: '#/definitions/2278.<nil>.0x14000830d08'
       StatusCode:
         type: integer
         format: int64
@@ -2428,7 +2553,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x1400075b800'
+        $ref: '#/definitions/3081.<nil>.0x14000830eb8'
       StatusCode:
         type: integer
         format: int64
@@ -2474,7 +2599,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x1400075b458'
+        $ref: '#/definitions/1380.<nil>.0x14000830b10'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2496,7 +2621,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4219.<nil>.0x1400075ba40'
+        $ref: '#/definitions/4454.<nil>.0x140008310f8'
 tags:
 - name: users
   description: |
@@ -2525,3 +2650,6 @@ tags:
 - name: role-permissions
   description: |
     Role_permissionsController operations for Role_permissions
+- name: id-types
+  description: |
+    Identification_typesController operations for Identification_types

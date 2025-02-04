@@ -77,6 +77,12 @@ func init() {
 				&controllers.Role_permissionsController{},
 			),
 		),
+
+		beego.NSNamespace("/id-types",
+			beego.NSInclude(
+				&controllers.Identification_typesController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
