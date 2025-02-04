@@ -272,7 +272,10 @@ func (c *CustomersController) GetAll() {
 		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
 		c.Data["json"] = resp
 	} else {
-		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched categories"}
+		if l == nil {
+			l = []interface{}{}
+		}
+		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

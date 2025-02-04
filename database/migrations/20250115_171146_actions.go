@@ -20,7 +20,7 @@ func init() {
 // Run the migrations
 func (m *Actions_20250115_171146) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
-	m.SQL("CREATE TABLE actions(`id` int(11) NOT NULL AUTO_INCREMENT,`action` varchar(50) NOT NULL,`description` varchar(255) NOT NULL,`date_created` datetime NOT NULL,`date_modified` datetime NOT NULL,`created_by` int(11) DEFAULT NULL,`modified_by` int(11) DEFAULT NULL,`active` int(11) DEFAULT NULL,PRIMARY KEY (`id`))")
+	m.SQL("CREATE TABLE actions(`action_id` int(11) NOT NULL AUTO_INCREMENT,`action` varchar(50) NOT NULL,`description` varchar(255) NOT NULL,`date_created` datetime DEFAULT CURRENT_TIMESTAMP,`date_modified` datetime ON UPDATE CURRENT_TIMESTAMP,`created_by` int(11) DEFAULT 1,`modified_by` int(11) DEFAULT 1,`active` int(11) DEFAULT 1,PRIMARY KEY (`action_id`))")
 }
 
 // Reverse the migrations
