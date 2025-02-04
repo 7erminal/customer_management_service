@@ -1616,20 +1616,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140008577d0:
-    title: "0x140008577d0"
+  494.<nil>.0x1400075b2f0:
+    title: "0x1400075b2f0"
     type: object
-  1145.<nil>.0x14000857938:
-    title: "0x14000857938"
+  1145.<nil>.0x1400075b458:
+    title: "0x1400075b458"
     type: object
-  2043.<nil>.0x14000857b30:
-    title: "0x14000857b30"
+  2043.<nil>.0x1400075b650:
+    title: "0x1400075b650"
     type: object
-  2846.<nil>.0x14000857ce0:
-    title: "0x14000857ce0"
+  2846.<nil>.0x1400075b800:
+    title: "0x1400075b800"
     type: object
-  4219.<nil>.0x14000857f20:
-    title: "0x14000857f20"
+  4219.<nil>.0x1400075ba40:
+    title: "0x1400075ba40"
     type: object
   models.Accounts:
     title: Accounts
@@ -2373,7 +2373,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140008577d0'
+        $ref: '#/definitions/494.<nil>.0x1400075b2f0'
       StatusCode:
         type: integer
         format: int64
@@ -2406,7 +2406,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2043.<nil>.0x14000857b30'
+        $ref: '#/definitions/2043.<nil>.0x1400075b650'
       StatusCode:
         type: integer
         format: int64
@@ -2428,7 +2428,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/2846.<nil>.0x14000857ce0'
+        $ref: '#/definitions/2846.<nil>.0x1400075b800'
       StatusCode:
         type: integer
         format: int64
@@ -2474,7 +2474,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1145.<nil>.0x14000857938'
+        $ref: '#/definitions/1145.<nil>.0x1400075b458'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2496,7 +2496,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4219.<nil>.0x14000857f20'
+        $ref: '#/definitions/4219.<nil>.0x1400075ba40'
 tags:
 - name: users
   description: |

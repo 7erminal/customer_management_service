@@ -269,6 +269,7 @@ func (c *CustomersController) GetAll() {
 
 	l, err := models.GetAllCustomers(query, fields, sortby, order, offset, limit)
 	if err != nil {
+		logs.Error("Error fetching customers ", err.Error())
 		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
 		c.Data["json"] = resp
 	} else {
