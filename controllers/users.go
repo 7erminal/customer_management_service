@@ -43,6 +43,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("GetUsersUnderBranch", c.GetUsersUnderBranch)
 	c.Mapping("UpdateUserRole", c.UpdateUserRole)
 	c.Mapping("UpdateUserBranch", c.UpdateUserBranch)
+	c.Mapping("GetUserCount", c.GetUserCount)
 }
 
 // SignUp2 ...
@@ -1569,6 +1570,28 @@ func (c *UsersController) Delete() {
 		}
 	} else {
 		c.Data["json"] = err.Error()
+	}
+	c.ServeJSON()
+}
+
+// GetItemCount ...
+// @Title Get Item Quantity
+// @Description get Item_quantity by Item id
+// @Param	id		path 	string	true		"The key for staticblock"
+// @Success 200 {object} responses.StringResponseDTO
+// @Failure 403 :id is empty
+// @router /count/ [get]
+func (c *UsersController) GetUserCount() {
+	// q, err := models.GetItemsById(id)
+	v, err := models.GetUserCount()
+	count := strconv.FormatInt(v, 10)
+	if err != nil {
+		logs.Error("Error fetching count of items ... ", err.Error())
+		resp := responses.StringResponseDTO{StatusCode: 301, Value: "", StatusDesc: err.Error()}
+		c.Data["json"] = resp
+	} else {
+		resp := responses.StringResponseDTO{StatusCode: 200, Value: count, StatusDesc: "Count fetched successfully"}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

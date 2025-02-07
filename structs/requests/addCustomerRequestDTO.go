@@ -11,6 +11,7 @@ type AddCustomerRequestDTO struct {
 	Email       string
 	Dob         string
 	AddedBy     string
+	Branch      string
 }
 
 type UpdateCustomerRequestDTO struct {
@@ -24,6 +25,7 @@ type UpdateCustomerRequestDTO struct {
 	Email       string
 	Dob         string
 	AddedBy     string
+	Branch      int64
 }
 
 type UpdateCustomerLastTxnRequest struct {

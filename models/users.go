@@ -78,6 +78,16 @@ func GetUsersById(id int64) (v *Users, err error) {
 	return nil, err
 }
 
+// GetItemsById retrieves Items by Id. Returns error if
+// Id doesn't exist
+func GetUserCount() (c int64, err error) {
+	o := orm.NewOrm()
+	if c, err = o.QueryTable(new(Users)).Count(); err == nil {
+		return c, nil
+	}
+	return 0, err
+}
+
 // GetAllUsers retrieves all Users matches certain condition. Returns empty list if
 // no records exist
 func GetAllUsers(query map[string]string, fields []string, sortby []string, order []string,

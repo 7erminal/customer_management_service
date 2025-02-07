@@ -144,6 +144,24 @@ func init() {
 
     beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
         beego.ControllerComments{
+            Method: "GetAllByBranch",
+            Router: `/branch/:id`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
+        beego.ControllerComments{
+            Method: "GetCustomerCount",
+            Router: `/count/`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
+        beego.ControllerComments{
             Method: "UpdateCustomerLastTxnDate",
             Router: `/last-txn/:id`,
             AllowHTTPMethods: []string{"put"},
@@ -558,18 +576,18 @@ func init() {
 
     beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
         beego.ControllerComments{
-            Method: "Put",
+            Method: "GetOne",
             Router: `/:id`,
-            AllowHTTPMethods: []string{"put"},
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})
 
     beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
         beego.ControllerComments{
-            Method: "GetOne",
+            Method: "Put",
             Router: `/:id`,
-            AllowHTTPMethods: []string{"get"},
+            AllowHTTPMethods: []string{"put"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})
@@ -588,6 +606,15 @@ func init() {
             Method: "UpdateUserBranch",
             Router: `/branch/:id`,
             AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
+        beego.ControllerComments{
+            Method: "GetUserCount",
+            Router: `/count/`,
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

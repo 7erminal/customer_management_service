@@ -457,6 +457,93 @@
                 }
             }
         },
+        "/customers/branch/{id}": {
+            "get": {
+                "tags": [
+                    "customers"
+                ],
+                "description": "get Customers By Branch\n\u003cbr\u003e",
+                "operationId": "CustomersController.Get All By Branch",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "Fields returned. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sortby",
+                        "description": "Sorted-by fields. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Customers"
+                        }
+                    },
+                    "403": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/customers/count/": {
+            "get": {
+                "tags": [
+                    "customers"
+                ],
+                "description": "get Item_quantity by Item id\n\u003cbr\u003e",
+                "operationId": "CustomersController.Get Item Quantity",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StringResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is empty"
+                    }
+                }
+            }
+        },
         "/customers/last-txn/{id}": {
             "put": {
                 "tags": [
@@ -1951,6 +2038,35 @@
                 }
             }
         },
+        "/users/count/": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "get Item_quantity by Item id\n\u003cbr\u003e",
+                "operationId": "UsersController.Get Item Quantity",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.StringResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is empty"
+                    }
+                }
+            }
+        },
         "/users/get-user-by-username/{username}": {
             "get": {
                 "tags": [
@@ -2464,24 +2580,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x140007c7ad0": {
-            "title": "0x140007c7ad0",
+        "1380.\u003cnil\u003e.0x14000836018": {
+            "title": "0x14000836018",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x140007c7cc8": {
-            "title": "0x140007c7cc8",
+        "2278.\u003cnil\u003e.0x14000836210": {
+            "title": "0x14000836210",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x140007c7e78": {
-            "title": "0x140007c7e78",
+        "3081.\u003cnil\u003e.0x140008363c0": {
+            "title": "0x140008363c0",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x14000820138": {
-            "title": "0x14000820138",
+        "4454.\u003cnil\u003e.0x14000836600": {
+            "title": "0x14000836600",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140007c7908": {
-            "title": "0x140007c7908",
+        "494.\u003cnil\u003e.0x140007efdd0": {
+            "title": "0x140007efdd0",
             "type": "object"
         },
         "models.Accounts": {
@@ -3410,6 +3526,9 @@
                 "AddedBy": {
                     "type": "string"
                 },
+                "Branch": {
+                    "type": "string"
+                },
                 "Category": {
                     "type": "string"
                 },
@@ -3545,7 +3664,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140007c7908"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140007efdd0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3593,7 +3712,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140007c7cc8"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000836210"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3625,7 +3744,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140007c7e78"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008363c0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3692,7 +3811,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140007c7ad0"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000836018"
                 }
             }
         },
@@ -3724,7 +3843,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000820138"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000836600"
                 }
             }
         }
