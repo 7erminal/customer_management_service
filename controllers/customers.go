@@ -6,6 +6,7 @@ import (
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -373,6 +374,8 @@ func (c *CustomersController) GetAllByBranch() {
 			if l == nil {
 				l = []interface{}{}
 			}
+			fmt.Printf("Type of customers: %T\n", l)
+			fmt.Printf("Value of customers: %+v\n", l)
 			resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
 			c.Data["json"] = resp
 		}
@@ -646,10 +649,9 @@ func (c *CustomersController) Delete() {
 	c.ServeJSON()
 }
 
-// GetItemCount ...
-// @Title Get Item Quantity
-// @Description get Item_quantity by Item id
-// @Param	id		path 	string	true		"The key for staticblock"
+// GetCustomerCount ...
+// @Title Get Customer Count
+// @Description get count of customers
 // @Success 200 {object} responses.StringResponseDTO
 // @Failure 403 :id is empty
 // @router /count/ [get]

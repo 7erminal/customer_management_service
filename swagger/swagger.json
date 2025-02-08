@@ -520,17 +520,8 @@
                 "tags": [
                     "customers"
                 ],
-                "description": "get Item_quantity by Item id\n\u003cbr\u003e",
-                "operationId": "CustomersController.Get Item Quantity",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "description": "The key for staticblock",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
+                "description": "get count of customers\n\u003cbr\u003e",
+                "operationId": "CustomersController.Get Customer Count",
                 "responses": {
                     "200": {
                         "description": "",
@@ -2580,24 +2571,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x14000836018": {
-            "title": "0x14000836018",
+        "1380.\u003cnil\u003e.0x140008b6480": {
+            "title": "0x140008b6480",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x14000836210": {
-            "title": "0x14000836210",
+        "2278.\u003cnil\u003e.0x140008b6678": {
+            "title": "0x140008b6678",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x140008363c0": {
-            "title": "0x140008363c0",
+        "3081.\u003cnil\u003e.0x140008b6828": {
+            "title": "0x140008b6828",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x14000836600": {
-            "title": "0x14000836600",
+        "4454.\u003cnil\u003e.0x140008b6a68": {
+            "title": "0x140008b6a68",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140007efdd0": {
-            "title": "0x140007efdd0",
+        "494.\u003cnil\u003e.0x140008b62b8": {
+            "title": "0x140008b62b8",
             "type": "object"
         },
         "models.Accounts": {
@@ -3664,7 +3655,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140007efdd0"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008b62b8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3712,7 +3703,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000836210"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008b6678"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3744,7 +3735,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008363c0"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008b6828"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3811,7 +3802,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000836018"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008b6480"
                 }
             }
         },
@@ -3843,7 +3834,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000836600"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140008b6a68"
                 }
             }
         }
