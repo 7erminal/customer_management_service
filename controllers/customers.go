@@ -324,7 +324,7 @@ func (c *CustomersController) GetAllByBranch() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 500
 	var offset int64
 
 	// fields: col1,col2,entity.col3
@@ -652,12 +652,28 @@ func (c *CustomersController) Delete() {
 // GetCustomerCount ...
 // @Title Get Customer Count
 // @Description get count of customers
+// @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Success 200 {object} responses.StringResponseDTO
 // @Failure 403 :id is empty
 // @router /count/ [get]
 func (c *CustomersController) GetCustomerCount() {
 	// q, err := models.GetItemsById(id)
-	v, err := models.GetCustomerCount()
+	var query = make(map[string]string)
+	// query: k:v,k:v
+	if v := c.GetString("query"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
+	v, err := models.GetCustomerCount(query)
 	count := strconv.FormatInt(v, 10)
 	if err != nil {
 		logs.Error("Error fetching count of customers ... ", err.Error())

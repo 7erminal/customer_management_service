@@ -80,9 +80,21 @@ func GetUsersById(id int64) (v *Users, err error) {
 
 // GetItemsById retrieves Items by Id. Returns error if
 // Id doesn't exist
-func GetUserCount() (c int64, err error) {
+func GetUserCount(query map[string]string) (c int64, err error) {
 	o := orm.NewOrm()
-	if c, err = o.QueryTable(new(Users)).Count(); err == nil {
+	qs := o.QueryTable(new(Users))
+
+	for k, v := range query {
+		// rewrite dot-notation to Object__Attribute
+		k = strings.Replace(k, ".", "__", -1)
+		if strings.Contains(k, "isnull") {
+			qs = qs.Filter(k, (v == "true" || v == "1"))
+		} else {
+			qs = qs.Filter(k, v)
+		}
+	}
+
+	if c, err = qs.Count(); err == nil {
 		return c, nil
 	}
 	return 0, err

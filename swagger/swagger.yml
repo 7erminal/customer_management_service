@@ -449,6 +449,11 @@ paths:
         get count of customers
         <br>
       operationId: CustomersController.Get Customer Count
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
       responses:
         "200":
           description: ""
@@ -1541,10 +1546,9 @@ paths:
         <br>
       operationId: UsersController.Get Item Quantity
       parameters:
-      - in: path
-        name: id
-        description: The key for staticblock
-        required: true
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
         type: string
       responses:
         "200":
@@ -1850,20 +1854,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x1400086dba8:
-    title: "0x1400086dba8"
+  494.<nil>.0x1400085f308:
+    title: "0x1400085f308"
     type: object
-  1380.<nil>.0x1400086dd70:
-    title: "0x1400086dd70"
+  1380.<nil>.0x1400085f4d0:
+    title: "0x1400085f4d0"
     type: object
-  2278.<nil>.0x1400086df68:
-    title: "0x1400086df68"
+  2278.<nil>.0x1400085f6c8:
+    title: "0x1400085f6c8"
     type: object
-  3081.<nil>.0x140008be198:
-    title: "0x140008be198"
+  3081.<nil>.0x1400085f878:
+    title: "0x1400085f878"
     type: object
-  4454.<nil>.0x140008be3d8:
-    title: "0x140008be3d8"
+  4454.<nil>.0x1400085fab8:
+    title: "0x1400085fab8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2618,7 +2622,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x1400086dba8'
+        $ref: '#/definitions/494.<nil>.0x1400085f308'
       StatusCode:
         type: integer
         format: int64
@@ -2651,7 +2655,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x1400086df68'
+        $ref: '#/definitions/2278.<nil>.0x1400085f6c8'
       StatusCode:
         type: integer
         format: int64
@@ -2673,7 +2677,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x140008be198'
+        $ref: '#/definitions/3081.<nil>.0x1400085f878'
       StatusCode:
         type: integer
         format: int64
@@ -2719,7 +2723,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x1400086dd70'
+        $ref: '#/definitions/1380.<nil>.0x1400085f4d0'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2741,7 +2745,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4454.<nil>.0x140008be3d8'
+        $ref: '#/definitions/4454.<nil>.0x1400085fab8'
 tags:
 - name: users
   description: |

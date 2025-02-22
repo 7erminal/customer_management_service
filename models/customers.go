@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 type Customers struct {
@@ -69,9 +70,16 @@ func GetCustomerByBranch(branch *Branches) (v *Customers, err error) {
 
 // GetItemsById retrieves Items by Id. Returns error if
 // Id doesn't exist
-func GetCustomerCount() (c int64, err error) {
+func GetCustomerCount(query map[string]string) (c int64, err error) {
 	o := orm.NewOrm()
-	if c, err = o.QueryTable(new(Customers)).Count(); err == nil {
+	qs := o.QueryTable(new(Customers))
+	logs.Info("Query is ", query)
+	for k, v := range query {
+		// rewrite dot-notation to Object__Attribute
+		k = strings.Replace(k, ".", "__", -1)
+		qs = qs.Filter(k, v)
+	}
+	if c, err = qs.Count(); err == nil {
 		return c, nil
 	}
 	return 0, err
