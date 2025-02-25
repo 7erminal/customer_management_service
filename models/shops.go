@@ -13,9 +13,11 @@ import (
 type Shops struct {
 	ShopId              int64 `orm:"auto"`
 	ShopName            string
-	ShopDescription     string    `orm:"size(255)"`
-	ShopAssistantName   string    `orm:"size(100)"`
-	ShopAssistantNumber string    `orm:"size(100)"`
+	ShopDescription     string `orm:"size(255)"`
+	ShopAssistantName   string `orm:"size(100)"`
+	ShopAssistantNumber string `orm:"size(100)"`
+	PhoneNumber         string
+	Email               string
 	Image               string    `orm:"size(100);omitempty"`
 	DateCreated         time.Time `orm:"type(datetime)"`
 	DateModified        time.Time `orm:"type(datetime)"`

@@ -44,6 +44,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("UpdateUserRole", c.UpdateUserRole)
 	c.Mapping("UpdateUserBranch", c.UpdateUserBranch)
 	c.Mapping("GetUserCount", c.GetUserCount)
+	c.Mapping("Deactivate", c.Deactivate)
 }
 
 // SignUp2 ...
@@ -1567,12 +1568,54 @@ func (c *UsersController) Delete() {
 			// } else {
 			// 	c.Data["json"] = err.Error()
 			// }
-			c.Data["json"] = "OK"
+			resp := responses.StringResponseDTO{StatusCode: 200, Value: "OK", StatusDesc: "OK"}
+			c.Data["json"] = resp
 		} else {
-			c.Data["json"] = err.Error()
+			logs.Error("Error deleting user", err.Error())
+			resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+			c.Data["json"] = resp
 		}
 	} else {
-		c.Data["json"] = err.Error()
+		logs.Error("Error deleting user", err.Error())
+		resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
+// Deactivate ...
+// @Title Deactivate
+// @Description delete the Users
+// @Param	id		path 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /deactivate/:id [delete]
+func (c *UsersController) Deactivate() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+
+	logs.Info("Checking user ", idStr)
+
+	v, err := models.GetUsersById(id)
+	if err == nil {
+		v.Active = 4
+		if err := models.UpdateUsersById(v); err == nil {
+			// if err := models.DeleteUsers(id); err == nil {
+			// 	c.Data["json"] = "OK"
+			// } else {
+			// 	c.Data["json"] = err.Error()
+			// }
+			resp := responses.StringResponseDTO{StatusCode: 200, Value: "OK", StatusDesc: "OK"}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Error deactivating user", err.Error())
+			resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Error("Error deactivating user", err.Error())
+		resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

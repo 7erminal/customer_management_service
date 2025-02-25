@@ -1264,7 +1264,7 @@ paths:
         description: body for Shops content
         required: true
         schema:
-          $ref: '#/definitions/models.Shops'
+          $ref: '#/definitions/requests.ShopRequest'
       responses:
         "200":
           description: ""
@@ -1331,6 +1331,25 @@ paths:
             $ref: '#/definitions/responses.BranchesResponseDTO'
         "403":
           description: ""
+  /shops/upload-shop-logo:
+    post:
+      tags:
+      - shops
+      description: |-
+        Upload shop's logo
+        <br>
+      operationId: ShopsController.Upload Shop Logo
+      parameters:
+      - in: formData
+        name: Image
+        description: Item Image
+        required: true
+        type: file
+      responses:
+        "200":
+          description: '{int} responses.StringResponseFDTO'
+        "403":
+          description: body is empty
   /users/:
     get:
       tags:
@@ -1557,6 +1576,25 @@ paths:
             $ref: '#/definitions/responses.StringResponseDTO'
         "403":
           description: :id is empty
+  /users/deactivate/{id}:
+    delete:
+      tags:
+      - users
+      description: |-
+        delete the Users
+        <br>
+      operationId: UsersController.Deactivate
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /users/get-user-by-username/{username}:
     get:
       tags:
@@ -1854,20 +1892,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x1400085f308:
-    title: "0x1400085f308"
+  494.<nil>.0x1400080f6b0:
+    title: "0x1400080f6b0"
     type: object
-  1380.<nil>.0x1400085f4d0:
-    title: "0x1400085f4d0"
+  1380.<nil>.0x1400080f878:
+    title: "0x1400080f878"
     type: object
-  2278.<nil>.0x1400085f6c8:
-    title: "0x1400085f6c8"
+  2278.<nil>.0x1400080fa70:
+    title: "0x1400080fa70"
     type: object
-  3081.<nil>.0x1400085f878:
-    title: "0x1400085f878"
+  3081.<nil>.0x1400080fc20:
+    title: "0x1400080fc20"
     type: object
-  4454.<nil>.0x1400085fab8:
-    title: "0x1400085fab8"
+  4454.<nil>.0x1400080fe60:
+    title: "0x1400080fe60"
     type: object
   models.Accounts:
     title: Accounts
@@ -2263,11 +2301,15 @@ definitions:
       DateModified:
         type: string
         format: datetime
+      Email:
+        type: string
       Image:
         type: string
       ModifiedBy:
         type: integer
         format: int64
+      PhoneNumber:
+        type: string
       ShopAssistantName:
         type: string
       ShopAssistantNumber:
@@ -2605,6 +2647,24 @@ definitions:
         type: string
       Role:
         type: string
+  requests.ShopRequest:
+    title: ShopRequest
+    type: object
+    properties:
+      AssistantName:
+        type: string
+      AssistantNumber:
+        type: string
+      Description:
+        type: string
+      Email:
+        type: string
+      ImageUrl:
+        type: string
+      Name:
+        type: string
+      PhoneNumber:
+        type: string
   requests.StringRequestDTO:
     title: StringRequestDTO
     type: object
@@ -2622,7 +2682,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x1400085f308'
+        $ref: '#/definitions/494.<nil>.0x1400080f6b0'
       StatusCode:
         type: integer
         format: int64
@@ -2655,7 +2715,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x1400085f6c8'
+        $ref: '#/definitions/2278.<nil>.0x1400080fa70'
       StatusCode:
         type: integer
         format: int64
@@ -2677,7 +2737,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x1400085f878'
+        $ref: '#/definitions/3081.<nil>.0x1400080fc20'
       StatusCode:
         type: integer
         format: int64
@@ -2723,7 +2783,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x1400085f4d0'
+        $ref: '#/definitions/1380.<nil>.0x1400080f878'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2745,7 +2805,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4454.<nil>.0x1400085fab8'
+        $ref: '#/definitions/4454.<nil>.0x1400080fe60'
 tags:
 - name: users
   description: |

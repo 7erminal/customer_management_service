@@ -1756,6 +1756,32 @@
                 }
             }
         },
+        "/shops/upload-shop-logo": {
+            "post": {
+                "tags": [
+                    "shops"
+                ],
+                "description": "Upload shop's logo\n\u003cbr\u003e",
+                "operationId": "ShopsController.Upload Shop Logo",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "Image",
+                        "description": "Item Image",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{int} responses.StringResponseFDTO"
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/shops/{id}": {
             "get": {
                 "tags": [
@@ -1804,7 +1830,7 @@
                         "description": "body for Shops content",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Shops"
+                            "$ref": "#/definitions/requests.ShopRequest"
                         }
                     }
                 ],
@@ -2061,6 +2087,32 @@
                     },
                     "403": {
                         "description": ":id is empty"
+                    }
+                }
+            }
+        },
+        "/users/deactivate/{id}": {
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "description": "delete the Users\n\u003cbr\u003e",
+                "operationId": "UsersController.Deactivate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} delete success!"
+                    },
+                    "403": {
+                        "description": "id is empty"
                     }
                 }
             }
@@ -2578,24 +2630,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x1400085f4d0": {
-            "title": "0x1400085f4d0",
+        "1380.\u003cnil\u003e.0x1400080f878": {
+            "title": "0x1400080f878",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x1400085f6c8": {
-            "title": "0x1400085f6c8",
+        "2278.\u003cnil\u003e.0x1400080fa70": {
+            "title": "0x1400080fa70",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x1400085f878": {
-            "title": "0x1400085f878",
+        "3081.\u003cnil\u003e.0x1400080fc20": {
+            "title": "0x1400080fc20",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x1400085fab8": {
-            "title": "0x1400085fab8",
+        "4454.\u003cnil\u003e.0x1400080fe60": {
+            "title": "0x1400080fe60",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x1400085f308": {
-            "title": "0x1400085f308",
+        "494.\u003cnil\u003e.0x1400080f6b0": {
+            "title": "0x1400080f6b0",
             "type": "object"
         },
         "models.Accounts": {
@@ -3146,12 +3198,18 @@
                     "type": "string",
                     "format": "datetime"
                 },
+                "Email": {
+                    "type": "string"
+                },
                 "Image": {
                     "type": "string"
                 },
                 "ModifiedBy": {
                     "type": "integer",
                     "format": "int64"
+                },
+                "PhoneNumber": {
+                    "type": "string"
                 },
                 "ShopAssistantName": {
                     "type": "string"
@@ -3639,6 +3697,33 @@
                 }
             }
         },
+        "requests.ShopRequest": {
+            "title": "ShopRequest",
+            "type": "object",
+            "properties": {
+                "AssistantName": {
+                    "type": "string"
+                },
+                "AssistantNumber": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "ImageUrl": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "PhoneNumber": {
+                    "type": "string"
+                }
+            }
+        },
         "requests.StringRequestDTO": {
             "title": "StringRequestDTO",
             "type": "object",
@@ -3662,7 +3747,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x1400085f308"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x1400080f6b0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3710,7 +3795,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x1400085f6c8"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x1400080fa70"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3742,7 +3827,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x1400085f878"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x1400080fc20"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3809,7 +3894,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x1400085f4d0"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x1400080f878"
                 }
             }
         },
@@ -3841,7 +3926,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x1400085fab8"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x1400080fe60"
                 }
             }
         }

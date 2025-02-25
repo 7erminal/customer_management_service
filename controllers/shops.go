@@ -2,12 +2,17 @@ package controllers
 
 import (
 	"customer_management_service/models"
+	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -24,6 +29,7 @@ func (c *ShopsController) URLMapping() {
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 	c.Mapping("GetAllBranches", c.GetAllBranches)
+	c.Mapping("UploadShopLogo", c.UploadShopLogo)
 }
 
 // Post ...
@@ -57,9 +63,12 @@ func (c *ShopsController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetShopsById(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		logs.Error("Error fetching shop details ", err.Error())
+		resp := models.ShopResponseDTO{StatusCode: 608, Shop: nil, StatusDesc: "Error fetching shop details " + err.Error()}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = v
+		resp := models.ShopResponseDTO{StatusCode: 200, Shop: v, StatusDesc: "Successfully fetched shop details "}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
@@ -196,20 +205,47 @@ func (c *ShopsController) GetAllBranches() {
 // @Title Put
 // @Description update the Shops
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Shops	true		"body for Shops content"
+// @Param	body		body 	requests.ShopRequest	true		"body for Shops content"
 // @Success 200 {object} models.Shops
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *ShopsController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := models.Shops{ShopId: id}
+	v := requests.ShopRequest{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateShopsById(&v); err == nil {
-		c.Data["json"] = "OK"
+
+	logs.Info("Request received ", v)
+	name := c.Ctx.Input.Query("Name")
+	email := c.Ctx.Input.Query("Email")
+	imageUrl := c.Ctx.Input.Query("ImageUrl")
+	phonenumber := c.Ctx.Input.Query("PhoneNumber")
+	assistantName := c.Ctx.Input.Query("AssistantName")
+	assistantNumber := c.Ctx.Input.Query("AssistantNumber")
+	logs.Info("Name is ", name, " Email ", email, " Image ", imageUrl, " and phone number ", phonenumber)
+
+	if shop, err := models.GetShopsById(id); err == nil {
+		if imageUrl == "" {
+			imageUrl = shop.Image
+		}
+		q := models.Shops{ShopId: id, ShopName: name, Email: email, Image: imageUrl, PhoneNumber: phonenumber, ShopAssistantName: assistantName, ShopAssistantNumber: assistantNumber, DateCreated: time.Now(), DateModified: time.Now(), Active: 1}
+		if err := models.UpdateShopsById(&q); err == nil {
+			// c.Data["json"] = "OK"
+			resp := models.ShopResponseDTO{StatusCode: 200, Shop: &q, StatusDesc: "Successfully updated shop details "}
+			c.Data["json"] = resp
+		} else {
+			c.Data["json"] = err.Error()
+			logs.Error("Error updating shop details ", err.Error())
+			resp := models.ShopResponseDTO{StatusCode: 608, Shop: nil, StatusDesc: "Error updating shop details " + err.Error()}
+			c.Data["json"] = resp
+		}
 	} else {
 		c.Data["json"] = err.Error()
+		logs.Error("Error updating shop details ", err.Error())
+		resp := models.ShopResponseDTO{StatusCode: 608, Shop: nil, StatusDesc: "Error updating shop details " + err.Error()}
+		c.Data["json"] = resp
 	}
+
 	c.ServeJSON()
 }
 
@@ -228,5 +264,58 @@ func (c *ShopsController) Delete() {
 	} else {
 		c.Data["json"] = err.Error()
 	}
+	c.ServeJSON()
+}
+
+// Upload Shop Logo ...
+// @Title Upload Shop Logo
+// @Description Upload shop's logo
+// @Param	Image		formData 	file	true		"Item Image"
+// @Success 200 {int} responses.StringResponseFDTO
+// @Failure 403 body is empty
+// @router /upload-shop-logo [post]
+func (c *ShopsController) UploadShopLogo() {
+	// var v models.Item_images
+	file, header, err := c.GetFile("Image")
+	logs.Info("Data received is ", file)
+
+	contentType := c.Ctx.Input.Header("Content-Type")
+	logs.Info("Content-Type of incoming request:", contentType)
+
+	if err != nil {
+		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
+		logs.Error("Failed to get the file ", err)
+		c.ServeJSON()
+		return
+	}
+	defer file.Close()
+
+	// Check the file size
+	fileInfo := header.Size
+	logs.Info("Received file size:", fileInfo)
+
+	// Save the uploaded file
+	fileName := filepath.Base(header.Filename)
+	logs.Info("File Name Extracted is ", fileName, "Time now is ", time.Now().Format("20060102150405"))
+	filePath := "/uploads/shops/" + time.Now().Format("20060102150405") + fileName // Define your file path
+	logs.Info("File Path Extracted is ", filePath)
+	err = c.SaveToFile("Image", "../images"+filePath)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		logs.Error("Error saving file", err)
+		// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
+		errorMessage := "Error: Failed to save the image file"
+
+		resp := responses.StringResponseDTO{StatusCode: http.StatusInternalServerError, Value: errorMessage, StatusDesc: "Internal Server Error"}
+
+		c.Data["json"] = resp
+		c.ServeJSON()
+		return
+	} else {
+		resp := responses.StringResponseDTO{StatusCode: 200, Value: filePath, StatusDesc: "Images uploaded successfully"}
+		c.Data["json"] = resp
+	}
+
 	c.ServeJSON()
 }

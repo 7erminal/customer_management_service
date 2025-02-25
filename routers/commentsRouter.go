@@ -466,6 +466,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
+        beego.ControllerComments{
+            Method: "UploadShopLogo",
+            Router: `/upload-shop-logo`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:UserExtraDetailsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UserExtraDetailsController"],
         beego.ControllerComments{
             Method: "GetAll",
@@ -567,6 +576,15 @@ func init() {
 
     beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
         beego.ControllerComments{
+            Method: "Put",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
+        beego.ControllerComments{
             Method: "Delete",
             Router: `/:id`,
             AllowHTTPMethods: []string{"delete"},
@@ -579,15 +597,6 @@ func init() {
             Method: "GetOne",
             Router: `/:id`,
             AllowHTTPMethods: []string{"get"},
-            MethodParams: param.Make(),
-            Filters: nil,
-            Params: nil})
-
-    beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
-        beego.ControllerComments{
-            Method: "Put",
-            Router: `/:id`,
-            AllowHTTPMethods: []string{"put"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})
@@ -615,6 +624,15 @@ func init() {
             Method: "GetUserCount",
             Router: `/count/`,
             AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UsersController"],
+        beego.ControllerComments{
+            Method: "Deactivate",
+            Router: `/deactivate/:id`,
+            AllowHTTPMethods: []string{"delete"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

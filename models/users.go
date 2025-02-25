@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 type Users struct {
@@ -107,15 +108,25 @@ func GetAllUsers(query map[string]string, fields []string, sortby []string, orde
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Users))
 	// query k=v
-	for k, v := range query {
-		// rewrite dot-notation to Object__Attribute
-		k = strings.Replace(k, ".", "__", -1)
-		if strings.Contains(k, "isnull") {
-			qs = qs.Filter(k, (v == "true" || v == "1"))
-		} else {
-			qs = qs.Filter(k, v)
+	if len(query) > 0 {
+		cond := orm.NewCondition()
+		cond1 := cond
+		for k, v := range query {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				cond1.Or(k+"__icontains", v)
+
+				// qs = qs.Filter(k+"__icontains", v)
+
+			}
 		}
+		logs.Info("Condition set ", qs)
+		qs.SetCond(cond1)
 	}
+
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {

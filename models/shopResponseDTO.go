@@ -5,7 +5,13 @@ package models
 // )
 
 type ShopResponseDTO struct {
-	StatusCode int    `orm: "omitempty"`
-	Shop       *Shops `orm: "omitempty"`
-	StatusDesc string `orm:"size(255)"`
+	StatusCode int
+	Shop       *Shops
+	StatusDesc string
+}
+
+type ShopsResponseDTO struct {
+	StatusCode int
+	Shop       []*interface{}
+	StatusDesc string
 }
