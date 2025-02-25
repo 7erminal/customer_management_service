@@ -722,6 +722,7 @@ func (c *UsersController) GetOne() {
 // @Title Get All
 // @Description get Users
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	search	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
@@ -735,6 +736,7 @@ func (c *UsersController) GetAll() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
+	var search = make(map[string]string)
 	var limit int64 = 500
 	var offset int64
 
@@ -772,10 +774,24 @@ func (c *UsersController) GetAll() {
 		}
 	}
 
+	// search: k:v,k:v
+	if v := c.GetString("search"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid search key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			search[k] = v
+		}
+	}
+
 	logs.Info("Getting all users")
 	logs.Info("Query is ", query)
 
-	l, err := models.GetAllUsers(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllUsers(query, fields, sortby, order, offset, limit, search)
 	if err != nil {
 		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
@@ -1624,12 +1640,14 @@ func (c *UsersController) Deactivate() {
 // @Title Get Item Quantity
 // @Description get Item_quantity by Item id
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	search	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Success 200 {object} responses.StringResponseDTO
 // @Failure 403 :id is empty
 // @router /count/ [get]
 func (c *UsersController) GetUserCount() {
 	// q, err := models.GetItemsById(id)
 	var query = make(map[string]string)
+	var search = make(map[string]string)
 
 	// query: k:v,k:v
 	if v := c.GetString("query"); v != "" {
@@ -1645,7 +1663,21 @@ func (c *UsersController) GetUserCount() {
 		}
 	}
 
-	v, err := models.GetUserCount(query)
+	// search: k:v,k:v
+	if v := c.GetString("search"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid search key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			search[k] = v
+		}
+	}
+
+	v, err := models.GetUserCount(query, search)
 	count := strconv.FormatInt(v, 10)
 	if err != nil {
 		logs.Error("Error fetching count of items ... ", err.Error())

@@ -81,18 +81,42 @@ func GetUsersById(id int64) (v *Users, err error) {
 
 // GetItemsById retrieves Items by Id. Returns error if
 // Id doesn't exist
-func GetUserCount(query map[string]string) (c int64, err error) {
+func GetUserCount(query map[string]string, search map[string]string) (c int64, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Users))
 
-	for k, v := range query {
-		// rewrite dot-notation to Object__Attribute
-		k = strings.Replace(k, ".", "__", -1)
-		if strings.Contains(k, "isnull") {
-			qs = qs.Filter(k, (v == "true" || v == "1"))
-		} else {
-			qs = qs.Filter(k, v)
+	if len(query) > 0 {
+		cond := orm.NewCondition()
+		for k, v := range query {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				// qs = qs.Filter(k, v)
+				cond = cond.Or(k+"__icontains", v)
+			}
 		}
+		qs = qs.SetCond(cond)
+	}
+
+	if len(search) > 0 {
+		cond := orm.NewCondition()
+		for k, v := range search {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				logs.Info("Adding or statement")
+				cond = cond.Or(k+"__icontains", v)
+
+				// qs = qs.Filter(k+"__icontains", v)
+
+			}
+		}
+		logs.Info("Condition set ", qs)
+		qs = qs.SetCond(cond)
 	}
 
 	if c, err = qs.Count(); err == nil {
@@ -104,27 +128,33 @@ func GetUserCount(query map[string]string) (c int64, err error) {
 // GetAllUsers retrieves all Users matches certain condition. Returns empty list if
 // no records exist
 func GetAllUsers(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+	offset int64, limit int64, search map[string]string) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Users))
 	// query k=v
-	if len(query) > 0 {
+	for k, v := range query {
+		// rewrite dot-notation to Object__Attribute
+		k = strings.Replace(k, ".", "__", -1)
+		qs = qs.Filter(k, v)
+	}
+
+	if len(search) > 0 {
 		cond := orm.NewCondition()
-		cond1 := cond
-		for k, v := range query {
+		for k, v := range search {
 			// rewrite dot-notation to Object__Attribute
 			k = strings.Replace(k, ".", "__", -1)
 			if strings.Contains(k, "isnull") {
 				qs = qs.Filter(k, (v == "true" || v == "1"))
 			} else {
-				cond1.Or(k+"__icontains", v)
+				logs.Info("Adding or statement")
+				cond = cond.Or(k+"__icontains", v)
 
 				// qs = qs.Filter(k+"__icontains", v)
 
 			}
 		}
 		logs.Info("Condition set ", qs)
-		qs.SetCond(cond1)
+		qs = qs.SetCond(cond)
 	}
 
 	// order by:
