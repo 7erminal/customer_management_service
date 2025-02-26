@@ -85,6 +85,25 @@ func GetUserCount(query map[string]string, search map[string]string) (c int64, e
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Users))
 
+	if len(search) > 0 {
+		cond := orm.NewCondition()
+		for k, v := range search {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				logs.Info("Adding or statement")
+				cond = cond.Or(k+"__icontains", v)
+
+				// qs = qs.Filter(k+"__icontains", v)
+
+			}
+		}
+		logs.Info("Condition set ", qs)
+		qs = qs.SetCond(cond)
+	}
+
 	if len(query) > 0 {
 		cond := orm.NewCondition()
 		for k, v := range query {
@@ -100,25 +119,6 @@ func GetUserCount(query map[string]string, search map[string]string) (c int64, e
 		qs = qs.SetCond(cond)
 	}
 
-	if len(search) > 0 {
-		cond := orm.NewCondition()
-		for k, v := range search {
-			// rewrite dot-notation to Object__Attribute
-			k = strings.Replace(k, ".", "__", -1)
-			if strings.Contains(k, "isnull") {
-				qs = qs.Filter(k, (v == "true" || v == "1"))
-			} else {
-				logs.Info("Adding or statement")
-				cond = cond.Or(k+"__icontains", v)
-
-				// qs = qs.Filter(k+"__icontains", v)
-
-			}
-		}
-		logs.Info("Condition set ", qs)
-		qs = qs.SetCond(cond)
-	}
-
 	if c, err = qs.Count(); err == nil {
 		return c, nil
 	}
@@ -131,12 +131,6 @@ func GetAllUsers(query map[string]string, fields []string, sortby []string, orde
 	offset int64, limit int64, search map[string]string) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Users))
-	// query k=v
-	for k, v := range query {
-		// rewrite dot-notation to Object__Attribute
-		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
-	}
 
 	if len(search) > 0 {
 		cond := orm.NewCondition()
@@ -155,6 +149,13 @@ func GetAllUsers(query map[string]string, fields []string, sortby []string, orde
 		}
 		logs.Info("Condition set ", qs)
 		qs = qs.SetCond(cond)
+	}
+
+	// query k=v
+	for k, v := range query {
+		// rewrite dot-notation to Object__Attribute
+		k = strings.Replace(k, ".", "__", -1)
+		qs = qs.Filter(k, v)
 	}
 
 	// order by:
