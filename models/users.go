@@ -105,21 +105,16 @@ func GetUserCount(query map[string]string, search map[string]string) (c int64, e
 	}
 
 	if len(query) > 0 {
-		cond := orm.NewCondition()
+		// cond := orm.NewCondition()
 		for k, v := range query {
 			// rewrite dot-notation to Object__Attribute
 			k = strings.Replace(k, ".", "__", -1)
-			if strings.Contains(k, "isnull") {
-				qs = qs.Filter(k, (v == "true" || v == "1"))
-			} else {
-				// qs = qs.Filter(k, v)
-				cond = cond.Or(k+"__icontains", v)
-			}
+			qs = qs.Filter(k, v)
 		}
-		qs = qs.SetCond(cond)
+		// qs = qs.SetCond(cond)
 	}
 
-	if c, err = qs.Count(); err == nil {
+	if c, err = qs.RelatedSel().Count(); err == nil {
 		return c, nil
 	}
 	return 0, err
