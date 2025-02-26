@@ -2642,24 +2642,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x14000817698": {
-            "title": "0x14000817698",
+        "1380.\u003cnil\u003e.0x14000827740": {
+            "title": "0x14000827740",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x14000817890": {
-            "title": "0x14000817890",
+        "2278.\u003cnil\u003e.0x14000827938": {
+            "title": "0x14000827938",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x14000817a40": {
-            "title": "0x14000817a40",
+        "3081.\u003cnil\u003e.0x14000827ae8": {
+            "title": "0x14000827ae8",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x14000817c80": {
-            "title": "0x14000817c80",
+        "4454.\u003cnil\u003e.0x14000827d28": {
+            "title": "0x14000827d28",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140008174d0": {
-            "title": "0x140008174d0",
+        "494.\u003cnil\u003e.0x14000827578": {
+            "title": "0x14000827578",
             "type": "object"
         },
         "models.Accounts": {
@@ -3297,10 +3297,12 @@
                     "type": "string"
                 },
                 "BranchId": {
-                    "type": "integer",
-                    "format": "int64"
+                    "type": "string"
                 },
                 "Dob": {
+                    "type": "string"
+                },
+                "Email": {
                     "type": "string"
                 },
                 "FullName": {
@@ -3319,8 +3321,10 @@
                     "type": "string"
                 },
                 "RoleId": {
-                    "type": "integer",
-                    "format": "int64"
+                    "type": "string"
+                },
+                "UpdatedBy": {
+                    "type": "string"
                 },
                 "Username": {
                     "type": "string"
@@ -3759,7 +3763,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008174d0"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000827578"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3807,7 +3811,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000817890"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000827938"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3839,7 +3843,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x14000817a40"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x14000827ae8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3906,7 +3910,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000817698"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000827740"
                 }
             }
         },
@@ -3938,7 +3942,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000817c80"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000827d28"
                 }
             }
         }

@@ -444,7 +444,7 @@ func (c *CustomersController) Put() {
 		rbranch := c.Ctx.Input.Query("Branch")
 		rmodifiedby := c.Ctx.Input.Query("ModifiedBy")
 		user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
-		if filePath == "" {
+		if filePath == "" && cust.ImagePath != "" {
 			filePath = cust.ImagePath
 		}
 

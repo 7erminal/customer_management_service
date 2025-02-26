@@ -45,6 +45,8 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("UpdateUserBranch", c.UpdateUserBranch)
 	c.Mapping("GetUserCount", c.GetUserCount)
 	c.Mapping("Deactivate", c.Deactivate)
+	c.Mapping("GetUserInvites", c.GetUserInvites)
+	c.Mapping("InviteUser", c.InviteUser)
 }
 
 // SignUp2 ...
@@ -476,42 +478,8 @@ func (c *UsersController) InviteUser() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 50
 	var offset int64
-
-	// fields: col1,col2,entity.col3
-	if v := c.GetString("fields"); v != "" {
-		fields = strings.Split(v, ",")
-	}
-	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
-		limit = v
-	}
-	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
-		offset = v
-	}
-	// sortby: col1,col2
-	if v := c.GetString("sortby"); v != "" {
-		sortby = strings.Split(v, ",")
-	}
-	// order: desc,asc
-	if v := c.GetString("order"); v != "" {
-		order = strings.Split(v, ",")
-	}
-	// query: k:v,k:v
-	if v := c.GetString("query"); v != "" {
-		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
-				c.Data["json"] = errors.New("Error: invalid query key/value pair")
-				c.ServeJSON()
-				return
-			}
-			k, v := kv[0], kv[1]
-			query[k] = v
-		}
-	}
 
 	var v requests.RegisterInviteRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
@@ -993,7 +961,7 @@ func (c *UsersController) GetUserInvites() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 100
 	var offset int64
 
 	// fields: col1,col2,entity.col3
@@ -1228,22 +1196,40 @@ func (c *UsersController) Put() {
 		logs.Debug("Role fetched is ", h.RoleId)
 
 		logs.Debug("File path is ", filePath, " and image path is ", v.ImagePath)
+		remail := c.Ctx.Input.Query("Email")
+		rname := c.Ctx.Input.Query("FullName")
+		rgender := c.Ctx.Input.Query("Gender")
+		rphonenumber := c.Ctx.Input.Query("PhoneNumber")
+		rmaritalstatus := c.Ctx.Input.Query("MaritalStatus")
+		raddress := c.Ctx.Input.Query("Address")
+		rmodifiedby := c.Ctx.Input.Query("UpdatedBy")
+		rroleid := c.Ctx.Input.Query("RoleId")
+		rbranchid := c.Ctx.Input.Query("BranchId")
+		dateofbirth := c.Ctx.Input.Query("Dob")
 
 		if filePath == "" && v.ImagePath != "" {
 			filePath = v.ImagePath
 		}
 
+		updatedBy, _ := strconv.ParseInt(rmodifiedby, 10, 64)
+
+		if upu, err := models.GetUsersById(updatedBy); err == nil {
+			updatedBy = upu.UserId
+		}
+
 		// Parse request in Users object
 		// v := models.Users{UserId: id, FullName: h.FullName, Gender: h.Gender, PhoneNumber: h.PhoneNumber, MaritalStatus: h.MaritalStatus, Address: h.Address}
 
-		v.FullName = h.FullName
-		v.Gender = h.Gender
-		v.PhoneNumber = h.PhoneNumber
-		v.MaritalStatus = h.MaritalStatus
-		v.Address = h.Address
+		v.FullName = rname
+		v.Gender = rgender
+		v.PhoneNumber = rphonenumber
+		v.MaritalStatus = rmaritalstatus
+		v.Address = raddress
 		v.ImagePath = filePath
+		v.Email = remail
+		v.ModifiedBy = int(updatedBy)
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02", h.Dob)
+		dobm, error := time.Parse("2006-01-02", dateofbirth)
 
 		logs.Debug("Converted date", dobm)
 
@@ -1256,19 +1242,20 @@ func (c *UsersController) Put() {
 		}
 
 		logs.Debug("About to save", v)
-		logs.Debug("DOB", dobm, v.Dob)
+		logs.Debug("DOB", dobm, dateofbirth)
 		logs.Debug("is verified?", v.IsVerified)
 
 		// about to get role to update with
-		if role, err := models.GetRolesById(h.RoleId); err == nil {
-			logs.Info("Role fetched for ", h.RoleId)
+		roleid, _ := strconv.ParseInt(rroleid, 10, 64)
+		if role, err := models.GetRolesById(roleid); err == nil {
+			logs.Info("Role fetched for ", roleid)
 			v.Role = role
 		} else {
 			logs.Error("There was an error getting the provided role")
 		}
 
 		if err := models.UpdateUsersById(v); err == nil {
-			userDetails, err := models.GetUserExtraDetailsById(v.UserId)
+			userDetails, err := models.GetUserExtraDetailsById(v.UserDetails.UserDetailsId)
 
 			if err != nil {
 				logs.Error("Error returned fetching customer ", err.Error())
@@ -1278,7 +1265,8 @@ func (c *UsersController) Put() {
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned customer is", userDetails)
-				branch, err := models.GetBranchesById(h.BranchId)
+				branchid, _ := strconv.ParseInt(rbranchid, 10, 64)
+				branch, err := models.GetBranchesById(branchid)
 
 				if err != nil {
 					logs.Error("Error fetching branch specified")
@@ -1330,14 +1318,14 @@ func (c *UsersController) Put() {
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+			var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = responses.UserResponseDTO{StatusCode: 200, User: nil, StatusDesc: "Error updating user"}
+		var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
