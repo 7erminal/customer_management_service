@@ -409,17 +409,23 @@ func (c *CustomersController) Put() {
 	if err != nil {
 		// c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Data["json"] = map[string]string{"error": "Failed to get image file."}
-		logs.Info("Failed to get the file ", err)
+		logs.Error("Failed to get the file ", err)
 		// c.ServeJSON()
 		// return
 	} else {
 		defer file.Close()
+		logs.Info("File path original is ", header.Size)
+		// fileInfo, err := os.Stat(filePath)
 
 		// Save the uploaded file
 		fileName := filepath.Base(header.Filename)
+
+		logs.Info("File found. Error is ", err, " while file name is ", fileName)
+
 		filePath = "/uploads/customers/" + time.Now().Format("20060102150405") + fileName // Define your file path
 		err = c.SaveToFile("CustomerImage", "../images/"+filePath)
-		if err != nil {
+		if err != nil || header.Size < 1 {
+			logs.Error("Error is not nil. Error saving file")
 			filePath = ""
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)

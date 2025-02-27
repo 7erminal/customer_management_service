@@ -1263,7 +1263,7 @@ func (c *UsersController) Put() {
 		fileName := filepath.Base(header.Filename)
 		filePath = "/uploads/users/" + time.Now().Format("20060102150405") + fileName // Define your file path
 		err = c.SaveToFile("UserImage", "../images/"+filePath)
-		if err != nil {
+		if err != nil || header.Size < 1 {
 			filePath = ""
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
