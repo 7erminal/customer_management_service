@@ -420,6 +420,7 @@ func (c *CustomersController) Put() {
 		filePath = "/uploads/customers/" + time.Now().Format("20060102150405") + fileName // Define your file path
 		err = c.SaveToFile("CustomerImage", "../images/"+filePath)
 		if err != nil {
+			filePath = ""
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
@@ -444,6 +445,7 @@ func (c *CustomersController) Put() {
 		rbranch := c.Ctx.Input.Query("Branch")
 		rmodifiedby := c.Ctx.Input.Query("ModifiedBy")
 		user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
+		logs.Info("File path is ", filePath, " and customer image path is ", cust.ImagePath)
 		if filePath == "" && cust.ImagePath != "" {
 			filePath = cust.ImagePath
 		}

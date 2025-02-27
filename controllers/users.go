@@ -1136,6 +1136,7 @@ func (c *UsersController) UpdateUserImage() {
 		logs.Info("File name is ", filePath)
 		err = c.SaveToFile("UserImage", "."+filePath)
 		if err != nil {
+			filePath = ""
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
@@ -1263,6 +1264,7 @@ func (c *UsersController) Put() {
 		filePath = "/uploads/users/" + time.Now().Format("20060102150405") + fileName // Define your file path
 		err = c.SaveToFile("UserImage", "../images/"+filePath)
 		if err != nil {
+			filePath = ""
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			logs.Error("Error saving file", err)
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
