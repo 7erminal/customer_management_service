@@ -61,10 +61,10 @@ func GetUserInvitesByToken(token *UserTokens) (v *UserInvites, err error) {
 
 // GetUserInvitesByTokenId retrieves UserInvites by Id. Returns error if
 // Id doesn't exist
-func GetUserInvitesByEmail(email string) (v *UserInvites, err error) {
+func GetUserInvitesByEmail(email string) (v []*UserInvites, err error) {
 	o := orm.NewOrm()
-	v = &UserInvites{Email: email}
-	if err = o.QueryTable(new(UserInvites)).Filter("Email", email).RelatedSel().One(v); err == nil {
+	v = []*UserInvites{}
+	if _, err := o.QueryTable(new(UserInvites)).Filter("Email", email).RelatedSel().All(&v); err == nil {
 		return v, nil
 	}
 	return nil, err

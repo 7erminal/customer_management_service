@@ -47,6 +47,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("Deactivate", c.Deactivate)
 	c.Mapping("GetUserInvites", c.GetUserInvites)
 	c.Mapping("InviteUser", c.InviteUser)
+	c.Mapping("RevokeUserInvites", c.RevokeUserInvites)
 }
 
 // SignUp2 ...
@@ -493,7 +494,18 @@ func (c *UsersController) InviteUser() {
 			proceed = true
 			for _, ui := range uis {
 				m := ui.(models.UserInvites)
-				if m.Status == "PENDING" || m.Status == "ACCEPTED" {
+				if m.Status == "PENDING" {
+					logs.Info("User invite exists but is pending")
+					if m.InvitationToken.ExpiryDate.Before(time.Now()) {
+						logs.Info("User invite expiry date is before now")
+						status := "EXPIRED"
+						m.Status = status
+
+						_ = models.UpdateUserInvitesById(&m)
+					} else {
+						proceed = false
+					}
+				} else if m.Status == "ACCEPTED" {
 					proceed = false
 				} else {
 					// if proceed == true{
@@ -544,6 +556,7 @@ func (c *UsersController) InviteUser() {
 					return
 				} else {
 					proceed = true
+					statCode = 200
 					message = "Sent"
 				}
 
@@ -576,7 +589,7 @@ func (c *UsersController) InviteUser() {
 	c.ServeJSON()
 }
 
-// SignUp ...
+// VerifyInvite ...
 // @Title Verify invite
 // @Description Verify invite
 // @Param	body		body 	requests.StringRequestDTO	true		"body for SignUp content"
@@ -590,9 +603,9 @@ func (c *UsersController) VerifyInvite() {
 
 	if token, err := models.GetUserTokensByToken(v.Value); err == nil {
 		logs.Info("Token fetched from DB")
-		if token.ExpiryDate.After(time.Now()) {
-			logs.Info("Token expiry ")
-			if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
+		logs.Info("Token expiry ")
+		if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
+			if token.ExpiryDate.After(time.Now()) {
 				if userInvite.Status != "PENDING" {
 					var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token verified failed. Token has been used already."}
 					c.Data["json"] = resp
@@ -609,21 +622,86 @@ func (c *UsersController) VerifyInvite() {
 					}
 				}
 			} else {
-				logs.Error("Unable to get specified token ", err.Error())
-				var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
+				status := "EXPIRED"
+				userInvite.Status = status
+
+				_ = models.UpdateUserInvitesById(userInvite)
+				logs.Error("Token expired ")
+				var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token expired ::: " + err.Error()}
 				c.Data["json"] = resp
 			}
 		} else {
-			logs.Error("Token expired ")
-			var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token expired ::: " + err.Error()}
+			logs.Error("Unable to get specified token ", err.Error())
+			var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
 			c.Data["json"] = resp
 		}
+
 	} else {
 		logs.Error("Unable to get specified token ", err.Error())
 		var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 
+	c.ServeJSON()
+}
+
+// RevokeInvite ...
+// @Title Revoke invite
+// @Description Revoke invite
+// @Param	body		body 	requests.StringRequestDTO	true		"body for SignUp content"
+// @Success 200 {object} responses.InviteDecodeResponseDTO
+// @Failure 403 body is empty
+// @router /revoke-invite [post]
+func (c *UsersController) RevokeUserInvites() {
+	var v requests.StringRequestDTO
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	logs.Info("Received ", v)
+
+	if userInvites, err := models.GetUserInvitesByEmail(v.Value); err == nil {
+		for _, invite := range userInvites {
+			logs.Info("Each user invite is ", invite)
+			status := "EXPIRED"
+			invite.Status = status
+
+			_ = models.UpdateUserInvitesById(invite)
+			logs.Error("Token expired ")
+			var resp = responses.StringResponseDTO{StatusCode: 200, Value: "DONE", StatusDesc: "Expired Invites"}
+			c.Data["json"] = resp
+
+		}
+	} else {
+		logs.Error("Unable to get specified token ", err.Error())
+		var resp = responses.StringResponseDTO{StatusCode: 608, Value: "", StatusDesc: "Unable to get token ::: " + err.Error()}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
+}
+
+// GetInvite ...
+// @Title Get Invite
+// @Description get User Invite by id
+// @Param	id		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Users
+// @Failure 403 :id is empty
+// @router /invite/:id [get]
+func (c *UsersController) GetInvite() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	v, err := models.GetUserInvitesById(id)
+	if err != nil {
+		var resp = responses.UserInviteResponseDTO{StatusCode: 604, UserInvite: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		logs.Info("Getting user invite ", v.InvitationToken)
+		if verifyInvite := functions.VerifyUserToken(&c.Controller, v.InvitationToken.Token, v.InvitationToken.Nonce, v.Email); verifyInvite.StatusCode == 200 {
+			var resp = responses.UserInviteResponseDTO{StatusCode: 200, UserInvite: v, StatusDesc: "User details fetched"}
+			c.Data["json"] = resp
+		} else {
+			var resp = responses.UserInviteResponseDTO{StatusCode: 604, UserInvite: nil, StatusDesc: "Error verifying user"}
+			c.Data["json"] = resp
+		}
+	}
 	c.ServeJSON()
 }
 
@@ -1022,7 +1100,7 @@ func (c *UsersController) GetUserInvites() {
 		c.Data["json"] = resp
 	} else {
 		// userInvites := []models.UserInvites{}
-
+		// logs.Info("Date created for user invite is ", l[0])
 		resp := responses.UserInvitesResponseDTO{StatusCode: 200, UserInvites: &l, StatusDesc: "User invites fetched successfully"}
 		c.Data["json"] = resp
 	}

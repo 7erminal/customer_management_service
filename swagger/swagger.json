@@ -2253,6 +2253,66 @@
                 }
             }
         },
+        "/users/invite/{id}": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "description": "get User Invite by id\n\u003cbr\u003e",
+                "operationId": "UsersController.Get Invite",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Users"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is empty"
+                    }
+                }
+            }
+        },
+        "/users/revoke-invite": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Revoke invite\n\u003cbr\u003e",
+                "operationId": "UsersController.Revoke invite",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for SignUp content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.StringRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InviteDecodeResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/users/role/{id}": {
             "put": {
                 "tags": [
@@ -2648,24 +2708,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x1400080d398": {
-            "title": "0x1400080d398",
+        "1380.\u003cnil\u003e.0x140008467f8": {
+            "title": "0x140008467f8",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x1400080d590": {
-            "title": "0x1400080d590",
+        "2278.\u003cnil\u003e.0x140008469f0": {
+            "title": "0x140008469f0",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x1400080d740": {
-            "title": "0x1400080d740",
+        "3081.\u003cnil\u003e.0x14000846ba0": {
+            "title": "0x14000846ba0",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x1400080d980": {
-            "title": "0x1400080d980",
+        "4454.\u003cnil\u003e.0x14000846de0": {
+            "title": "0x14000846de0",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x1400080d1d0": {
-            "title": "0x1400080d1d0",
+        "494.\u003cnil\u003e.0x14000846630": {
+            "title": "0x14000846630",
             "type": "object"
         },
         "models.Accounts": {
@@ -3769,7 +3829,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x1400080d1d0"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000846630"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3817,7 +3877,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x1400080d590"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008469f0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3849,7 +3909,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x1400080d740"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x14000846ba0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3916,7 +3976,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x1400080d398"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008467f8"
                 }
             }
         },
@@ -3948,7 +4008,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x1400080d980"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000846de0"
                 }
             }
         }
