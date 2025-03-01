@@ -2720,24 +2720,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x140007ff890": {
-            "title": "0x140007ff890",
+        "1380.\u003cnil\u003e.0x140008cfcf8": {
+            "title": "0x140008cfcf8",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x140007ffa88": {
-            "title": "0x140007ffa88",
+        "2278.\u003cnil\u003e.0x140008cfef0": {
+            "title": "0x140008cfef0",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x140007ffc38": {
-            "title": "0x140007ffc38",
+        "3081.\u003cnil\u003e.0x14000920120": {
+            "title": "0x14000920120",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x140007ffe78": {
-            "title": "0x140007ffe78",
+        "4454.\u003cnil\u003e.0x14000920360": {
+            "title": "0x14000920360",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140007ff6c8": {
-            "title": "0x140007ff6c8",
+        "494.\u003cnil\u003e.0x140008cfb30": {
+            "title": "0x140008cfb30",
             "type": "object"
         },
         "models.Accounts": {
@@ -3758,10 +3758,19 @@
                 "InviteBy": {
                     "type": "string"
                 },
-                "Link": {
+                "Links": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.string"
+                    }
+                },
+                "Message": {
                     "type": "string"
                 },
                 "Role": {
+                    "type": "string"
+                },
+                "Subject": {
                     "type": "string"
                 }
             }
@@ -3836,12 +3845,16 @@
                 }
             }
         },
+        "requests.string": {
+            "title": "string",
+            "type": "object"
+        },
         "responses.BranchesResponseDTO": {
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140007ff6c8"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008cfb30"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3889,7 +3902,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140007ffa88"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008cfef0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3921,7 +3934,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140007ffc38"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x14000920120"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3988,7 +4001,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140007ff890"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008cfcf8"
                 }
             }
         },
@@ -4020,7 +4033,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140007ffe78"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000920360"
                 }
             }
         }

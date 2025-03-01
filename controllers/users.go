@@ -529,10 +529,13 @@ func (c *UsersController) InviteUser() {
 			i, _ := strconv.ParseInt(v.InviteBy, 10, 64)
 			status := "PENDING"
 
+			inviteByName := ""
 			inviteBy, err := models.GetUsersById(i)
 
 			if err != nil {
 				message = "User not found"
+			} else {
+				inviteByName = inviteBy.FullName
 			}
 
 			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
@@ -564,9 +567,16 @@ func (c *UsersController) InviteUser() {
 					logs.Info("User invite added ", ui)
 					logs.Info("Token to be sent is ", tokenResp.Value.Token.Token)
 
-					link := v.Link + tokenResp.Value.Token.Token
+					message_ := strings.Replace(v.Message, "[SENDER_NAME_ID]", inviteByName, 0)
 
-					go functions.SendEmail(v.Email, link)
+					for i, link := range v.Links {
+						iStr := strconv.Itoa(i)
+						placeholder := "[LINK_" + iStr + "_ID]"
+						formattedLink := *link + tokenResp.Value.Token.Token
+						message_ = strings.Replace(message_, placeholder, formattedLink, 0)
+					}
+
+					go functions.SendEmail(v.Email, v.Subject, message_)
 
 					logs.Info("Email sent")
 				}

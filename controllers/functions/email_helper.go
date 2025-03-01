@@ -6,15 +6,15 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
-func SendEmail(email string, link string) {
+func SendEmail(email string, subject_ string, message string) {
 	// Create app password in gmail to use here
 	auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
 
 	// Here we do it all: connect to our server, set up a message and send it
 
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	subject := "Subject: AMC Sales & Rentals user invitation\n"
-	body := "<html><body><table></table><tr><th>AMC Sales & Rentals</th></tr><tr></tr><tr><td>User invitation</td></tr><tr><td>" + link + "</td></tr><tr></tr><tr><a href='" + link + "'>Accept Invite</a></tr></body></html>"
+	subject := "Subject:" + subject_
+	body := message
 
 	to := []string{email}
 

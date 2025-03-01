@@ -8,5 +8,7 @@ type RegisterInviteRequestDTO struct {
 	InviteBy string
 	Email    string
 	Role     string
-	Link     string
+	Message  string
+	Subject  string
+	Links    []*string
 }
