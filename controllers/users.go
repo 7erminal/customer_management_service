@@ -567,13 +567,13 @@ func (c *UsersController) InviteUser() {
 					logs.Info("User invite added ", ui)
 					logs.Info("Token to be sent is ", tokenResp.Value.Token.Token)
 
-					message_ := strings.Replace(v.Message, "[SENDER_NAME_ID]", inviteByName, 0)
+					message_ := strings.Replace(v.Message, "[SENDER_NAME_ID]", inviteByName, -1)
 
 					for i, link := range v.Links {
 						iStr := strconv.Itoa(i)
 						placeholder := "[LINK_" + iStr + "_ID]"
 						formattedLink := *link + tokenResp.Value.Token.Token
-						message_ = strings.Replace(message_, placeholder, formattedLink, 0)
+						message_ = strings.Replace(message_, placeholder, formattedLink, -1)
 					}
 
 					go functions.SendEmail(v.Email, v.Subject, message_)
