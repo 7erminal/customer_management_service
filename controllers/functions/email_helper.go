@@ -20,7 +20,7 @@ func SendEmail(email string, link string) {
 
 		"\r\n" +
 
-		link + ".\r\nThis link will expire in 4 hours.\r\n")
+		"<div style='color: blue'>" + link + ".\r\nThis link will expire in 4 hours.\r\n</div>")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, "bede.abbe@gmail.com", to, msg)
 

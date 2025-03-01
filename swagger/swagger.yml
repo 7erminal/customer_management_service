@@ -276,6 +276,10 @@ paths:
         description: Filter. e.g. col1:v1,col2:v2 ...
         type: string
       - in: query
+        name: search
+        description: Filter. e.g. Tony ...
+        type: string
+      - in: query
         name: fields
         description: Fields returned. e.g. col1,col2 ...
         type: string
@@ -453,6 +457,10 @@ paths:
       - in: query
         name: query
         description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: search
+        description: Filter. e.g. Toby ...
         type: string
       responses:
         "200":
@@ -1947,20 +1955,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140008db680:
-    title: "0x140008db680"
+  494.<nil>.0x140008f1b48:
+    title: "0x140008f1b48"
     type: object
-  1380.<nil>.0x140008db848:
-    title: "0x140008db848"
+  1380.<nil>.0x140008f1d10:
+    title: "0x140008f1d10"
     type: object
-  2278.<nil>.0x140008dba40:
-    title: "0x140008dba40"
+  2278.<nil>.0x140008f1f08:
+    title: "0x140008f1f08"
     type: object
-  3081.<nil>.0x140008dbbf0:
-    title: "0x140008dbbf0"
+  3081.<nil>.0x14000942138:
+    title: "0x14000942138"
     type: object
-  4454.<nil>.0x140008dbe30:
-    title: "0x140008dbe30"
+  4454.<nil>.0x14000942378:
+    title: "0x14000942378"
     type: object
   models.Accounts:
     title: Accounts
@@ -2739,7 +2747,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140008db680'
+        $ref: '#/definitions/494.<nil>.0x140008f1b48'
       StatusCode:
         type: integer
         format: int64
@@ -2772,7 +2780,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x140008dba40'
+        $ref: '#/definitions/2278.<nil>.0x140008f1f08'
       StatusCode:
         type: integer
         format: int64
@@ -2794,7 +2802,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x140008dbbf0'
+        $ref: '#/definitions/3081.<nil>.0x14000942138'
       StatusCode:
         type: integer
         format: int64
@@ -2840,7 +2848,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x140008db848'
+        $ref: '#/definitions/1380.<nil>.0x140008f1d10'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2862,7 +2870,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4454.<nil>.0x140008dbe30'
+        $ref: '#/definitions/4454.<nil>.0x14000942378'
 tags:
 - name: users
   description: |

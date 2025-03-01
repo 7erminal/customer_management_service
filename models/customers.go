@@ -70,16 +70,36 @@ func GetCustomerByBranch(branch *Branches) (v *Customers, err error) {
 
 // GetItemsById retrieves Items by Id. Returns error if
 // Id doesn't exist
-func GetCustomerCount(query map[string]string) (c int64, err error) {
+func GetCustomerCount(query map[string]string, search map[string]string) (c int64, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Customers))
+
+	if len(search) > 0 {
+		cond := orm.NewCondition()
+		for k, v := range search {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				logs.Info("Adding or statement")
+				cond = cond.Or(k+"__icontains", v)
+
+				// qs = qs.Filter(k+"__icontains", v)
+
+			}
+		}
+		logs.Info("Condition set ", qs)
+		qs = qs.SetCond(cond)
+	}
+
 	logs.Info("Query is ", query)
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
 		k = strings.Replace(k, ".", "__", -1)
 		qs = qs.Filter(k, v)
 	}
-	if c, err = qs.Count(); err == nil {
+	if c, err = qs.RelatedSel().Count(); err == nil {
 		return c, nil
 	}
 	return 0, err
@@ -88,9 +108,29 @@ func GetCustomerCount(query map[string]string) (c int64, err error) {
 // GetAllCustomers retrieves all Customers matches certain condition. Returns empty list if
 // no records exist
 func GetAllCustomers(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+	offset int64, limit int64, search map[string]string) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Customers))
+
+	if len(search) > 0 {
+		cond := orm.NewCondition()
+		for k, v := range search {
+			// rewrite dot-notation to Object__Attribute
+			k = strings.Replace(k, ".", "__", -1)
+			if strings.Contains(k, "isnull") {
+				qs = qs.Filter(k, (v == "true" || v == "1"))
+			} else {
+				logs.Info("Adding or statement")
+				cond = cond.Or(k+"__icontains", v)
+
+				// qs = qs.Filter(k+"__icontains", v)
+
+			}
+		}
+		logs.Info("Condition set ", qs)
+		qs = qs.SetCond(cond)
+	}
+
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute

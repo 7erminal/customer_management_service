@@ -242,6 +242,7 @@ func (c *CustomersController) GetOne() {
 // @Title Get All
 // @Description get Customers
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	search	query	string	false	"Filter. e.g. Tony ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
@@ -255,6 +256,7 @@ func (c *CustomersController) GetAll() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
+	var search = make(map[string]string)
 	var limit int64 = 500
 	var offset int64
 
@@ -292,7 +294,21 @@ func (c *CustomersController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllCustomers(query, fields, sortby, order, offset, limit)
+	// search: k:v,k:v
+	if v := c.GetString("search"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid search key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			search[k] = v
+		}
+	}
+
+	l, err := models.GetAllCustomers(query, fields, sortby, order, offset, limit, search)
 	if err != nil {
 		logs.Error("Error fetching customers ", err.Error())
 		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
@@ -661,12 +677,14 @@ func (c *CustomersController) Delete() {
 // @Title Get Customer Count
 // @Description get count of customers
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
+// @Param	search	query	string	false	"Filter. e.g. Toby ..."
 // @Success 200 {object} responses.StringResponseDTO
 // @Failure 403 :id is empty
 // @router /count/ [get]
 func (c *CustomersController) GetCustomerCount() {
 	// q, err := models.GetItemsById(id)
 	var query = make(map[string]string)
+	var search = make(map[string]string)
 	// query: k:v,k:v
 	if v := c.GetString("query"); v != "" {
 		for _, cond := range strings.Split(v, ",") {
@@ -681,7 +699,21 @@ func (c *CustomersController) GetCustomerCount() {
 		}
 	}
 
-	v, err := models.GetCustomerCount(query)
+	// search: k:v,k:v
+	if v := c.GetString("search"); v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid search key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			search[k] = v
+		}
+	}
+
+	v, err := models.GetCustomerCount(query, search)
 	count := strconv.FormatInt(v, 10)
 	if err != nil {
 		logs.Error("Error fetching count of customers ... ", err.Error())
