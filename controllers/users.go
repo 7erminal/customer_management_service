@@ -611,44 +611,61 @@ func (c *UsersController) VerifyInvite() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
+	statusCode := 608
+	message := "An error occurred"
+
 	if token, err := models.GetUserTokensByToken(v.Value); err == nil {
 		logs.Info("Token fetched from DB")
 		logs.Info("Token expiry ")
 		if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
 			if token.ExpiryDate.After(time.Now()) {
-				if userInvite.Status != "PENDING" {
-					var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token verified failed. Token has been used already."}
-					c.Data["json"] = resp
-				} else {
-					verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
-					if verifyTokenResp.StatusCode == 200 {
+				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
+				if verifyTokenResp.StatusCode == 200 {
+					message = "Token verified successfully"
+					statusCode = 200
+
+					if userInvite.Status == "ACCEPTED" {
+						statusCode = 201
+						message = "Token has been verified already"
+					}
+
+					if userInvite.Status == "PENDING" {
 						userInvite.Status = "ACCEPTED"
 						models.UpdateUserInvitesById(userInvite)
-						var resp = responses.InviteDecodeResponseDTO{StatusCode: 200, Value: verifyTokenResp.Value, StatusDesc: "Token verified successfully"}
-						c.Data["json"] = resp
-					} else {
-						var resp = responses.InviteDecodeResponseDTO{StatusCode: 501, Value: nil, StatusDesc: "Token verification failed"}
-						c.Data["json"] = resp
 					}
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: verifyTokenResp.Value, StatusDesc: message}
+					c.Data["json"] = resp
+				} else {
+					statusCode = 501
+					message = "Token verification failed"
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}
+					c.Data["json"] = resp
 				}
+
 			} else {
 				status := "EXPIRED"
 				userInvite.Status = status
 
 				_ = models.UpdateUserInvitesById(userInvite)
 				logs.Error("Token expired ")
-				var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Token expired ::: " + err.Error()}
+				statusCode = 608
+				message = "Token expired"
+				var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}
 				c.Data["json"] = resp
 			}
 		} else {
 			logs.Error("Unable to get specified token ", err.Error())
-			var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
+			statusCode = 608
+			message = "Unable to get token ::: " + err.Error()
+			var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}
 
 	} else {
 		logs.Error("Unable to get specified token ", err.Error())
-		var resp = responses.InviteDecodeResponseDTO{StatusCode: 608, Value: nil, StatusDesc: "Unable to get token ::: " + err.Error()}
+		statusCode = 608
+		message = "Unable to get token ::: " + err.Error()
+		var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}
 		c.Data["json"] = resp
 	}
 

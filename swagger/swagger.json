@@ -2720,24 +2720,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x14000845c20": {
-            "title": "0x14000845c20",
+        "1380.\u003cnil\u003e.0x14000839d88": {
+            "title": "0x14000839d88",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x14000845e18": {
-            "title": "0x14000845e18",
+        "2278.\u003cnil\u003e.0x14000890000": {
+            "title": "0x14000890000",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x14000890048": {
-            "title": "0x14000890048",
+        "3081.\u003cnil\u003e.0x140008901b0": {
+            "title": "0x140008901b0",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x14000890288": {
-            "title": "0x14000890288",
+        "4454.\u003cnil\u003e.0x140008903f0": {
+            "title": "0x140008903f0",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x14000845a58": {
-            "title": "0x14000845a58",
+        "494.\u003cnil\u003e.0x14000839bc0": {
+            "title": "0x14000839bc0",
             "type": "object"
         },
         "models.Accounts": {
@@ -3854,7 +3854,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000845a58"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x14000839bc0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3902,7 +3902,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000845e18"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x14000890000"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3934,7 +3934,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x14000890048"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008901b0"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4001,7 +4001,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000845c20"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x14000839d88"
                 }
             }
         },
@@ -4033,7 +4033,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x14000890288"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140008903f0"
                 }
             }
         }
