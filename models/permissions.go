@@ -14,7 +14,6 @@ type Permissions struct {
 	PermissionId          int64     `orm:"auto"`
 	Permission            string    `orm:"size(100)"`
 	PermissionCode        string    `orm:"size(10)"`
-	Action                *Actions  `orm:"rel(fk);column(action_id)"`
 	PermissionDescription string    `orm:"size(500)"`
 	DateCreated           time.Time `orm:"type(datetime)"`
 	DateModified          time.Time `orm:"type(datetime)"`

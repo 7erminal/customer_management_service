@@ -2720,24 +2720,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x140008e85e8": {
-            "title": "0x140008e85e8",
+        "1380.\u003cnil\u003e.0x140008ee6f0": {
+            "title": "0x140008ee6f0",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x140008e87e0": {
-            "title": "0x140008e87e0",
+        "2278.\u003cnil\u003e.0x140008ee8e8": {
+            "title": "0x140008ee8e8",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x140008e8990": {
-            "title": "0x140008e8990",
+        "3081.\u003cnil\u003e.0x140008eea98": {
+            "title": "0x140008eea98",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x140008e8bd0": {
-            "title": "0x140008e8bd0",
+        "4454.\u003cnil\u003e.0x140008eecd8": {
+            "title": "0x140008eecd8",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140008e8420": {
-            "title": "0x140008e8420",
+        "494.\u003cnil\u003e.0x140008ee528": {
+            "title": "0x140008ee528",
             "type": "object"
         },
         "models.Accounts": {
@@ -3158,9 +3158,6 @@
             "title": "Permissions",
             "type": "object",
             "properties": {
-                "Action": {
-                    "$ref": "#/definitions/models.Actions"
-                },
                 "Active": {
                     "type": "integer",
                     "format": "int64"
@@ -3200,6 +3197,9 @@
             "title": "Role_permissions",
             "type": "object",
             "properties": {
+                "Action": {
+                    "$ref": "#/definitions/models.Actions"
+                },
                 "Active": {
                     "type": "integer",
                     "format": "int64"
@@ -3737,9 +3737,6 @@
             "title": "PermissionRequest",
             "type": "object",
             "properties": {
-                "Action": {
-                    "type": "string"
-                },
                 "Description": {
                     "type": "string"
                 },
@@ -3779,6 +3776,9 @@
             "title": "RolePermissionRequest",
             "type": "object",
             "properties": {
+                "Action": {
+                    "type": "string"
+                },
                 "PermissionCode": {
                     "type": "string"
                 },
@@ -3854,7 +3854,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008e8420"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008ee528"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3902,7 +3902,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008e87e0"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008ee8e8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3934,7 +3934,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008e8990"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008eea98"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4001,7 +4001,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008e85e8"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008ee6f0"
                 }
             }
         },
@@ -4033,7 +4033,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140008e8bd0"
+                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140008eecd8"
                 }
             }
         }

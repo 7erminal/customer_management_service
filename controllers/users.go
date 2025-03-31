@@ -237,7 +237,7 @@ func (c *UsersController) SignUp() {
 		// dobm, error := time.Parse("2006-01-02", v.Dob)
 		var dobm time.Time
 
-		var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.853655834", "2006/01/02 15:04:05.853655834"}
+		var allowedDateList [5]string = [5]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z"}
 
 		for _, date_ := range allowedDateList {
 			logs.Debug("About to convert ", v.Dob)

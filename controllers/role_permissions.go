@@ -41,13 +41,19 @@ func (c *Role_permissionsController) Post() {
 
 	if role, err := models.GetRolesById(v.Role); err == nil {
 		if permission, err := models.GetPermissionsByCode(v.PermissionCode); err == nil {
-			var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
-			if _, err := models.AddRole_permissions(&rolePermission); err == nil {
-				c.Ctx.Output.SetStatus(200)
-				var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: &rolePermission, StatusDesc: "Role Permission added"}
-				c.Data["json"] = resp
+			if action, err := models.GetActionsByName(v.Action); err == nil {
+				var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				if _, err := models.AddRole_permissions(&rolePermission); err == nil {
+					c.Ctx.Output.SetStatus(200)
+					var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: &rolePermission, StatusDesc: "Role Permission added"}
+					c.Data["json"] = resp
+				} else {
+					var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+					c.Data["json"] = resp
+				}
 			} else {
-				var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+				logs.Error("Unbable to fetch action using name ", v.Action)
+				var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
 				c.Data["json"] = resp
 			}
 		} else {
@@ -144,6 +150,9 @@ func (c *Role_permissionsController) GetAll() {
 		var resp = responses.RolePermissionsAllResponseDTO{StatusCode: 604, RolePermissions: nil, StatusDesc: "Error getting permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		if l == nil {
+			l = []interface{}{}
+		}
 		var resp = responses.RolePermissionsAllResponseDTO{StatusCode: 200, RolePermissions: &l, StatusDesc: "Role Permissions fetched"}
 		c.Data["json"] = resp
 	}

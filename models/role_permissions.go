@@ -14,6 +14,7 @@ type Role_permissions struct {
 	RolePermissionId int64        `orm:"auto"`
 	Role             *Roles       `orm:"rel(fk)"`
 	Permission       *Permissions `orm:"rel(fk)"`
+	Action           *Actions     `orm:"rel(fk);column(action_id)"`
 	DateCreated      time.Time    `orm:"type(datetime)"`
 	DateModified     time.Time    `orm:"type(datetime)"`
 	CreatedBy        int
