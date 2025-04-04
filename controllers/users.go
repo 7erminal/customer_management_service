@@ -48,6 +48,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("GetUserInvites", c.GetUserInvites)
 	c.Mapping("InviteUser", c.InviteUser)
 	c.Mapping("RevokeUserInvites", c.RevokeUserInvites)
+	c.Mapping("UpdateInviteToken", c.UpdateInviteToken)
 }
 
 // SignUp2 ...
@@ -628,11 +629,6 @@ func (c *UsersController) VerifyInvite() {
 						statusCode = 201
 						message = "Token has been verified already"
 					}
-
-					if userInvite.Status == "PENDING" {
-						userInvite.Status = "ACCEPTED"
-						models.UpdateUserInvitesById(userInvite)
-					}
 					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: verifyTokenResp.Value, StatusDesc: message}
 					c.Data["json"] = resp
 				} else {
@@ -668,6 +664,77 @@ func (c *UsersController) VerifyInvite() {
 		var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}
 		c.Data["json"] = resp
 	}
+
+	c.ServeJSON()
+}
+
+// UpdateToken ...
+// @Title Update invite token validity
+// @Description Update Invite Token
+// @Param	body		body 	requestsDTOs.UpdateUserInviteRequest	true		"body for Authentication content"
+// @Success 200 {object} responsesDTOs.InviteDecodeResponseDTO
+// @Failure 403 body is empty
+// @router /update-user-invite [post]
+func (c *UsersController) UpdateInviteToken() {
+	var v requests.UpdateUserInviteRequest
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+
+	logs.Info("About to verify user ", v.Email)
+	statusCode := 608
+	message := "Unable to update invite token"
+
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var search = make(map[string]string)
+	var limit int64 = 500
+	var offset int64
+
+	filter := "Email:" + v.Email
+
+	if v := filter; v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
+	if ui, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit, search); err == nil {
+		if ui != nil {
+			for _, l := range ui {
+				userInvite, ok := l.(models.UserInvites)
+				if !ok {
+					logs.Error("Error converting item to UserInvites struct")
+					continue
+				}
+
+				userInvite.Status = "ACCEPTED"
+
+				if err := models.UpdateUserInvitesById(&userInvite); err == nil {
+					logs.Info("User invite updated successfully")
+				} else {
+					logs.Error("Error updating user invite: ", err)
+					continue
+				}
+				// Process userInvite as needed
+				logs.Info("Processing UserInvite: ", userInvite)
+			}
+			statusCode = 200
+			message = "User invite updated successfully"
+			var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "SUCCESS", StatusDesc: message}
+			c.Data["json"] = resp
+
+		}
+	}
+
+	// ikey, _ := functions.GenerateKey()
 
 	c.ServeJSON()
 }

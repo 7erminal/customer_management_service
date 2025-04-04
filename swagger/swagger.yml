@@ -1863,6 +1863,28 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /users/update-user-invite:
+    post:
+      tags:
+      - users
+      description: |-
+        Update Invite Token
+        <br>
+      operationId: UsersController.Update invite token validity
+      parameters:
+      - in: body
+        name: body
+        description: body for Authentication content
+        required: true
+        schema:
+          $ref: '#/definitions/requestsDTOs.UpdateUserInviteRequest'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/responsesDTOs.InviteDecodeResponseDTO'
+        "403":
+          description: body is empty
   /users/update-user-invite/{id}:
     put:
       tags:
@@ -1955,20 +1977,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140008ee528:
-    title: "0x140008ee528"
+  494.<nil>.0x140008f4948:
+    title: "0x140008f4948"
     type: object
-  1380.<nil>.0x140008ee6f0:
-    title: "0x140008ee6f0"
+  1380.<nil>.0x140008f4b10:
+    title: "0x140008f4b10"
     type: object
-  2278.<nil>.0x140008ee8e8:
-    title: "0x140008ee8e8"
+  2278.<nil>.0x140008f4d08:
+    title: "0x140008f4d08"
     type: object
-  3081.<nil>.0x140008eea98:
-    title: "0x140008eea98"
+  3081.<nil>.0x140008f4eb8:
+    title: "0x140008f4eb8"
     type: object
-  4454.<nil>.0x140008eecd8:
-    title: "0x140008eecd8"
+  4472.<nil>.0x140008f50f8:
+    title: "0x140008f50f8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2746,17 +2768,22 @@ definitions:
     title: UpdateUserInviteRequest
     type: object
     properties:
+      Email:
+        type: string
       Status:
         type: string
   requests.string:
     title: string
+    type: object
+  requestsDTOs.UpdateUserInviteRequest:
+    title: UpdateUserInviteRequest
     type: object
   responses.BranchesResponseDTO:
     title: BranchesResponseDTO
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140008ee528'
+        $ref: '#/definitions/494.<nil>.0x140008f4948'
       StatusCode:
         type: integer
         format: int64
@@ -2789,7 +2816,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x140008ee8e8'
+        $ref: '#/definitions/2278.<nil>.0x140008f4d08'
       StatusCode:
         type: integer
         format: int64
@@ -2811,7 +2838,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x140008eea98'
+        $ref: '#/definitions/3081.<nil>.0x140008f4eb8'
       StatusCode:
         type: integer
         format: int64
@@ -2836,6 +2863,8 @@ definitions:
         type: string
       RoleId:
         type: string
+      TokenId:
+        type: string
   responses.UserInviteResponseDTO:
     title: UserInviteResponseDTO
     type: object
@@ -2857,7 +2886,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x140008ee6f0'
+        $ref: '#/definitions/1380.<nil>.0x140008f4b10'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2879,7 +2908,10 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4454.<nil>.0x140008eecd8'
+        $ref: '#/definitions/4472.<nil>.0x140008f50f8'
+  responsesDTOs.InviteDecodeResponseDTO:
+    title: InviteDecodeResponseDTO
+    type: object
 tags:
 - name: users
   description: |

@@ -1,8 +1,9 @@
 package responses
 
 type TokenDestructureResponseDTO struct {
-	Email  string
-	RoleId string
+	TokenId string
+	Email   string
+	RoleId  string
 }
 
 type InviteDecodeResponseDTO struct {

@@ -234,6 +234,10 @@ func GetAllUserInvites(query map[string]string, fields []string, sortby []string
 				ml = append(ml, m)
 			}
 		}
+
+		if ml == nil {
+			ml = []interface{}{}
+		}
 		return ml, nil
 	}
 	return nil, err

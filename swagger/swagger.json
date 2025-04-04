@@ -2495,6 +2495,37 @@
                 }
             }
         },
+        "/users/update-user-invite": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "description": "Update Invite Token\n\u003cbr\u003e",
+                "operationId": "UsersController.Update invite token validity",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Authentication content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestsDTOs.UpdateUserInviteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/responsesDTOs.InviteDecodeResponseDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
         "/users/update-user-invite/{id}": {
             "put": {
                 "tags": [
@@ -2720,24 +2751,24 @@
         }
     },
     "definitions": {
-        "1380.\u003cnil\u003e.0x140008ee6f0": {
-            "title": "0x140008ee6f0",
+        "1380.\u003cnil\u003e.0x140008f4b10": {
+            "title": "0x140008f4b10",
             "type": "object"
         },
-        "2278.\u003cnil\u003e.0x140008ee8e8": {
-            "title": "0x140008ee8e8",
+        "2278.\u003cnil\u003e.0x140008f4d08": {
+            "title": "0x140008f4d08",
             "type": "object"
         },
-        "3081.\u003cnil\u003e.0x140008eea98": {
-            "title": "0x140008eea98",
+        "3081.\u003cnil\u003e.0x140008f4eb8": {
+            "title": "0x140008f4eb8",
             "type": "object"
         },
-        "4454.\u003cnil\u003e.0x140008eecd8": {
-            "title": "0x140008eecd8",
+        "4472.\u003cnil\u003e.0x140008f50f8": {
+            "title": "0x140008f50f8",
             "type": "object"
         },
-        "494.\u003cnil\u003e.0x140008ee528": {
-            "title": "0x140008ee528",
+        "494.\u003cnil\u003e.0x140008f4948": {
+            "title": "0x140008f4948",
             "type": "object"
         },
         "models.Accounts": {
@@ -3840,6 +3871,9 @@
             "title": "UpdateUserInviteRequest",
             "type": "object",
             "properties": {
+                "Email": {
+                    "type": "string"
+                },
                 "Status": {
                     "type": "string"
                 }
@@ -3849,12 +3883,16 @@
             "title": "string",
             "type": "object"
         },
+        "requestsDTOs.UpdateUserInviteRequest": {
+            "title": "UpdateUserInviteRequest",
+            "type": "object"
+        },
         "responses.BranchesResponseDTO": {
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008ee528"
+                    "$ref": "#/definitions/494.\u003cnil\u003e.0x140008f4948"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3902,7 +3940,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008ee8e8"
+                    "$ref": "#/definitions/2278.\u003cnil\u003e.0x140008f4d08"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3934,7 +3972,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008eea98"
+                    "$ref": "#/definitions/3081.\u003cnil\u003e.0x140008f4eb8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -3970,6 +4008,9 @@
                 },
                 "RoleId": {
                     "type": "string"
+                },
+                "TokenId": {
+                    "type": "string"
                 }
             }
         },
@@ -4001,7 +4042,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008ee6f0"
+                    "$ref": "#/definitions/1380.\u003cnil\u003e.0x140008f4b10"
                 }
             }
         },
@@ -4033,9 +4074,13 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4454.\u003cnil\u003e.0x140008eecd8"
+                    "$ref": "#/definitions/4472.\u003cnil\u003e.0x140008f50f8"
                 }
             }
+        },
+        "responsesDTOs.InviteDecodeResponseDTO": {
+            "title": "InviteDecodeResponseDTO",
+            "type": "object"
         }
     },
     "tags": [
