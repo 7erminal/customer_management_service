@@ -238,7 +238,7 @@ func (c *UsersController) SignUp() {
 		// dobm, error := time.Parse("2006-01-02", v.Dob)
 		var dobm time.Time
 
-		var allowedDateList [5]string = [5]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z"}
+		var allowedDateList [6]string = [6]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST"}
 
 		for _, date_ := range allowedDateList {
 			logs.Debug("About to convert ", v.Dob)
@@ -1423,16 +1423,24 @@ func (c *UsersController) Put() {
 		v.Email = remail
 		v.ModifiedBy = int(updatedBy)
 		// Convert dob string to date
-		dobm, error := time.Parse("2006-01-02", dateofbirth)
+		var dobm time.Time
 
-		logs.Debug("Converted date", dobm)
+		var allowedDateList [6]string = [6]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST"}
 
-		if error != nil {
-			logs.Debug("Converted date error", error.Error())
-		} else {
-			// Assign dob
-			logs.Debug("DOB assigned")
-			v.Dob = dobm
+		for _, date_ := range allowedDateList {
+			logs.Debug("About to convert ", v.Dob)
+			logs.Debug("About to convert ", c.Ctx.Input.Query("Dob"))
+			// Convert dob string to date
+			tdobm, error := time.Parse(date_, dateofbirth)
+
+			if error != nil {
+				logs.Error("Error parsing date", error)
+			} else {
+				logs.Error("Date converted to time successfully", tdobm)
+				dobm = tdobm
+
+				break
+			}
 		}
 
 		logs.Debug("About to save", v)

@@ -127,7 +127,7 @@ func (c *CustomersController) AddCustomer() {
 
 	var dobm time.Time
 
-	var allowedDateList [5]string = [5]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z"}
+	var allowedDateList [6]string = [6]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST"}
 
 	for _, date_ := range allowedDateList {
 		logs.Debug("About to convert ", rdob)
@@ -545,23 +545,28 @@ func (c *CustomersController) Put() {
 func (c *CustomersController) UpdateCustomerLastTxnDate() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := requests.UpdateCustomerLastTxnRequest{}
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	// v := requests.UpdateCustomerLastTxnRequest{}
+	// json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+
+	transactionDate := c.Ctx.Input.Query("TransactionDate")
+
+	// Trim extra text from the date string
+	transactionDate = strings.Split(transactionDate, " m=")[0]
 
 	if cust, err := models.GetCustomerById(id); err == nil {
 		var lastTxnDate time.Time
 
-		var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000"}
+		var allowedDateList [6]string = [6]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST"}
 
 		for _, date_ := range allowedDateList {
-			logs.Debug("About to convert ", v.TransactionDate)
+			logs.Debug("About to convert ", transactionDate, " using ", date_)
 			// Convert dob string to date
-			tlastTxnDate, error := time.Parse(date_, v.TransactionDate)
+			tlastTxnDate, error := time.Parse(date_, transactionDate)
 
 			if error != nil {
 				logs.Error("Error parsing date", error)
 			} else {
-				logs.Error("Date converted to time successfully", tlastTxnDate)
+				logs.Info("Date converted to time successfully", tlastTxnDate)
 				lastTxnDate = tlastTxnDate
 
 				break
