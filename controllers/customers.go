@@ -556,7 +556,7 @@ func (c *CustomersController) UpdateCustomerLastTxnDate() {
 	if cust, err := models.GetCustomerById(id); err == nil {
 		var lastTxnDate time.Time
 
-		var allowedDateList [7]string = [7]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST", "2006-01-02 15:04:05.000000000 -0700 MST"}
+		var allowedDateList [8]string = [8]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST", "2006-01-02 15:04:05.000000000 -0700 MST", "2006-01-02 15:04:05.000000000 -0700 UTC"}
 
 		for _, date_ := range allowedDateList {
 			logs.Debug("About to convert ", transactionDate, " using ", date_)
