@@ -1,7 +1,6 @@
 # Base image is in https://registry.hub.docker.com/_/golang/
 # Refer to https://blog.golang.org/docker for usage
 FROM golang:1.18-alpine AS builder
-MAINTAINER Bede Abbe
 
 # ENV GOPATH /go
 
@@ -17,9 +16,6 @@ COPY . .
 
 # Install beego & bee
 RUN go install github.com/beego/bee/v2@latest
-
-# Build the Go app
-RUN go build -o main .
 
 # Build the Go app and create an executable named 'main'
 RUN go build -o main .

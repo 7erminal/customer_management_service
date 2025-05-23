@@ -205,6 +205,7 @@ func (c *CustomersController) AddCustomer() {
 			c.Data["json"] = resp
 		} else {
 			// c.Data["json"] = err.Error()
+			logs.Error("An error occurred adding customer ", err.Error())
 			var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
 			c.Data["json"] = resp
 		}
@@ -317,6 +318,8 @@ func (c *CustomersController) GetAll() {
 		if l == nil {
 			l = []interface{}{}
 		}
+		// fmt.Printf("Type of customers: %T\n", l)
+		// fmt.Printf("Value of customers: %+v\n", l)
 		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
 		c.Data["json"] = resp
 	}

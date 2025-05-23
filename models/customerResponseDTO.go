@@ -9,3 +9,15 @@ type CustomerResponseDTO struct {
 	Customer   *Customers
 	StatusDesc string
 }
+
+type CustomerEmergencyContactResponseDTO struct {
+	StatusCode               int
+	CustomerEmergencyContact *Customer_emergency_contacts
+	StatusDesc               string
+}
+
+type CustomerGuarantorResponseDTO struct {
+	StatusCode        int
+	CustomerGuarantor *Customer_guarantors
+	StatusDesc        string
+}

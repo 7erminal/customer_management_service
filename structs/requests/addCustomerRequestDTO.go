@@ -31,3 +31,15 @@ type UpdateCustomerRequestDTO struct {
 type UpdateCustomerLastTxnRequest struct {
 	TransactionDate string
 }
+
+type AddCustomerEmergencyContactRequestDTO struct {
+	Name        string
+	PhoneNumber string
+	CustomerId  int64
+}
+
+type AddCustomerGuarantorRequestDTO struct {
+	Name        string
+	PhoneNumber string
+	CustomerId  int64
+}

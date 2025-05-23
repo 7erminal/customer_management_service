@@ -262,6 +262,256 @@ paths:
           description: '{string} delete success!'
         "403":
           description: id is empty
+  /customer-emergency-contacts/:
+    get:
+      tags:
+      - customer-emergency-contacts
+      description: |-
+        get Customer_emergency_contacts
+        <br>
+      operationId: Customer_emergency_contactsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_emergency_contacts'
+        "403":
+          description: ""
+    post:
+      tags:
+      - customer-emergency-contacts
+      description: |-
+        create Customer_emergency_contacts
+        <br>
+      operationId: Customer_emergency_contactsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Customer_emergency_contacts content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddCustomerEmergencyContactRequestDTO'
+      responses:
+        "201":
+          description: '{int} models.CustomerEmergencyContactResponseDTO'
+        "403":
+          description: body is empty
+  /customer-emergency-contacts/{id}:
+    get:
+      tags:
+      - customer-emergency-contacts
+      description: |-
+        get Customer_emergency_contacts by id
+        <br>
+      operationId: Customer_emergency_contactsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_emergency_contacts'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - customer-emergency-contacts
+      description: |-
+        update the Customer_emergency_contacts
+        <br>
+      operationId: Customer_emergency_contactsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customer_emergency_contacts content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddCustomerEmergencyContactRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.CustomerEmergencyContactResponseDTO'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - customer-emergency-contacts
+      description: |-
+        delete the Customer_emergency_contacts
+        <br>
+      operationId: Customer_emergency_contactsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /customer-guarantors/:
+    get:
+      tags:
+      - customer-guarantors
+      description: |-
+        get Customer_guarantors
+        <br>
+      operationId: Customer_guarantorsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_guarantors'
+        "403":
+          description: ""
+    post:
+      tags:
+      - customer-guarantors
+      description: |-
+        create Customer_guarantors
+        <br>
+      operationId: Customer_guarantorsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Customer_guarantors content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddCustomerGuarantorRequestDTO'
+      responses:
+        "201":
+          description: '{int} models.Customer_guarantors'
+        "403":
+          description: body is empty
+  /customer-guarantors/{id}:
+    get:
+      tags:
+      - customer-guarantors
+      description: |-
+        get Customer_guarantors by id
+        <br>
+      operationId: Customer_guarantorsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_guarantors'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - customer-guarantors
+      description: |-
+        update the Customer_guarantors
+        <br>
+      operationId: Customer_guarantorsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customer_guarantors content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AddCustomerGuarantorRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_guarantors'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - customer-guarantors
+      description: |-
+        delete the Customer_guarantors
+        <br>
+      operationId: Customer_guarantorsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /customers/:
     get:
       tags:
@@ -1977,20 +2227,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140008af4b8:
-    title: "0x140008af4b8"
+  494.<nil>.0x14000889380:
+    title: "0x14000889380"
     type: object
-  1380.<nil>.0x140008af680:
-    title: "0x140008af680"
+  1380.<nil>.0x14000889548:
+    title: "0x14000889548"
     type: object
-  2278.<nil>.0x140008af878:
-    title: "0x140008af878"
+  2278.<nil>.0x14000889740:
+    title: "0x14000889740"
     type: object
-  3081.<nil>.0x140008afa28:
-    title: "0x140008afa28"
+  3081.<nil>.0x140008898f0:
+    title: "0x140008898f0"
     type: object
-  4472.<nil>.0x140008afc68:
-    title: "0x140008afc68"
+  4472.<nil>.0x14000889b30:
+    title: "0x14000889b30"
     type: object
   models.Accounts:
     title: Accounts
@@ -2160,6 +2410,56 @@ definitions:
       ModifiedBy:
         type: integer
         format: int64
+  models.Customer_emergency_contacts:
+    title: Customer_emergency_contacts
+    type: object
+    properties:
+      Contact:
+        type: string
+      CreatedBy:
+        type: integer
+        format: int64
+      Customer:
+        $ref: '#/definitions/models.Customers'
+      CustomerEmergencyContactId:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      ModifiedBy:
+        type: integer
+        format: int64
+      Name:
+        type: string
+  models.Customer_guarantors:
+    title: Customer_guarantors
+    type: object
+    properties:
+      Contact:
+        type: string
+      CreatedBy:
+        type: integer
+        format: int64
+      Customer:
+        $ref: '#/definitions/models.Customers'
+      CustomerGuarantorId:
+        type: integer
+        format: int64
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      ModifiedBy:
+        type: integer
+        format: int64
+      Name:
+        type: string
   models.CustomerCategoriesRequestDTO:
     title: CustomerCategoriesRequestDTO
     type: object
@@ -2170,6 +2470,17 @@ definitions:
         type: integer
         format: int64
       Description:
+        type: string
+  models.CustomerEmergencyContactResponseDTO:
+    title: CustomerEmergencyContactResponseDTO
+    type: object
+    properties:
+      CustomerEmergencyContact:
+        $ref: '#/definitions/models.Customer_emergency_contacts'
+      StatusCode:
+        type: integer
+        format: int64
+      StatusDesc:
         type: string
   models.CustomerResponseDTO:
     title: CustomerResponseDTO
@@ -2210,8 +2521,16 @@ definitions:
         format: datetime
       Email:
         type: string
+      EmergencyContacts:
+        type: array
+        items:
+          $ref: '#/definitions/models.Customer_emergency_contacts'
       FullName:
         type: string
+      Guarantors:
+        type: array
+        items:
+          $ref: '#/definitions/models.Customer_guarantors'
       IdentificationNumber:
         type: string
       IdentificationType:
@@ -2652,6 +2971,28 @@ definitions:
         format: int64
       Username:
         type: string
+  requests.AddCustomerEmergencyContactRequestDTO:
+    title: AddCustomerEmergencyContactRequestDTO
+    type: object
+    properties:
+      CustomerId:
+        type: integer
+        format: int64
+      Name:
+        type: string
+      PhoneNumber:
+        type: string
+  requests.AddCustomerGuarantorRequestDTO:
+    title: AddCustomerGuarantorRequestDTO
+    type: object
+    properties:
+      CustomerId:
+        type: integer
+        format: int64
+      Name:
+        type: string
+      PhoneNumber:
+        type: string
   requests.AddCustomerRequestDTO:
     title: AddCustomerRequestDTO
     type: object
@@ -2783,7 +3124,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140008af4b8'
+        $ref: '#/definitions/494.<nil>.0x14000889380'
       StatusCode:
         type: integer
         format: int64
@@ -2816,7 +3157,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x140008af878'
+        $ref: '#/definitions/2278.<nil>.0x14000889740'
       StatusCode:
         type: integer
         format: int64
@@ -2838,7 +3179,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x140008afa28'
+        $ref: '#/definitions/3081.<nil>.0x140008898f0'
       StatusCode:
         type: integer
         format: int64
@@ -2886,7 +3227,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x140008af680'
+        $ref: '#/definitions/1380.<nil>.0x14000889548'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -2908,7 +3249,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4472.<nil>.0x140008afc68'
+        $ref: '#/definitions/4472.<nil>.0x14000889b30'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object
@@ -2943,3 +3284,9 @@ tags:
 - name: id-types
   description: |
     Identification_typesController operations for Identification_types
+- name: customer-emergency-contacts
+  description: |
+    Customer_emergency_contactsController operations for Customer_emergency_contacts
+- name: customer-guarantors
+  description: |
+    Customer_guarantorsController operations for Customer_guarantors

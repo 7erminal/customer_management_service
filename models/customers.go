@@ -30,8 +30,10 @@ type Customers struct {
 	CreatedBy            int
 	ModifiedBy           int
 	Active               int
-	User                 *Users    `orm:"rel(fk);omitempty;null"`
-	LastTxnDate          time.Time `orm:"type(datetime)"`
+	User                 *Users                         `orm:"rel(fk);omitempty;null"`
+	LastTxnDate          time.Time                      `orm:"type(datetime)"`
+	EmergencyContacts    []*Customer_emergency_contacts `orm:"reverse(many);null;"`
+	Guarantors           []*Customer_guarantors         `orm:"reverse(many);null;"`
 }
 
 func init() {
@@ -183,11 +185,41 @@ func GetAllCustomers(query map[string]string, fields []string, sortby []string, 
 	if _, err = qs.All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
+				_, err = o.LoadRelated(&v, "EmergencyContacts")
+				if err != nil {
+					logs.Error("Error loading related EmergencyContacts: ", err)
+				} else {
+					logs.Info("EmergencyContacts loaded successfully")
+					// fmt.Printf("Emergency contacts of customers: %T\n", v)
+					// fmt.Printf("Emergency contacts of customers: %v\n", v.EmergencyContacts)
+					// for _, ec := range v.EmergencyContacts {
+					// 	fmt.Printf("Emergency contact: %v\n", ec)
+					// }
+				}
+				_, err = o.LoadRelated(&v, "Guarantors")
+				if err != nil {
+					logs.Error("Error loading related Guarantors: ", err)
+				}
 				ml = append(ml, v)
 			}
 		} else {
 			// trim unused fields
 			for _, v := range l {
+				_, err = o.LoadRelated(&v, "EmergencyContacts")
+				if err != nil {
+					logs.Error("Error loading related EmergencyContacts: ", err)
+				} else {
+					logs.Info("EmergencyContacts loaded successfully")
+					// fmt.Printf("Emergency contacts of customers: %T\n", v)
+					// fmt.Printf("Emergency contacts of customers: %v\n", v.EmergencyContacts)
+					// for _, ec := range v.EmergencyContacts {
+					// 	fmt.Printf("Emergency contact: %v\n", ec)
+					// }
+				}
+				_, err = o.LoadRelated(&v, "Guarantors")
+				if err != nil {
+					logs.Error("Error loading related Guarantors: ", err)
+				}
 				m := make(map[string]interface{})
 				val := reflect.ValueOf(v)
 				for _, fname := range fields {

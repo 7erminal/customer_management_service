@@ -83,6 +83,18 @@ func init() {
 				&controllers.Identification_typesController{},
 			),
 		),
+
+		beego.NSNamespace("/customer-emergency-contacts",
+			beego.NSInclude(
+				&controllers.Customer_emergency_contactsController{},
+			),
+		),
+
+		beego.NSNamespace("/customer-guarantors",
+			beego.NSInclude(
+				&controllers.Customer_guarantorsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
