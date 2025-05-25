@@ -55,7 +55,7 @@ func GetCustomerById(id int64) (v *Customers, err error) {
 	v = &Customers{CustomerId: id}
 	qs := o.QueryTable(new(Customers))
 	if err = qs.Filter("CustomerId", id).RelatedSel().One(v); err == nil {
-		_, err = o.LoadRelated(&v, "EmergencyContacts")
+		_, err = o.LoadRelated(v, "EmergencyContacts")
 		if err != nil {
 			logs.Error("Error loading related EmergencyContacts: ", err)
 		} else {
@@ -66,7 +66,7 @@ func GetCustomerById(id int64) (v *Customers, err error) {
 			// 	fmt.Printf("Emergency contact: %v\n", ec)
 			// }
 		}
-		_, err = o.LoadRelated(&v, "Guarantors")
+		_, err = o.LoadRelated(v, "Guarantors")
 		if err != nil {
 			logs.Error("Error loading related Guarantors: ", err)
 		}
