@@ -150,17 +150,28 @@ func (c *Customer_guarantorsController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	var req requests.AddCustomerGuarantorRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	v := models.Customer_guarantors{CustomerGuarantorId: id, Name: req.Name, Contact: req.PhoneNumber, ModifiedBy: 1}
 
-	if err := models.UpdateCustomer_guarantorsById(&v); err == nil {
-		// c.Data["json"] = "OK"
-		logs.Info("Customer guarantor updated successfully")
-		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: &v, StatusDesc: "Customer guarantor updated successfully"}
-		c.Data["json"] = resp
+	name := c.Ctx.Input.Query("Name")
+	phoneNumber := c.Ctx.Input.Query("PhoneNumber")
+
+	if cust, err := models.GetCustomer_guarantorsById(id); err == nil {
+		v := models.Customer_guarantors{CustomerGuarantorId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, ModifiedBy: 1, DateModified: time.Now()}
+
+		if err := models.UpdateCustomer_guarantorsById(&v); err == nil {
+			// c.Data["json"] = "OK"
+			logs.Info("Customer guarantor updated successfully")
+			var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: &v, StatusDesc: "Customer guarantor updated successfully"}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("An error occurred updating customer ", err.Error())
+			// c.Data["json"] = err.Error()
+			var resp = models.CustomerGuarantorResponseDTO{StatusCode: 604, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not updated"}
+			c.Data["json"] = resp
+		}
 	} else {
-		logs.Error("An error occurred updating customer ", err.Error())
-		// c.Data["json"] = err.Error()
-		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 604, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not updated"}
+		logs.Error("Customer guarantor not found with id: ", id)
+		logs.Error("An error occurred retrieving customer guarantor ", err.Error())
+		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 604, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not found"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

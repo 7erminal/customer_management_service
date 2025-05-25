@@ -152,16 +152,34 @@ func (c *Customer_emergency_contactsController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	var req requests.EditCustomerEmergencyContactRequestDTO
-	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{CustomerEmergencyContactId: id, Name: req.Name, Contact: req.PhoneNumber, DateModified: time.Now(), ModifiedBy: 1}
-	// v := models.Customer_emergency_contacts{CustomerEmergencyContactId: id}
-	if err := models.UpdateCustomer_emergency_contactsById(&v); err == nil {
-		var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 200, CustomerEmergencyContact: &v, StatusDesc: "Customer emergency contact updated successfully"}
-		c.Data["json"] = resp
+	logs.Info("Request body: ", c.Ctx.Input.RequestBody)
+	logs.Info("Request body - Name: ", req.Name)
+	logs.Info("Request body - PhoneNumber: ", req.PhoneNumber)
+
+	logs.Info("- Request body - Name: ", c.Ctx.Input.Query("Name"))
+	logs.Info("- Request body - PhoneNumber: ", c.Ctx.Input.Query("PhoneNumber"))
+
+	if cust, err := models.GetCustomer_emergency_contactsById(id); err == nil {
+		name := c.Ctx.Input.Query("Name")
+		phoneNumber := c.Ctx.Input.Query("PhoneNumber")
+
+		logs.Info("Request body - Name: ", req.Name)
+		json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+		var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{CustomerEmergencyContactId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, DateModified: time.Now(), ModifiedBy: 1}
+		// v := models.Customer_emergency_contacts{CustomerEmergencyContactId: id}
+		if err := models.UpdateCustomer_emergency_contactsById(&v); err == nil {
+			var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 200, CustomerEmergencyContact: &v, StatusDesc: "Customer emergency contact updated successfully"}
+			c.Data["json"] = resp
+		} else {
+			// c.Data["json"] = err.Error()
+			logs.Info("Error updating customer emergency contact: ", err)
+			var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 604, CustomerEmergencyContact: nil, StatusDesc: "Error updating customer emergency contact"}
+			c.Data["json"] = resp
+		}
 	} else {
-		// c.Data["json"] = err.Error()
-		logs.Info("Error updating customer emergency contact: ", err)
-		var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 604, CustomerEmergencyContact: nil, StatusDesc: "Error updating customer emergency contact"}
+		logs.Error("Customer emergency contact not found with id: ", id)
+		logs.Error("Error: ", err.Error())
+		var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 604, CustomerEmergencyContact: nil, StatusDesc: "Customer emergency contact not found"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
