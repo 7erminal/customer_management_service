@@ -43,3 +43,13 @@ type AddCustomerGuarantorRequestDTO struct {
 	PhoneNumber string
 	CustomerId  int64
 }
+
+type EditCustomerEmergencyContactRequestDTO struct {
+	Name        string
+	PhoneNumber string
+}
+
+type EditCustomerGuarantorRequestDTO struct {
+	Name        string
+	PhoneNumber string
+}

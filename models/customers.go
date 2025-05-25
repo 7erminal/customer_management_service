@@ -53,7 +53,24 @@ func AddCustomer(m *Customers) (id int64, err error) {
 func GetCustomerById(id int64) (v *Customers, err error) {
 	o := orm.NewOrm()
 	v = &Customers{CustomerId: id}
-	if err = o.QueryTable(new(Customers)).Filter("CustomerId", id).RelatedSel().One(v); err == nil {
+	qs := o.QueryTable(new(Customers))
+	if err = qs.Filter("CustomerId", id).RelatedSel().One(v); err == nil {
+		_, err = o.LoadRelated(&v, "EmergencyContacts")
+		if err != nil {
+			logs.Error("Error loading related EmergencyContacts: ", err)
+		} else {
+			logs.Info("EmergencyContacts loaded successfully")
+			// fmt.Printf("Emergency contacts of customers: %T\n", v)
+			// fmt.Printf("Emergency contacts of customers: %v\n", v.EmergencyContacts)
+			// for _, ec := range v.EmergencyContacts {
+			// 	fmt.Printf("Emergency contact: %v\n", ec)
+			// }
+		}
+		_, err = o.LoadRelated(&v, "Guarantors")
+		if err != nil {
+			logs.Error("Error loading related Guarantors: ", err)
+		}
+		logs.Info("Guarantors loaded successfully")
 		return v, nil
 	}
 	return nil, err

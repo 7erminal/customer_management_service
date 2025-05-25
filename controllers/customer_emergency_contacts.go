@@ -151,7 +151,7 @@ func (c *Customer_emergency_contactsController) GetAll() {
 func (c *Customer_emergency_contactsController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var req requests.AddCustomerEmergencyContactRequestDTO
+	var req requests.EditCustomerEmergencyContactRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{CustomerEmergencyContactId: id, Name: req.Name, Contact: req.PhoneNumber, DateModified: time.Now(), ModifiedBy: 1}
 	// v := models.Customer_emergency_contacts{CustomerEmergencyContactId: id}
