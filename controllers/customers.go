@@ -197,7 +197,12 @@ func (c *CustomersController) AddCustomer() {
 
 		user, _ := strconv.ParseInt(raddedBy, 10, 64)
 
-		var cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+		var cust models.Customers
+		if idType.IdentificationTypeId == 0 {
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+		} else {
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
