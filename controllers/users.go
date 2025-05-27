@@ -629,7 +629,15 @@ func (c *UsersController) VerifyInvite() {
 						statusCode = 201
 						message = "Token has been verified already"
 					}
-					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: verifyTokenResp.Value, StatusDesc: message}
+
+					var tokenResp responses.TokenDestructureResponseDTO = responses.TokenDestructureResponseDTO{
+						TokenId:  verifyTokenResp.Value.TokenId,
+						Email:    verifyTokenResp.Value.Email,
+						RoleId:   verifyTokenResp.Value.RoleId,
+						InviteBy: verifyTokenResp.Value.InviteBy,
+					}
+
+					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: &tokenResp, StatusDesc: message}
 					c.Data["json"] = resp
 				} else {
 					statusCode = 501

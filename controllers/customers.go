@@ -124,6 +124,8 @@ func (c *CustomersController) AddCustomer() {
 	logs.Info("Received :::", rdob, " ::: ", rcategoryid, " ::: ", remail, " ::: ", rname, " ::: ", " ::: ", rnickname)
 
 	var proceed bool = true
+	errorCode := 302
+	message := "Error adding customer"
 
 	var dobm time.Time
 
@@ -206,12 +208,19 @@ func (c *CustomersController) AddCustomer() {
 
 		if _, err := models.AddCustomer(&cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
-			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: &cust, StatusDesc: "User created successfully"}
+			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
 			c.Data["json"] = resp
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Error("An error occurred adding customer ", err.Error())
-			var resp = models.CustomerResponseDTO{StatusCode: 604, Customer: nil, StatusDesc: "Error adding customer"}
+			if strings.Contains(strings.ToUpper(err.Error()), "DUPLICATE") || strings.Contains(strings.ToUpper(err.Error()), "UNIQUE") {
+				errorCode = 607
+				message = "Customer with the same email or phone number already exists"
+			} else {
+				errorCode = 608
+				message = "An error occurred adding customer. " + err.Error()
+			}
+			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}
 
