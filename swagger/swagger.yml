@@ -2227,20 +2227,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x140009731e8:
-    title: "0x140009731e8"
+  494.<nil>.0x14000917a70:
+    title: "0x14000917a70"
     type: object
-  1380.<nil>.0x140009733b0:
-    title: "0x140009733b0"
+  1380.<nil>.0x14000917c38:
+    title: "0x14000917c38"
     type: object
-  2278.<nil>.0x140009735a8:
-    title: "0x140009735a8"
+  2278.<nil>.0x14000917e30:
+    title: "0x14000917e30"
     type: object
-  3081.<nil>.0x14000973758:
-    title: "0x14000973758"
+  3081.<nil>.0x14000968060:
+    title: "0x14000968060"
     type: object
-  4492.<nil>.0x14000973998:
-    title: "0x14000973998"
+  4492.<nil>.0x140009682a0:
+    title: "0x140009682a0"
     type: object
   models.Accounts:
     title: Accounts
@@ -3124,7 +3124,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/494.<nil>.0x140009731e8'
+        $ref: '#/definitions/494.<nil>.0x14000917a70'
       StatusCode:
         type: integer
         format: int64
@@ -3157,7 +3157,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x140009735a8'
+        $ref: '#/definitions/2278.<nil>.0x14000917e30'
       StatusCode:
         type: integer
         format: int64
@@ -3179,7 +3179,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x14000973758'
+        $ref: '#/definitions/3081.<nil>.0x14000968060'
       StatusCode:
         type: integer
         format: int64
@@ -3229,7 +3229,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x140009733b0'
+        $ref: '#/definitions/1380.<nil>.0x14000917c38'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -3251,7 +3251,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4492.<nil>.0x14000973998'
+        $ref: '#/definitions/4492.<nil>.0x140009682a0'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object
