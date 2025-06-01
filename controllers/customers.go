@@ -209,6 +209,8 @@ func (c *CustomersController) AddCustomer() {
 		if _, err := models.AddCustomer(&cust); err == nil {
 			logs.Info("Customer added successfully ", cust.CustomerId)
 			c.Ctx.Output.SetStatus(200)
+			errorCode := 200
+			message := "Customer added successfully"
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
 			c.Data["json"] = resp
 		} else {
