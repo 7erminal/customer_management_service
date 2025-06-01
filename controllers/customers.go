@@ -207,6 +207,7 @@ func (c *CustomersController) AddCustomer() {
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
+			logs.Info("Customer added successfully ", cust.CustomerId)
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
 			c.Data["json"] = resp
@@ -220,6 +221,7 @@ func (c *CustomersController) AddCustomer() {
 				errorCode = 608
 				message = "An error occurred adding customer. " + err.Error()
 			}
+			logs.Info("Error adding customer message:: ", message)
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}
