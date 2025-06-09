@@ -715,37 +715,52 @@ func (c *UsersController) UpdateInviteToken() {
 	}
 
 	logs.Info("Query is ", query)
-	if ui, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit, search); err == nil {
-		logs.Info("User invites fetched successfully: ", ui)
-		if ui != nil {
-			for _, l := range ui {
-				userInvite, ok := l.(models.UserInvites)
-				if !ok {
-					logs.Error("Error converting item to UserInvites struct")
-					continue
-				}
+	statuses := [3]string{"PENDING", "ACCEPTED", "CANCELLED"}
+	proceed := false
+	for _, st := range statuses {
+		if v.Status == st {
+			proceed = true
+		}
+	}
+	if proceed {
+		if ui, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit, search); err == nil {
+			logs.Info("User invites fetched successfully: ", ui)
+			if ui != nil {
+				for _, l := range ui {
+					userInvite, ok := l.(models.UserInvites)
+					if !ok {
+						logs.Error("Error converting item to UserInvites struct")
+						continue
+					}
 
-				userInvite.Status = "ACCEPTED"
+					userInvite.Status = v.Status
 
-				if err := models.UpdateUserInvitesById(&userInvite); err == nil {
-					logs.Info("User invite updated successfully")
-				} else {
-					logs.Error("Error updating user invite: ", err)
-					continue
+					if err := models.UpdateUserInvitesById(&userInvite); err == nil {
+						logs.Info("User invite updated successfully")
+					} else {
+						logs.Error("Error updating user invite: ", err)
+						continue
+					}
+					// Process userInvite as needed
+					logs.Info("Processing UserInvite: ", userInvite)
 				}
-				// Process userInvite as needed
-				logs.Info("Processing UserInvite: ", userInvite)
+				statusCode = 200
+				message = "User invite updated successfully"
+				var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "SUCCESS", StatusDesc: message}
+				c.Data["json"] = resp
+
 			}
-			statusCode = 200
-			message = "User invite updated successfully"
-			var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "SUCCESS", StatusDesc: message}
+		} else {
+			logs.Error("Error fetching user invites: ", err)
+			statusCode = 608
+			message = "Error fetching user invites: " + err.Error()
+			var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "", StatusDesc: message}
 			c.Data["json"] = resp
-
 		}
 	} else {
-		logs.Error("Error fetching user invites: ", err)
+		logs.Error("Invalid status provided for user invite")
 		statusCode = 608
-		message = "Error fetching user invites: " + err.Error()
+		message = "Invalid status provided for user invite"
 		var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "", StatusDesc: message}
 		c.Data["json"] = resp
 	}
