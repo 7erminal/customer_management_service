@@ -800,14 +800,17 @@ func (c *UsersController) GetInvite() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUserInvitesById(id)
 	if err != nil {
+		logs.Error("Error getting user invite::", err.Error())
 		var resp = responses.UserInviteResponseDTO{StatusCode: 604, UserInvite: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Getting user invite ", v.InvitationToken)
 		if verifyInvite := functions.VerifyUserToken(&c.Controller, v.InvitationToken.Token, v.InvitationToken.Nonce, v.Email); verifyInvite.StatusCode == 200 {
+			logs.Info("User invite verified successfully ", v.InvitationToken.Token)
 			var resp = responses.UserInviteResponseDTO{StatusCode: 200, UserInvite: v, StatusDesc: "User details fetched"}
 			c.Data["json"] = resp
 		} else {
+			logs.Error("Error verifying user invite ", verifyInvite.StatusDesc)
 			var resp = responses.UserInviteResponseDTO{StatusCode: 604, UserInvite: nil, StatusDesc: "Error verifying user"}
 			c.Data["json"] = resp
 		}
