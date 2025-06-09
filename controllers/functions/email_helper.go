@@ -9,7 +9,7 @@ import (
 func SendEmail(email string, subject_ string, message string) {
 	// Create app password in gmail to use here
 	// auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
-	auth := smtp.PlainAuth("", "info@amcrentalsgh.com", "@Amcadmin2025", "smtp.gmail.com")
+	auth := smtp.PlainAuth("", "info@amcrentalsgh.com", "eeastbiqnvvjzyjb", "smtp.gmail.com")
 
 	// Here we do it all: connect to our server, set up a message and send it
 
