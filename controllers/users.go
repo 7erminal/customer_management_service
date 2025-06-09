@@ -1737,6 +1737,8 @@ func (c *UsersController) UpdateUserInvite() {
 	var h requests.UpdateUserInviteRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
 
+	logs.Info("Status to update user invite is ", h.Status)
+
 	if ui, err := models.GetUserInvitesById(id); err == nil {
 		statuses := [3]string{"PENDING", "ACCEPTED", "CANCELLED"}
 		proceed := false
@@ -1747,7 +1749,9 @@ func (c *UsersController) UpdateUserInvite() {
 		}
 
 		if proceed {
+			logs.Info("User invite status is ", h.Status)
 			ui.Status = h.Status
+			logs.Info("About to update user invite", ui)
 
 			if err := models.UpdateUserInvitesById(ui); err == nil {
 				logs.Debug("User invite updated successfully")
