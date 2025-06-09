@@ -740,6 +740,12 @@ func (c *UsersController) UpdateInviteToken() {
 			c.Data["json"] = resp
 
 		}
+	} else {
+		logs.Error("Error fetching user invites: ", err)
+		statusCode = 608
+		message = "Error fetching user invites: " + err.Error()
+		var resp = responses.StringResponseDTO{StatusCode: statusCode, Value: "", StatusDesc: message}
+		c.Data["json"] = resp
 	}
 
 	// ikey, _ := functions.GenerateKey()
