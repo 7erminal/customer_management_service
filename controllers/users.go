@@ -687,7 +687,7 @@ func (c *UsersController) UpdateInviteToken() {
 	var v requests.UpdateUserInviteRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
-	logs.Info("About to verify user ", v.Email)
+	logs.Info("About to verify user ", v.Email, " with status ", v.Status)
 	statusCode := 608
 	message := "Unable to update invite token"
 
@@ -714,7 +714,9 @@ func (c *UsersController) UpdateInviteToken() {
 		}
 	}
 
+	logs.Info("Query is ", query)
 	if ui, err := models.GetAllUserInvites(query, fields, sortby, order, offset, limit, search); err == nil {
+		logs.Info("User invites fetched successfully: ", ui)
 		if ui != nil {
 			for _, l := range ui {
 				userInvite, ok := l.(models.UserInvites)
