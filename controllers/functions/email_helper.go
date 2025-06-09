@@ -8,7 +8,8 @@ import (
 
 func SendEmail(email string, subject_ string, message string) {
 	// Create app password in gmail to use here
-	auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
+	// auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
+	auth := smtp.PlainAuth("", "info@amcrentalsgh.com", "@Amcadmin2025", "smtp.gmail.com")
 
 	// Here we do it all: connect to our server, set up a message and send it
 
@@ -20,7 +21,7 @@ func SendEmail(email string, subject_ string, message string) {
 
 	msg := []byte(subject + mime + body)
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, "bede.abbe@gmail.com", to, msg)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, "info@amcrentalsgh.com", to, msg)
 
 	if err != nil {
 
