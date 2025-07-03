@@ -558,6 +558,9 @@ func (c *UsersController) InviteUser() {
 			}
 
 			if proceed {
+				logs.Info("User invite by is ", inviteBy)
+				logs.Info("Email to invite is ", v.Email)
+				logs.Info("Role to invite is ", role)
 				proceed = false
 				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
 
@@ -640,12 +643,18 @@ func (c *UsersController) VerifyInvite() {
 						statusCode = 201
 						message = "Token has been verified already"
 					}
+					logs.Info("Token verified successfully ", verifyTokenResp.Value)
+					logs.Info("User who invited is ", userInvite.InvitedBy)
+
+					inviteByStr := userInvite.InvitedBy.UserId
+
+					logs.Info("Invite by user ID is ", inviteByStr)
 
 					var tokenResp responses.TokenDestructureResponseDTO = responses.TokenDestructureResponseDTO{
 						TokenId:  verifyTokenResp.Value.TokenId,
 						Email:    verifyTokenResp.Value.Email,
 						RoleId:   verifyTokenResp.Value.RoleId,
-						InviteBy: verifyTokenResp.Value.InviteBy,
+						InviteBy: strconv.FormatInt(inviteByStr, 10),
 					}
 
 					var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: &tokenResp, StatusDesc: message}
