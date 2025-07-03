@@ -287,7 +287,15 @@ func (c *UsersController) SignUp() {
 
 				// logs.Debug("Returned user is", v)
 
-				var userDetails = models.UserExtraDetails{User: uid, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				branchId, err := strconv.ParseInt(*v.Branch, 10, 64)
+				b := models.Branches{}
+				if err != nil {
+					logs.Error("Error getting branch for registration ", err)
+				} else {
+					b = models.Branches{BranchId: branchId}
+				}
+
+				var userDetails = models.UserExtraDetails{User: uid, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
 					c.Ctx.Output.SetStatus(200)
@@ -568,7 +576,10 @@ func (c *UsersController) InviteUser() {
 					logs.Info("User invite added ", ui)
 					logs.Info("Token to be sent is ", tokenResp.Value.Token.Token)
 
-					message_ := strings.Replace(v.Message, "[SENDER_NAME_ID]", inviteByName, -1)
+					// Split inviteByName by "|" and concatenate with a space
+					name := strings.Join(strings.Split(inviteByName, "|"), " ")
+
+					message_ := strings.Replace(v.Message, "[SENDER_NAME_ID]", name, -1)
 
 					for i, link := range v.Links {
 						iStr := strconv.Itoa(i)

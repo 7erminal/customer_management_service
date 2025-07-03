@@ -12,6 +12,7 @@ type SignUpDTO struct {
 	Dob          string `orm:"size(255)"`
 	PhoneNumber  string `orm:"size(255)"`
 	Role         string `orm:"size(255)"`
+	Branch       *string
 	RoleRequired bool
 }
 
