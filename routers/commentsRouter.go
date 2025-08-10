@@ -97,6 +97,51 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
+        beego.ControllerComments{
+            Method: "GetAll",
+            Router: `/`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
+        beego.ControllerComments{
+            Method: "GetOne",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
+        beego.ControllerComments{
+            Method: "Delete",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"delete"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
+        beego.ControllerComments{
+            Method: "AddCustomerCredential",
+            Router: `/add-customer-credential`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
+        beego.ControllerComments{
+            Method: "Put",
+            Router: `/update-customer-credential/:customerId`,
+            AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:Customer_emergency_contactsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_emergency_contactsController"],
         beego.ControllerComments{
             Method: "Post",
@@ -255,6 +300,15 @@ func init() {
             Method: "UpdateCustomerLastTxnDate",
             Router: `/last-txn/:id`,
             AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
+        beego.ControllerComments{
+            Method: "GetCustomerByMsisdn",
+            Router: `/phone-number/:msisdn`,
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

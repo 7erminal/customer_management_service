@@ -257,6 +257,27 @@ func (c *CustomersController) GetOne() {
 	c.ServeJSON()
 }
 
+// GetCustomerByMsisdn ...
+// @Title Get Customer by MSISDN
+// @Description get Customers by msisdn
+// @Param	msisdn		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Customers
+// @Failure 403 :msisdn is empty
+// @router /phone-number/:msisdn [get]
+func (c *CustomersController) GetCustomerByMsisdn() {
+	msisdn := c.Ctx.Input.Param(":msisdn")
+	v, err := models.GetCustomerByMsisdn(msisdn)
+	if err != nil {
+		logs.Error("An error occurred fetching customer")
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Customer fetched successfully"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
 // GetAll ...
 // @Title Get All
 // @Description get Customers
