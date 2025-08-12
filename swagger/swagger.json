@@ -1188,6 +1188,35 @@
                 }
             }
         },
+        "/customers/username/{username}": {
+            "get": {
+                "tags": [
+                    "customers"
+                ],
+                "description": "get Customers by msisdn\n\u003cbr\u003e",
+                "operationId": "CustomersController.Get Customer by Username",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "username",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Customers"
+                        }
+                    },
+                    "403": {
+                        "description": ":msisdn is empty"
+                    }
+                }
+            }
+        },
         "/customers/{id}": {
             "get": {
                 "tags": [
@@ -3303,24 +3332,24 @@
         }
     },
     "definitions": {
-        "1501.\u003cnil\u003e.0x1400093d800": {
-            "title": "0x1400093d800",
+        "1501.\u003cnil\u003e.0x1400092cd80": {
+            "title": "0x1400092cd80",
             "type": "object"
         },
-        "2399.\u003cnil\u003e.0x1400093d9f8": {
-            "title": "0x1400093d9f8",
+        "2399.\u003cnil\u003e.0x1400092cf78": {
+            "title": "0x1400092cf78",
             "type": "object"
         },
-        "3202.\u003cnil\u003e.0x1400093dba8": {
-            "title": "0x1400093dba8",
+        "3202.\u003cnil\u003e.0x1400092d128": {
+            "title": "0x1400092d128",
             "type": "object"
         },
-        "4613.\u003cnil\u003e.0x1400093dde8": {
-            "title": "0x1400093dde8",
+        "4613.\u003cnil\u003e.0x1400092d368": {
+            "title": "0x1400092d368",
             "type": "object"
         },
-        "615.\u003cnil\u003e.0x1400093d638": {
-            "title": "0x1400093d638",
+        "615.\u003cnil\u003e.0x1400092cbb8": {
+            "title": "0x1400092cbb8",
             "type": "object"
         },
         "models.Accounts": {
@@ -4653,7 +4682,7 @@
             "type": "object",
             "properties": {
                 "Branches": {
-                    "$ref": "#/definitions/615.\u003cnil\u003e.0x1400093d638"
+                    "$ref": "#/definitions/615.\u003cnil\u003e.0x1400092cbb8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4701,7 +4730,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2399.\u003cnil\u003e.0x1400093d9f8"
+                    "$ref": "#/definitions/2399.\u003cnil\u003e.0x1400092cf78"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4733,7 +4762,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3202.\u003cnil\u003e.0x1400093dba8"
+                    "$ref": "#/definitions/3202.\u003cnil\u003e.0x1400092d128"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4806,7 +4835,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1501.\u003cnil\u003e.0x1400093d800"
+                    "$ref": "#/definitions/1501.\u003cnil\u003e.0x1400092cd80"
                 }
             }
         },
@@ -4838,7 +4867,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4613.\u003cnil\u003e.0x1400093dde8"
+                    "$ref": "#/definitions/4613.\u003cnil\u003e.0x1400092d368"
                 }
             }
         },

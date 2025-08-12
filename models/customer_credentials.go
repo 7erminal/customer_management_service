@@ -57,6 +57,17 @@ func GetCustomer_credentialsByCustomerId(id Customers) (v *Customer_credentials,
 	return nil, err
 }
 
+// GetCustomer_credentialsByCustomerId retrieves Customer_credentials by Id. Returns error if
+// Id doesn't exist
+func GetCustomer_credentialsByCustomerUsername(username string) (v *Customer_credentials, err error) {
+	o := orm.NewOrm()
+	v = &Customer_credentials{Username: username}
+	if err = o.QueryTable(new(Customer_credentials)).Filter("Username", username).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllCustomer_credentials retrieves all Customer_credentials matches certain condition. Returns empty list if
 // no records exist
 func GetAllCustomer_credentials(query map[string]string, fields []string, sortby []string, order []string,

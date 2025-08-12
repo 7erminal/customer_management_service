@@ -925,6 +925,27 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /customers/username/{username}:
+    get:
+      tags:
+      - customers
+      description: |-
+        get Customers by msisdn
+        <br>
+      operationId: CustomersController.Get Customer by Username
+      parameters:
+      - in: path
+        name: username
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: :msisdn is empty
   /id-types/:
     get:
       tags:
@@ -2375,20 +2396,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  615.<nil>.0x1400093d638:
-    title: "0x1400093d638"
+  615.<nil>.0x1400092cbb8:
+    title: "0x1400092cbb8"
     type: object
-  1501.<nil>.0x1400093d800:
-    title: "0x1400093d800"
+  1501.<nil>.0x1400092cd80:
+    title: "0x1400092cd80"
     type: object
-  2399.<nil>.0x1400093d9f8:
-    title: "0x1400093d9f8"
+  2399.<nil>.0x1400092cf78:
+    title: "0x1400092cf78"
     type: object
-  3202.<nil>.0x1400093dba8:
-    title: "0x1400093dba8"
+  3202.<nil>.0x1400092d128:
+    title: "0x1400092d128"
     type: object
-  4613.<nil>.0x1400093dde8:
-    title: "0x1400093dde8"
+  4613.<nil>.0x1400092d368:
+    title: "0x1400092d368"
     type: object
   models.Accounts:
     title: Accounts
@@ -3327,7 +3348,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/615.<nil>.0x1400093d638'
+        $ref: '#/definitions/615.<nil>.0x1400092cbb8'
       StatusCode:
         type: integer
         format: int64
@@ -3360,7 +3381,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2399.<nil>.0x1400093d9f8'
+        $ref: '#/definitions/2399.<nil>.0x1400092cf78'
       StatusCode:
         type: integer
         format: int64
@@ -3382,7 +3403,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3202.<nil>.0x1400093dba8'
+        $ref: '#/definitions/3202.<nil>.0x1400092d128'
       StatusCode:
         type: integer
         format: int64
@@ -3432,7 +3453,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1501.<nil>.0x1400093d800'
+        $ref: '#/definitions/1501.<nil>.0x1400092cd80'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -3454,7 +3475,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4613.<nil>.0x1400093dde8'
+        $ref: '#/definitions/4613.<nil>.0x1400092d368'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object

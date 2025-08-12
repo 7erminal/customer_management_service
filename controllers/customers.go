@@ -278,6 +278,28 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 	c.ServeJSON()
 }
 
+// GetCustomerByUsername ...
+// @Title Get Customer by Username
+// @Description get Customers by msisdn
+// @Param	username		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Customers
+// @Failure 403 :msisdn is empty
+// @router /username/:username [get]
+func (c *CustomersController) GetCustomerByUsername() {
+	username := c.Ctx.Input.Param(":username")
+	v, err := models.GetCustomer_credentialsByCustomerUsername(username)
+	if err != nil {
+		logs.Error("An error occurred fetching customer")
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		logs.Info("Customer fetched successfully ", v.Customer.FullName)
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v.Customer, StatusDesc: "Customer fetched successfully"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
 // GetAll ...
 // @Title Get All
 // @Description get Customers
