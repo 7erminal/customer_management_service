@@ -211,8 +211,17 @@ func (c *CustomersController) AddCustomer() {
 			c.Ctx.Output.SetStatus(200)
 			errorCode := 200
 			message := "Customer added successfully"
+
+			// Generate customer number
+			cust.CustomerNumber = fmt.Sprintf("CUST%06d", cust.CustomerId)
+			if err := models.UpdateCustomerById(&cust); err != nil {
+				logs.Error("An error occurred updating customer number ", err.Error())
+				errorCode = 609
+				message = "An error occurred updating customer number. " + err.Error()
+			}
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
 			c.Data["json"] = resp
+
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Error("An error occurred adding customer ", err.Error())
