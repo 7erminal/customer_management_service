@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "msysmobilizer" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "msysmobilizer" ]
+    branches: [ "main" ]
 
 jobs:
 
