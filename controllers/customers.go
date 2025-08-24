@@ -261,6 +261,12 @@ func (c *CustomersController) GetOne() {
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "User created successfully"}
 		c.Data["json"] = resp
 	}
