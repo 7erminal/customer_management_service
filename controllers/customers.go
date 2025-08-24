@@ -288,6 +288,13 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
+
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Customer fetched successfully"}
 		c.Data["json"] = resp
 	}
@@ -309,6 +316,12 @@ func (c *CustomersController) GetCustomerByUsername() {
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
 		logs.Info("Customer fetched successfully ", v.Customer.FullName)
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v.Customer, StatusDesc: "Customer fetched successfully"}
 		c.Data["json"] = resp
