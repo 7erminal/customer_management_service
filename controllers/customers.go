@@ -214,6 +214,7 @@ func (c *CustomersController) AddCustomer() {
 
 			// Generate customer number
 			cust.CustomerNumber = fmt.Sprintf("CUST%06d", cust.CustomerId)
+			logs.Info("Generated customer number ", cust.CustomerNumber)
 			if err := models.UpdateCustomerById(&cust); err != nil {
 				logs.Error("An error occurred updating customer number ", err.Error())
 				errorCode = 609
