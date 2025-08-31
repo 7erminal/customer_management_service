@@ -120,6 +120,7 @@ func (c *CustomersController) AddCustomer() {
 	rlocation := c.Ctx.Input.Query("Location")
 	rbranch := c.Ctx.Input.Query("Branch")
 	raddedBy := c.Ctx.Input.Query("AddedBy")
+	status := c.Ctx.Input.Query("Status")
 
 	logs.Info("Received :::", rdob, " ::: ", rcategoryid, " ::: ", remail, " ::: ", rname, " ::: ", " ::: ", rnickname)
 
@@ -199,11 +200,17 @@ func (c *CustomersController) AddCustomer() {
 
 		user, _ := strconv.ParseInt(raddedBy, 10, 64)
 
+		activeStatus := 0
+
+		if strings.ToUpper(status) == "ACTIVE" || strings.ToUpper(status) == "1" || strings.ToUpper(status) == "ENABLED" {
+			activeStatus = 1
+		}
+
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		} else {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
