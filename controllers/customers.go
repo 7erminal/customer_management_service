@@ -204,6 +204,8 @@ func (c *CustomersController) AddCustomer() {
 
 		if strings.ToUpper(status) == "ACTIVE" || strings.ToUpper(status) == "1" || strings.ToUpper(status) == "ENABLED" {
 			activeStatus = 1
+		} else if strings.ToUpper(status) == "PENDING" || strings.ToUpper(status) == "2" || strings.ToUpper(status) == "DISABLED" {
+			activeStatus = 2
 		}
 
 		var cust models.Customers
