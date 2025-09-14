@@ -26,6 +26,7 @@ type UpdateCustomerRequestDTO struct {
 	Dob         string
 	AddedBy     string
 	Branch      int64
+	Status      int
 }
 
 type UpdateCustomerLastTxnRequest struct {

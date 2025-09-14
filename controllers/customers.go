@@ -568,6 +568,7 @@ func (c *CustomersController) Put() {
 		rlocation := c.Ctx.Input.Query("Location")
 		rbranch := c.Ctx.Input.Query("Branch")
 		rmodifiedby := c.Ctx.Input.Query("ModifiedBy")
+		rstatus := c.Ctx.Input.Query("Status")
 		user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
 		logs.Info("File path is ", filePath, " and customer image path is ", cust.ImagePath)
 		if filePath == "" && cust.ImagePath != "" {
@@ -582,6 +583,12 @@ func (c *CustomersController) Put() {
 		cust.Location = rlocation
 		cust.ImagePath = filePath
 		cust.ModifiedBy = int(user)
+		statusInt, err := strconv.Atoi(rstatus)
+		if err != nil {
+			logs.Error("Invalid status value: ", rstatus, " error: ", err)
+			statusInt = 0 // or set a default/fallback value
+		}
+		cust.Active = statusInt
 
 		idT, _ := strconv.ParseInt(ridtype, 10, 64)
 		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
