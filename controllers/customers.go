@@ -590,6 +590,8 @@ func (c *CustomersController) Put() {
 		}
 		cust.Active = statusInt
 
+		logs.Info("Status is ", rstatus, " and status int is ", statusInt)
+
 		idT, _ := strconv.ParseInt(ridtype, 10, 64)
 		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
 
