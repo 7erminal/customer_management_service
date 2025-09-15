@@ -2396,20 +2396,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  615.<nil>.0x1400097b9c8:
-    title: "0x1400097b9c8"
+  615.<nil>.0x14000920618:
+    title: "0x14000920618"
     type: object
-  1501.<nil>.0x1400097bb90:
-    title: "0x1400097bb90"
+  1501.<nil>.0x140009207e0:
+    title: "0x140009207e0"
     type: object
-  2399.<nil>.0x1400097bd88:
-    title: "0x1400097bd88"
+  2399.<nil>.0x140009209d8:
+    title: "0x140009209d8"
     type: object
-  3202.<nil>.0x1400097bf38:
-    title: "0x1400097bf38"
+  3202.<nil>.0x14000920b88:
+    title: "0x14000920b88"
     type: object
-  4613.<nil>.0x140009ca1f8:
-    title: "0x140009ca1f8"
+  4613.<nil>.0x14000920dc8:
+    title: "0x14000920dc8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2727,6 +2727,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Customer_emergency_contacts'
       FullName:
+        type: string
+      Gender:
         type: string
       Guarantors:
         type: array
@@ -3350,7 +3352,7 @@ definitions:
     type: object
     properties:
       Branches:
-        $ref: '#/definitions/615.<nil>.0x1400097b9c8'
+        $ref: '#/definitions/615.<nil>.0x14000920618'
       StatusCode:
         type: integer
         format: int64
@@ -3383,7 +3385,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2399.<nil>.0x1400097bd88'
+        $ref: '#/definitions/2399.<nil>.0x140009209d8'
       StatusCode:
         type: integer
         format: int64
@@ -3405,7 +3407,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3202.<nil>.0x1400097bf38'
+        $ref: '#/definitions/3202.<nil>.0x14000920b88'
       StatusCode:
         type: integer
         format: int64
@@ -3455,7 +3457,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1501.<nil>.0x1400097bb90'
+        $ref: '#/definitions/1501.<nil>.0x140009207e0'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -3477,7 +3479,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4613.<nil>.0x140009ca1f8'
+        $ref: '#/definitions/4613.<nil>.0x14000920dc8'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object

@@ -121,6 +121,7 @@ func (c *CustomersController) AddCustomer() {
 	rbranch := c.Ctx.Input.Query("Branch")
 	raddedBy := c.Ctx.Input.Query("AddedBy")
 	status := c.Ctx.Input.Query("Status")
+	rgender := c.Ctx.Input.Query("Gender")
 
 	logs.Info("Received :::", rdob, " ::: ", rcategoryid, " ::: ", remail, " ::: ", rname, " ::: ", " ::: ", rnickname)
 
@@ -185,6 +186,19 @@ func (c *CustomersController) AddCustomer() {
 			idType = *idtype_
 		}
 
+		// Gender
+		rgender = strings.ToUpper(rgender)
+
+		if rgender == "MALE" {
+			rgender = "M"
+		}
+		if rgender == "FEMALE" {
+			rgender = "F"
+		}
+		if rgender != "M" && rgender != "F" {
+			rgender = "N"
+		}
+
 		branch := models.Branches{}
 		idB, _ := strconv.ParseInt(rbranch, 10, 64)
 		if branch_, err := models.GetBranchesById(idB); err != nil {
@@ -210,9 +224,9 @@ func (c *CustomersController) AddCustomer() {
 
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		} else {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {

@@ -18,6 +18,7 @@ type Customers struct {
 	ImagePath            string                `orm:"column(image_path);size(255)"`
 	Email                string                `orm:"column(email);size(255);null"`
 	PhoneNumber          string                `orm:"column(phone_number);size(255);null"`
+	Gender               string                `orm:"column(gender);size(10);null"`
 	Location             string                `orm:"column(location);size(255);null"`
 	IdentificationType   *Identification_types `orm:"rel(fk);column(identification_type_id);omitempty;null"`
 	IdentificationNumber string                `orm:"column(identification_number);size(255);null"`
