@@ -602,7 +602,16 @@ func (c *CustomersController) Put() {
 			logs.Error("Invalid status value: ", rstatus, " error: ", err)
 			statusInt = 0 // or set a default/fallback value
 		}
-		cust.Active = statusInt
+
+		activeStatus := 0
+
+		if strings.ToUpper(rstatus) == "ACTIVE" || strings.ToUpper(rstatus) == "1" || strings.ToUpper(rstatus) == "ENABLED" {
+			activeStatus = 1
+		} else if strings.ToUpper(rstatus) == "PENDING" || strings.ToUpper(rstatus) == "2" || strings.ToUpper(rstatus) == "DISABLED" {
+			activeStatus = 2
+		}
+
+		cust.Active = activeStatus
 
 		logs.Info("Status is ", rstatus, " and status int is ", statusInt)
 
