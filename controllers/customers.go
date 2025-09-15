@@ -605,6 +605,8 @@ func (c *CustomersController) Put() {
 
 		activeStatus := 0
 
+		logs.Info("Status received is ", rstatus, " and status int is ", statusInt)
+
 		if strings.ToUpper(rstatus) == "ACTIVE" || strings.ToUpper(rstatus) == "1" || strings.ToUpper(rstatus) == "ENABLED" {
 			activeStatus = 1
 		} else if strings.ToUpper(rstatus) == "PENDING" || strings.ToUpper(rstatus) == "2" || strings.ToUpper(rstatus) == "DISABLED" {
