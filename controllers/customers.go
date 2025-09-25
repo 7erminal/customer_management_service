@@ -655,6 +655,8 @@ func (c *CustomersController) Put() {
 			cust.Branch = branch_
 		}
 
+		logs.Info("About to update customer record ", cust.CustomerId, " with name ", cust.FullName)
+		logs.Info("Date created for customer is ", cust.DateCreated)
 		if err := models.UpdateCustomerById(cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
