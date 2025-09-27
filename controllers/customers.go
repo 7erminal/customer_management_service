@@ -34,6 +34,8 @@ func (c *CustomersController) URLMapping() {
 	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
 	c.Mapping("GetAllByBranch", c.GetAllByBranch)
 	c.Mapping("GetCustomerCount", c.GetCustomerCount)
+	c.Mapping("GetCustomerByMsisdn", c.GetCustomerByMsisdn)
+	c.Mapping("GetCustomerByUsername", c.GetCustomerByUsername)
 }
 
 // Post ...
