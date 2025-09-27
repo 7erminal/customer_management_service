@@ -338,6 +338,7 @@ func (c *CustomersController) GetCustomerByUsername() {
 	v, err := models.GetCustomer_credentialsByCustomerUsername(username)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
+		logs.Error(err.Error())
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
