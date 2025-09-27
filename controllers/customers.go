@@ -328,10 +328,10 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 
 // GetCustomerByUsername ...
 // @Title Get Customer by Username
-// @Description get Customers by msisdn
+// @Description get Customers by username
 // @Param	username		path 	string	true		"The key for staticblock"
 // @Success 200 {object} models.Customers
-// @Failure 403 :msisdn is empty
+// @Failure 403 :username is empty
 // @router /username/:username [get]
 func (c *CustomersController) GetCustomerByUsername() {
 	username := c.Ctx.Input.Param(":username")
