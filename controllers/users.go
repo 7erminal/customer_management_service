@@ -268,6 +268,9 @@ func (c *UsersController) SignUp() {
 			// Assign dob
 			var gender string = strings.ToLower(v.Gender)
 
+			if gender == "" {
+				gender = "m"
+			}
 			if gender == "m" || gender == "M" || gender == "male" {
 				gender = "MALE"
 			}
