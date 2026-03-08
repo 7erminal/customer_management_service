@@ -1843,9 +1843,22 @@ func (c *UsersController) Delete() {
 			c.Data["json"] = resp
 		}
 	} else {
-		logs.Error("Error deleting user", err.Error())
-		resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
-		c.Data["json"] = resp
+		v, err := models.GetUsersByUsername(idStr)
+		if err == nil {
+			v.Active = 6
+			if err := models.UpdateUsersById(v); err == nil {
+				resp := responses.StringResponseDTO{StatusCode: 200, Value: "OK", StatusDesc: "OK"}
+				c.Data["json"] = resp
+			} else {
+				logs.Error("Error deleting user", err.Error())
+				resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+				c.Data["json"] = resp
+			}
+		} else {
+			logs.Error("Error deleting user", err.Error())
+			resp := responses.StringResponseDTO{StatusCode: 507, Value: "", StatusDesc: "ERROR " + err.Error()}
+			c.Data["json"] = resp
+		}
 	}
 	c.ServeJSON()
 }
