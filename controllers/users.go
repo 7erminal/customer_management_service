@@ -276,7 +276,22 @@ func (c *UsersController) SignUp() {
 			if gender == "f" || gender == "F" || gender == "female" {
 				gender = "FEMALE"
 			}
-			var addUserModel = models.Users{FullName: v.Name, UserType: 1, Gender: gender, Dob: dobm, Password: string(hashedPassword), Email: v.Email, PhoneNumber: v.PhoneNumber, Role: role, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var addUserModel = models.Users{
+				FullName:     v.Name,
+				UserType:     1,
+				Gender:       gender,
+				Dob:          dobm,
+				Password:     string(hashedPassword),
+				Email:        v.Email,
+				PhoneNumber:  v.PhoneNumber,
+				Role:         role,
+				DateCreated:  time.Now(),
+				DateModified: time.Now(),
+				Active:       1,
+				CreatedBy:    1,
+				ModifiedBy:   1,
+				Username:     v.Username,
+			}
 
 			if uid, err := models.AddUsers(&addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
