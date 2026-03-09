@@ -224,10 +224,9 @@ func (c *UsersController) SignUp() {
 			proceed = true
 		}
 	} else {
+		logs.Info("The role fetched is ", role.Role)
 		proceed = true
 	}
-
-	logs.Info("The role fetched is ", role.Role)
 
 	if _, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
 		logs.Debug("About to debug")
