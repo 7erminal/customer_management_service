@@ -289,12 +289,15 @@ func (c *UsersController) SignUp() {
 
 				// logs.Debug("Returned user is", v)
 
-				branchId, err := strconv.ParseInt(*v.Branch, 10, 64)
 				b := models.Branches{}
-				if err != nil {
-					logs.Error("Error getting branch for registration ", err)
-				} else {
-					b = models.Branches{BranchId: branchId}
+				if v.Branch != nil {
+					branchId, err := strconv.ParseInt(*v.Branch, 10, 64)
+
+					if err != nil {
+						logs.Error("Error getting branch for registration ", err)
+					} else {
+						b = models.Branches{BranchId: branchId}
+					}
 				}
 
 				var userDetails = models.UserExtraDetails{User: uid, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
