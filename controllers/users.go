@@ -241,7 +241,6 @@ func (c *UsersController) SignUp() {
 
 		for _, date_ := range allowedDateList {
 			logs.Debug("About to convert ", v.Dob)
-			logs.Debug("About to convert ", c.Ctx.Input.Query("Dob"))
 			// Convert dob string to date
 			tdobm, error := time.Parse(date_, v.Dob)
 
@@ -258,13 +257,14 @@ func (c *UsersController) SignUp() {
 		}
 
 		if !proceed {
+			logs.Error("Error parsing date. Please enter date in the format (YYYY-MM-DD).")
 			var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
 			c.Data["json"] = resp
 
 			// c.Data["json"] = error.Error()
 
 		} else {
-			// Assign dob
+			logs.Info("Checking gender...")
 			var gender string = strings.ToLower(v.Gender)
 
 			if gender == "" {
@@ -315,9 +315,12 @@ func (c *UsersController) SignUp() {
 					}
 				}
 
+				logs.Info("Adding extra details")
 				var userDetails = models.UserExtraDetails{User: &addUserModel, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
+				logs.Info("User details add after")
 				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
+					logs.Info("Successfully added user extra details")
 					c.Ctx.Output.SetStatus(200)
 
 					// Check application and register
