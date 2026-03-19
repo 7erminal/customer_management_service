@@ -84,13 +84,13 @@ func (c *UsersController) SignUp2() {
 	// Assign dob
 	var addUserModel = models.Users{Username: v.Username, UserType: 1, Password: string(hashedPassword), DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
-	if r, err := models.AddUsers(&addUserModel); err == nil {
+	if _, err := models.AddUsers(&addUserModel); err == nil {
 		c.Ctx.Output.SetStatus(201)
 
 		logs.Debug("Returned user A is", addUserModel)
 
 		// id, _ := strconv.ParseInt(idStr, 0, 64)
-		v, err := models.GetUsersById(r)
+		// v, err := models.GetUsersById(r)
 
 		if err != nil {
 			c.Data["json"] = err.Error()
@@ -104,7 +104,7 @@ func (c *UsersController) SignUp2() {
 
 			// Shop here will be amended to cater for the shop that the customer is registering for
 
-			var userDetails = models.UserExtraDetails{User: v.UserId, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var userDetails = models.UserExtraDetails{User: &addUserModel, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 			if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
 				// Check application and register
@@ -293,7 +293,7 @@ func (c *UsersController) SignUp() {
 				Username:     v.Username,
 			}
 
-			if uid, err := models.AddUsers(&addUserModel); err == nil {
+			if _, err := models.AddUsers(&addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
 
 				logs.Debug("User is ", addUserModel)
@@ -315,7 +315,7 @@ func (c *UsersController) SignUp() {
 					}
 				}
 
-				var userDetails = models.UserExtraDetails{User: uid, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var userDetails = models.UserExtraDetails{User: &addUserModel, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
 				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
 					c.Ctx.Output.SetStatus(200)
@@ -334,14 +334,14 @@ func (c *UsersController) SignUp() {
 						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
-						logs.Error("Error updating customer ID for user ")
+						logs.Error("Error updating user ID for user ")
 						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}
 
 				} else {
 					// c.Data["json"] = err.Error()
-					logs.Error("Error adding customer, ", err.Error())
+					logs.Error("Error adding user, ", err.Error())
 					var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
 					c.Data["json"] = resp
 				}
@@ -1698,7 +1698,7 @@ func (c *UsersController) UpdateUserBranch() {
 	if err == nil {
 		logs.Debug("User fetched successfully")
 
-		userDetails, err := models.GetUserExtraDetailsByUser(v.UserId)
+		userDetails, err := models.GetUserExtraDetailsByUser(v)
 
 		if err != nil {
 			logs.Error("Error returned fetching user details ", err.Error())
