@@ -104,7 +104,15 @@ func (c *UsersController) SignUp2() {
 
 			// Shop here will be amended to cater for the shop that the customer is registering for
 
-			var userDetails = models.UserExtraDetails{User: &addUserModel, Shop: nil, Nickname: "", DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+			var userDetails = models.UserExtraDetails{
+				Shop:         nil,
+				Nickname:     "",
+				DateCreated:  time.Now(),
+				DateModified: time.Now(),
+				Active:       1,
+				CreatedBy:    1,
+				ModifiedBy:   1,
+			}
 
 			if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
 				// Check application and register
@@ -306,6 +314,7 @@ func (c *UsersController) SignUp() {
 
 				b := models.Branches{}
 				if v.Branch != nil {
+					logs.Error("Branch is nil")
 					branchId, err := strconv.ParseInt(*v.Branch, 10, 64)
 
 					if err != nil {
@@ -318,7 +327,6 @@ func (c *UsersController) SignUp() {
 
 				logs.Info("Adding extra details")
 				var userDetails = models.UserExtraDetails{
-					User:         &addUserModel,
 					Shop:         nil,
 					Nickname:     "",
 					Branch:       &b,
@@ -345,10 +353,14 @@ func (c *UsersController) SignUp() {
 					addUserModel.UserDetails = &userDetails
 					if err := models.UpdateUsersById(&addUserModel); err == nil {
 						logs.Info("User found and verified....sending user data")
+						// Clear UserDetails to avoid circular reference during JSON serialization
+						addUserModel.UserDetails = nil
 						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
 						logs.Error("Error updating user ID for user ")
+						// Clear UserDetails to avoid circular reference during JSON serialization
+						addUserModel.UserDetails = nil
 						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}

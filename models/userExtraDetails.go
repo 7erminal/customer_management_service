@@ -12,7 +12,6 @@ import (
 
 type UserExtraDetails struct {
 	UserDetailsId int64     `orm:"auto"`
-	User          *Users    `orm:"rel(fk);column(user_id)"`
 	Branch        *Branches `orm:"rel(fk);column(branch);omitempty;null"`
 	Shop          *Shops    `orm:"rel(fk);omitempty;null"`
 	Nickname      string    `orm:"size(100);omitempty;null"`
@@ -50,10 +49,14 @@ func GetUserExtraDetailsById(id int64) (v *UserExtraDetails, err error) {
 // Id doesn't exist
 func GetUserExtraDetailsByUser(user *Users) (v *UserExtraDetails, err error) {
 	o := orm.NewOrm()
-	v = &UserExtraDetails{User: user}
-	if err = o.QueryTable(new(UserExtraDetails)).Filter("User", user).RelatedSel().One(v); err == nil {
-		return v, nil
+	u := &Users{UserId: user.UserId}
+	if err = o.QueryTable(new(Users)).Filter("UserId", user.UserId).RelatedSel().One(u); err == nil {
+		v = u.UserDetails
+		if err = o.QueryTable(new(UserExtraDetails)).Filter("User", u).RelatedSel().One(v); err == nil {
+			return v, nil
+		}
 	}
+
 	return nil, err
 }
 
