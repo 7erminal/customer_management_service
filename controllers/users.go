@@ -333,7 +333,7 @@ func (c *UsersController) SignUp() {
 
 					addUserModel.UserDetails = &userDetails
 					if err := models.UpdateUsersById(&addUserModel); err == nil {
-
+						logs.Info("User found and verified....sending user data")
 						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
@@ -351,6 +351,7 @@ func (c *UsersController) SignUp() {
 				// c.Data["json"] = v
 
 			} else {
+				logs.Error("An error occurred...")
 				logs.Error(err.Error())
 
 				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
