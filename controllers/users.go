@@ -311,12 +311,23 @@ func (c *UsersController) SignUp() {
 					if err != nil {
 						logs.Error("Error getting branch for registration ", err)
 					} else {
+						logs.Info("Branch ID is ", branchId)
 						b = models.Branches{BranchId: branchId}
 					}
 				}
 
 				logs.Info("Adding extra details")
-				var userDetails = models.UserExtraDetails{User: &addUserModel, Shop: nil, Nickname: "", Branch: &b, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var userDetails = models.UserExtraDetails{
+					User:         &addUserModel,
+					Shop:         nil,
+					Nickname:     "",
+					Branch:       &b,
+					DateCreated:  time.Now(),
+					DateModified: time.Now(),
+					Active:       1,
+					CreatedBy:    1,
+					ModifiedBy:   1,
+				}
 
 				logs.Info("User details add after")
 				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
@@ -362,6 +373,7 @@ func (c *UsersController) SignUp() {
 		}
 	} else {
 		// c.Data["json"] = err.Error()
+		logs.Error("User with email already exists...")
 		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
 		c.Data["json"] = resp
 	}
