@@ -917,43 +917,7 @@ func (c *UsersController) GetOne() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Getting user details ", v.UserDetails)
-		// cust, err := models.GetCustomersByUser(v.UserId)
 
-		// if err != nil {
-		// 	c.Data["json"] = err.Error()
-
-		// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
-		// 	c.Data["json"] = resp
-		// } else {
-		// 	logs.Info("Getting the customer ", cust.Branch.Country.DefaultCurrency.CurrencyId)
-
-		// 	userResp := responses.UserResp{
-		// 		UserId:        v.UserId,
-		// 		ImagePath:     v.ImagePath,
-		// 		UserType:      v.UserType,
-		// 		FullName:      v.FullName,
-		// 		Username:      v.Username,
-		// 		Password:      v.Password,
-		// 		Email:         v.Email,
-		// 		PhoneNumber:   v.PhoneNumber,
-		// 		Gender:        v.Gender,
-		// 		Dob:           v.Dob,
-		// 		Address:       v.Address,
-		// 		IdType:        v.IdType,
-		// 		IdNumber:      v.IdNumber,
-		// 		MaritalStatus: v.MaritalStatus,
-		// 		Active:        v.Active,
-		// 		Role:          v.Role,
-		// 		IsVerified:    v.IsVerified,
-		// 		DateCreated:   v.DateCreated,
-		// 		DateModified:  v.DateModified,
-		// 		CreatedBy:     v.CreatedBy,
-		// 		ModifiedBy:    v.ModifiedBy,
-		// 		Branch:        cust.Branch,
-		// 	}
-		// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User details fetched"}
-		// 	c.Data["json"] = resp
-		// }
 		var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
@@ -1116,13 +1080,13 @@ func (c *UsersController) GetUsersWithRole() {
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
-			// usersResp := []models.Users{}
-			// for _, urs := range l {
-			// 	m := urs.(models.Users)
+			usersResp := []models.Users{}
+			for _, urs := range l {
+				m := urs.(models.Users)
 
-			// 	usersResp = append(usersResp, m)
-			// }
-			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+				usersResp = append(usersResp, m)
+			}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
 		}
 	} else {
@@ -1200,13 +1164,13 @@ func (c *UsersController) GetUsersUnderBranch() {
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
-			// usersResp := []models.Users{}
-			// for _, urs := range l {
-			// 	m := urs.(models.Users)
+			usersResp := []models.Users{}
+			for _, urs := range l {
+				m := urs.(models.Users)
 
-			// 	usersResp = append(usersResp, m)
-			// }
-			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &l, StatusDesc: "Users fetched successfully"}
+				usersResp = append(usersResp, m)
+			}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
 		}
 	} else {
