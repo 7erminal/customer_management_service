@@ -351,7 +351,7 @@ func GetAllUsersByBranch(branch *Branches, query map[string]string, fields []str
 
 	var l []Users
 	// u := &Users{Role: role}
-	qs = qs.Filter("Customer__Branch__branch_id", branch).OrderBy(sortFields...)
+	qs = qs.Filter("UserDetails__Branch__branch_id", branch.BranchId).OrderBy(sortFields...)
 	if _, err = qs.RelatedSel().Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
