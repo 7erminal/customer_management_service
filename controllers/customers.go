@@ -35,7 +35,6 @@ func (c *CustomersController) URLMapping() {
 	c.Mapping("GetAllByBranch", c.GetAllByBranch)
 	c.Mapping("GetCustomerCount", c.GetCustomerCount)
 	c.Mapping("GetCustomerByMsisdn", c.GetCustomerByMsisdn)
-	c.Mapping("GetCustomerByUsername", c.GetCustomerByUsername)
 }
 
 // Post ...
@@ -321,35 +320,6 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 		}
 
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Customer fetched successfully"}
-		c.Data["json"] = resp
-	}
-	c.ServeJSON()
-}
-
-// GetCustomerByUsername ...
-// @Title Get Customer by Username
-// @Description get Customers by username
-// @Param	username		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.Customers
-// @Failure 403 :username is empty
-// @router /username/:username [get]
-func (c *CustomersController) GetCustomerByUsername() {
-	username := c.Ctx.Input.Param(":username")
-	v, err := models.GetCustomer_credentialsByCustomerUsername(username)
-	if err != nil {
-		logs.Error("An error occurred fetching customer")
-		logs.Error(err.Error())
-		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
-		c.Data["json"] = resp
-	} else {
-		jsonStr, err := json.MarshalIndent(v, "", "  ")
-		if err != nil {
-			logs.Error("Failed to marshal customer to JSON: ", err)
-		} else {
-			logs.Info("Fetched customer: ", string(jsonStr))
-		}
-		logs.Info("Customer fetched successfully ", v.Customer.FullName)
-		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v.Customer, StatusDesc: "Customer fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

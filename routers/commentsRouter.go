@@ -124,24 +124,6 @@ func init() {
             Filters: nil,
             Params: nil})
 
-    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
-        beego.ControllerComments{
-            Method: "AddCustomerCredential",
-            Router: `/add-customer-credential`,
-            AllowHTTPMethods: []string{"post"},
-            MethodParams: param.Make(),
-            Filters: nil,
-            Params: nil})
-
-    beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
-        beego.ControllerComments{
-            Method: "Put",
-            Router: `/update-customer-credential/:customerId`,
-            AllowHTTPMethods: []string{"put"},
-            MethodParams: param.Make(),
-            Filters: nil,
-            Params: nil})
-
     beego.GlobalControllerRouter["customer_management_service/controllers:Customer_emergency_contactsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_emergency_contactsController"],
         beego.ControllerComments{
             Method: "Post",
@@ -318,15 +300,6 @@ func init() {
             Method: "UpdateCustomerImage",
             Router: `/update-customer-image`,
             AllowHTTPMethods: []string{"post"},
-            MethodParams: param.Make(),
-            Filters: nil,
-            Params: nil})
-
-    beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:CustomersController"],
-        beego.ControllerComments{
-            Method: "GetCustomerByUsername",
-            Router: `/username/:username`,
-            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

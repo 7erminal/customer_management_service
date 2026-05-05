@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "msysmobilizer" ]
+    branches: [ "ecommerce" ]
   pull_request:
-    branches: [ "msysmobilizer" ]
+    branches: [ "ecommerce" ]
 
 jobs:
 
@@ -36,8 +36,8 @@ jobs:
           set -e
           cd /usr/app/mobile-application/customer-management-service
           git stash
-          git pull origin msysmobilizer
-          go build -o customer-management-service
-          pm2 restart customer-management-service || \
-          pm2 start customer-management-service --name customer-management-service
+          git pull origin ecommerce
+          go build -o ecommerce-customer-management-service
+          pm2 restart ecommerce-customer-management-service || \
+          pm2 start ecommerce-customer-management-service --name ecommerce-customer-management-service
         EOF

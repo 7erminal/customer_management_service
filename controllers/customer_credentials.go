@@ -2,17 +2,11 @@ package controllers
 
 import (
 	"customer_management_service/models"
-	"customer_management_service/structs/requests"
-	"customer_management_service/structs/responses"
-	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Customer_credentialsController operations for Customer_credentials
@@ -22,93 +16,10 @@ type Customer_credentialsController struct {
 
 // URLMapping ...
 func (c *Customer_credentialsController) URLMapping() {
-	c.Mapping("AddCustomerCredential", c.AddCustomerCredential)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
-}
-
-// AddCustomerCredential ...
-// @Title Post
-// @Description create Customer_credentials
-// @Param	body		body 	requests.CustomerCredentialRequestDTO	true		"body for Customer_credentials content"
-// @Success 201 {int} models.Customer_credentials
-// @Failure 403 body is empty
-// @router /add-customer-credential [post]
-func (c *Customer_credentialsController) AddCustomerCredential() {
-	var v requests.CustomerCredentialRequestDTO
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-
-	logs.Info("Adding customer credential for customer ID: ", v.CustomerId)
-
-	statusCode := 401
-	statusDesc := "Unauthorized"
-
-	customer := models.Customers{CustomerId: v.CustomerId}
-
-	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
-	if errr != nil {
-		logs.Error("Error hashing password: %v", errr)
-		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-			StatusCode: 500,
-			StatusDesc: "Internal Server Error",
-			Result:     "Error hashing password",
-		}
-		c.Ctx.Output.SetStatus(500)
-		return
-	}
-
-	// hashedPin, errr := bcrypt.GenerateFromPassword([]byte(v.Pin), 8)
-	// if errr != nil {
-	// 	logs.Error("Error hashing password: %v", errr)
-	// 	c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-	// 		StatusCode: 500,
-	// 		StatusDesc: "Internal Server Error",
-	// 		Result:     "Error hashing password",
-	// 	}
-	// 	c.Ctx.Output.SetStatus(500)
-	// 	return
-	// }
-
-	ccredential := models.Customer_credentials{
-		Customer:     &customer,
-		Username:     v.Username,
-		Password:     string(hashedPassword),
-		Pin:          v.Pin,
-		DateCreated:  time.Now(),
-		DateModified: time.Now(),
-		CreatedBy:    1,
-		ModifiedBy:   1,
-		Active:       1,
-	}
-
-	if _, err := models.AddCustomer_credentials(&ccredential); err == nil {
-		c.Ctx.Output.SetStatus(200)
-
-		statusCode = 200
-		statusDesc = "Customer credential added successfully"
-
-		logs.Info("Customer credential added successfully: ", ccredential)
-		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-			StatusCode: statusCode,
-			StatusDesc: statusDesc,
-			Result:     "Customer credential added successfully",
-		}
-		// c.Data["json"] = v
-	} else {
-		c.Data["json"] = err.Error()
-
-		logs.Error("Error adding customer credential: %v", err)
-		c.Ctx.Output.SetStatus(200)
-
-		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-			StatusCode: statusCode,
-			StatusDesc: statusDesc,
-			Result:     err.Error(),
-		}
-	}
-	c.ServeJSON()
 }
 
 // GetOne ...
@@ -189,95 +100,6 @@ func (c *Customer_credentialsController) GetAll() {
 		c.Data["json"] = err.Error()
 	} else {
 		c.Data["json"] = l
-	}
-	c.ServeJSON()
-}
-
-// Put ...
-// @Title Put
-// @Description update the Customer_credentials
-// @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	requests.CustomerCredentialUpdateRequestDTO	true		"body for Customer_credentials content"
-// @Success 200 {object} models.Customer_credentials
-// @Failure 403 :customerId is not int
-// @router /update-customer-credential/:customerId [put]
-func (c *Customer_credentialsController) Put() {
-	idStr := c.Ctx.Input.Param(":customerId")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	// v := models.Customer_credentials{Id: id}
-
-	var v requests.CustomerCredentialUpdateRequestDTO
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-
-	logs.Info("Adding customer credential for customer ID: ", idStr)
-
-	statusCode := 401
-	statusDesc := "Unauthorized"
-
-	customer := models.Customers{CustomerId: id}
-
-	if customerC, err := models.GetCustomer_credentialsByCustomerId(customer); err == nil {
-
-		hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
-		if errr != nil {
-			logs.Error("Error hashing password: %v", errr)
-			c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-				StatusCode: 500,
-				StatusDesc: "Internal Server Error",
-				Result:     "Error hashing password",
-			}
-			c.Ctx.Output.SetStatus(500)
-			return
-		}
-
-		// hashedPin, errr := bcrypt.GenerateFromPassword([]byte(v.Pin), 8)
-		// if errr != nil {
-		// 	logs.Error("Error hashing password: %v", errr)
-		// 	c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-		// 		StatusCode: 500,
-		// 		StatusDesc: "Internal Server Error",
-		// 		Result:     "Error hashing password",
-		// 	}
-		// 	c.Ctx.Output.SetStatus(500)
-		// 	return
-		// }
-
-		ccredential := models.Customer_credentials{
-			Id:           customerC.Id,
-			Customer:     &customer,
-			Username:     v.Username,
-			Password:     string(hashedPassword),
-			Pin:          v.Pin,
-			DateCreated:  time.Now(),
-			DateModified: time.Now(),
-			CreatedBy:    1,
-			ModifiedBy:   1,
-			Active:       1,
-		}
-
-		// json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-		if err := models.UpdateCustomer_credentialsById(&ccredential); err == nil {
-			c.Data["json"] = "OK"
-
-			c.Ctx.Output.SetStatus(200)
-			statusCode = 200
-			statusDesc = "Customer credential updated successfully"
-			logs.Info("Customer credential updated successfully: ", ccredential)
-			c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-				StatusCode: statusCode,
-				StatusDesc: statusDesc,
-				Result:     "Customer credential updated successfully",
-			}
-		} else {
-			// c.Data["json"] = err.Error()
-			logs.Error("Error updating customer credential: %v", err)
-			c.Ctx.Output.SetStatus(200)
-			c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-				StatusCode: statusCode,
-				StatusDesc: statusDesc,
-				Result:     err.Error(),
-			}
-		}
 	}
 	c.ServeJSON()
 }
