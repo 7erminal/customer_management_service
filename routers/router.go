@@ -42,30 +42,6 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/customer-credentials",
-			beego.NSInclude(
-				&controllers.Customer_credentialsController{},
-			),
-		),
-
-		beego.NSNamespace("/accounts",
-			beego.NSInclude(
-				&controllers.AccountsController{},
-			),
-		),
-
-		beego.NSNamespace("/newsletter",
-			beego.NSInclude(
-				&controllers.Newsletter_customersController{},
-			),
-		),
-
-		beego.NSNamespace("/shops",
-			beego.NSInclude(
-				&controllers.ShopsController{},
-			),
-		),
-
 		beego.NSNamespace("/roles",
 			beego.NSInclude(
 				&controllers.RolesController{},
@@ -87,18 +63,6 @@ func init() {
 		beego.NSNamespace("/id-types",
 			beego.NSInclude(
 				&controllers.Identification_typesController{},
-			),
-		),
-
-		beego.NSNamespace("/customer-emergency-contacts",
-			beego.NSInclude(
-				&controllers.Customer_emergency_contactsController{},
-			),
-		),
-
-		beego.NSNamespace("/customer-guarantors",
-			beego.NSInclude(
-				&controllers.Customer_guarantorsController{},
 			),
 		),
 	)
