@@ -82,7 +82,7 @@ func GetCustomerById(id int64) (v *Customers, err error) {
 func GetCustomerByMsisdn(msisdn string) (v *Customers, err error) {
 	o := orm.NewOrm()
 
-	v = &Customers{PhoneNumber: fmt.Sprintf("%d", msisdn)}
+	v = &Customers{PhoneNumber: fmt.Sprintf("%s", msisdn)}
 	qs := o.QueryTable(new(Customers))
 	if err = qs.Filter("PhoneNumber", msisdn).RelatedSel().One(v); err == nil {
 		_, err = o.LoadRelated(v, "EmergencyContacts")

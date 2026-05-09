@@ -1,0 +1,196 @@
+-- Customer Management Service migration scoped to models directly used by
+-- controllers configured in routers/router.go.
+
+SET NAMES utf8mb4;
+
+CREATE TABLE IF NOT EXISTS actions (
+  action_id BIGINT NOT NULL AUTO_INCREMENT,
+  action VARCHAR(50) NOT NULL DEFAULT '',
+  description VARCHAR(255) NOT NULL DEFAULT '',
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (action_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS roles (
+  role_id BIGINT NOT NULL AUTO_INCREMENT,
+  role VARCHAR(100) NOT NULL DEFAULT '',
+  description VARCHAR(500) NOT NULL DEFAULT '',
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (role_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS permissions (
+  permission_id BIGINT NOT NULL AUTO_INCREMENT,
+  permission VARCHAR(100) NOT NULL DEFAULT '',
+  permission_code VARCHAR(10) NOT NULL DEFAULT '',
+  permission_description VARCHAR(500) NOT NULL DEFAULT '',
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (permission_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+  role_permission_id BIGINT NOT NULL AUTO_INCREMENT,
+  role_id BIGINT NOT NULL,
+  permission_id BIGINT NOT NULL,
+  action_id BIGINT NOT NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (role_permission_id),
+  KEY idx_role_permissions_role_id (role_id),
+  KEY idx_role_permissions_permission_id (permission_id),
+  KEY idx_role_permissions_action_id (action_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS customer_categories (
+  customer_category_id BIGINT NOT NULL AUTO_INCREMENT,
+  category VARCHAR(100) NOT NULL DEFAULT '',
+  description VARCHAR(255) NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (customer_category_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS identification_types (
+  identification_type_id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL DEFAULT '',
+  code VARCHAR(100) NOT NULL DEFAULT '',
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (identification_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS branches (
+  branch_id BIGINT NOT NULL AUTO_INCREMENT,
+  branch VARCHAR(80) NOT NULL DEFAULT '',
+  country_id BIGINT NULL,
+  location VARCHAR(255) NOT NULL DEFAULT '',
+  phone_number VARCHAR(255) NOT NULL DEFAULT '',
+  active INT NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NULL,
+  modified_by INT NULL,
+  PRIMARY KEY (branch_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_extra_details (
+  user_details_id BIGINT NOT NULL AUTO_INCREMENT,
+  branch BIGINT NULL,
+  shop_id BIGINT NULL,
+  nickname VARCHAR(100) NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_details_id),
+  KEY idx_user_extra_details_branch (branch)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS auth_users (
+  user_id BIGINT NOT NULL AUTO_INCREMENT,
+  user_details_id BIGINT NULL,
+  image_path VARCHAR(200) NULL,
+  user_type INT NULL,
+  full_name VARCHAR(255) NOT NULL DEFAULT '',
+  username VARCHAR(40) NULL,
+  password VARCHAR(255) NOT NULL DEFAULT '',
+  email VARCHAR(255) NULL,
+  phone_number VARCHAR(255) NULL,
+  gender VARCHAR(10) NOT NULL DEFAULT '',
+  dob DATETIME NOT NULL,
+  address VARCHAR(255) NULL,
+  id_type VARCHAR(5) NULL,
+  id_number VARCHAR(100) NULL,
+  marital_status VARCHAR(20) NULL,
+  active INT NULL,
+  role BIGINT NULL,
+  is_verified BOOLEAN NULL,
+  date_created DATETIME NULL,
+  date_modified DATETIME NULL,
+  created_by INT NULL,
+  modified_by INT NULL,
+  PRIMARY KEY (user_id),
+  KEY idx_auth_users_user_details_id (user_details_id),
+  KEY idx_auth_users_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_tokens (
+  user_token_id BIGINT NOT NULL AUTO_INCREMENT,
+  token VARCHAR(255) NOT NULL DEFAULT '',
+  nonce VARCHAR(255) NOT NULL DEFAULT '',
+  expiry_date DATETIME NOT NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_token_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_invites (
+  user_invite_id BIGINT NOT NULL AUTO_INCREMENT,
+  invited_by BIGINT NOT NULL,
+  invitation_token BIGINT NOT NULL,
+  email VARCHAR(255) NOT NULL DEFAULT '',
+  role BIGINT NOT NULL,
+  status VARCHAR(255) NOT NULL DEFAULT '',
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_invite_id),
+  KEY idx_user_invites_invited_by (invited_by),
+  KEY idx_user_invites_invitation_token (invitation_token),
+  KEY idx_user_invites_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS customers (
+  customer_id BIGINT NOT NULL AUTO_INCREMENT,
+  customer_number VARCHAR(255) NOT NULL DEFAULT '',
+  full_name VARCHAR(255) NOT NULL DEFAULT '',
+  image_path VARCHAR(255) NOT NULL DEFAULT '',
+  email VARCHAR(255) NULL,
+  phone_number VARCHAR(255) NULL,
+  gender VARCHAR(10) NULL,
+  location VARCHAR(255) NULL,
+  identification_type_id BIGINT NULL,
+  identification_number VARCHAR(255) NULL,
+  branch BIGINT NULL,
+  shop_id BIGINT NULL,
+  customer_category_id BIGINT NULL,
+  nickname VARCHAR(100) NULL,
+  dob DATETIME NOT NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  last_txn_date DATETIME NOT NULL,
+  PRIMARY KEY (customer_id),
+  KEY idx_customers_identification_type_id (identification_type_id),
+  KEY idx_customers_branch (branch),
+  KEY idx_customers_customer_category_id (customer_category_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
