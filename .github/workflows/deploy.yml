@@ -35,7 +35,7 @@ jobs:
 
         ssh -o StrictHostKeyChecking=no root@$SSH_SERVER << 'EOF'
           set -e
-          cd /usr/app/customer-management-service
+          cd /usr/app/customer_management_service
           git stash
           git pull origin ecommerce
           go build -o ecommerce-customer-management-service
