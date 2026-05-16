@@ -6,7 +6,7 @@ package models
 
 type CustomerResponseDTO struct {
 	StatusCode int
-	Customer   *Customers
+	Result     *Customers
 	StatusDesc string
 }
 

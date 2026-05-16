@@ -49,6 +49,7 @@ func (c *UsersController) URLMapping() {
 	c.Mapping("InviteUser", c.InviteUser)
 	c.Mapping("RevokeUserInvites", c.RevokeUserInvites)
 	c.Mapping("UpdateInviteToken", c.UpdateInviteToken)
+	c.Mapping("UpdateUserPassword", c.UpdateUserPassword)
 }
 
 // SignUp2 ...
@@ -1651,6 +1652,79 @@ func (c *UsersController) UpdateUserRole() {
 
 			var resp = responses.UserResponseDTO{StatusCode: 605, User: nil, StatusDesc: "Error updating user. Role not found."}
 			c.Data["json"] = resp
+		}
+
+	} else {
+		logs.Error("Error updating user ", err.Error())
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error updating user. User not found."}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
+}
+
+// Update User Role...
+// @Title Update User Role
+// @Description update the Users
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.UpdateUserRequestDTO	true		"body for Users content"
+// @Success 200 {object} models.UserResponseDTO
+// @Failure 403 :id is not int
+// @router /password/:id [put]
+func (c *UsersController) UpdateUserPassword() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	var h requests.UpdateUserPasswordRequest
+
+	// get the request
+	json.Unmarshal(c.Ctx.Input.RequestBody, &h)
+
+	logs.Info("Update user request received ", h)
+
+	logs.Debug("User id is ", id)
+
+	v, err := models.GetUsersById(id)
+
+	logs.Debug("About to save", v)
+	logs.Debug("And error is ", err)
+
+	if err == nil {
+		logs.Debug("User fetched successfully")
+
+		if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(h.OldPassword)); err != nil {
+			// If the two passwords don't match, return a 401 status
+			c.Data["json"] = err.Error()
+
+			logs.Error(err.Error())
+
+			var resp = responses.UserResponseDTO{StatusCode: 605, User: nil, StatusDesc: "Old password does not match"}
+			c.Data["json"] = resp
+
+		} else {
+			hashedPassword, err := bcrypt.GenerateFromPassword([]byte(h.NewPassword), bcrypt.DefaultCost)
+
+			if err != nil {
+				logs.Error("Error hashing password ", err.Error())
+				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error hashing new password"}
+				c.Data["json"] = resp
+			} else {
+				v.Password = string(hashedPassword)
+
+				if err := models.UpdateUsersById(v); err == nil {
+					message := "Password updated successfully"
+					var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+					c.Data["json"] = resp
+
+					// c.Data["json"] = v
+
+				} else {
+					// c.Data["json"] = err.Error()
+					logs.Debug("Error updating user", err.Error())
+					var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
+					c.Data["json"] = resp
+				}
+			}
+
 		}
 
 	} else {

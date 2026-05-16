@@ -154,7 +154,7 @@ func (c *CustomersController) AddCustomer() {
 
 	if !proceed {
 
-		var resp = models.CustomerResponseDTO{StatusCode: 606, Customer: nil, StatusDesc: "Error adding user"}
+		var resp = models.CustomerResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
 		// c.Data["json"] = error.Error()
@@ -244,7 +244,7 @@ func (c *CustomersController) AddCustomer() {
 				errorCode = 609
 				message = "An error occurred updating customer number. " + err.Error()
 			}
-			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
+			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Result: &cust, StatusDesc: message}
 			c.Data["json"] = resp
 
 		} else {
@@ -258,7 +258,7 @@ func (c *CustomersController) AddCustomer() {
 				message = "An error occurred adding customer. " + err.Error()
 			}
 			logs.Info("Error adding customer message:: ", message)
-			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: nil, StatusDesc: message}
+			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Result: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}
 
@@ -282,7 +282,7 @@ func (c *CustomersController) GetOne() {
 	v, err := models.GetCustomerById(id)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
-		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
 		jsonStr, err := json.MarshalIndent(v, "", "  ")
@@ -291,7 +291,7 @@ func (c *CustomersController) GetOne() {
 		} else {
 			logs.Info("Fetched customer: ", string(jsonStr))
 		}
-		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "User created successfully"}
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User created successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -309,7 +309,7 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 	v, err := models.GetCustomerByMsisdn(msisdn)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
-		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
 		jsonStr, err := json.MarshalIndent(v, "", "  ")
@@ -319,7 +319,7 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 			logs.Info("Fetched customer: ", string(jsonStr))
 		}
 
-		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Customer fetched successfully"}
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Result: v, StatusDesc: "Customer fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -632,11 +632,11 @@ func (c *CustomersController) Put() {
 		logs.Info("Date created for customer is ", cust.DateCreated)
 		if err := models.UpdateCustomerById(cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
-			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Result: cust, StatusDesc: "Customer updated successfully"}
 			c.Data["json"] = resp
 		} else {
 			logs.Error("Customer update failed ", err.Error())
-			var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Customer update failed"}
+			var resp = models.CustomerResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Customer update failed"}
 			c.Data["json"] = resp
 		}
 	}
@@ -687,11 +687,11 @@ func (c *CustomersController) UpdateCustomerLastTxnDate() {
 		cust.LastTxnDate = lastTxnDate
 		if err := models.UpdateCustomerById(cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
-			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Result: cust, StatusDesc: "Customer updated successfully"}
 			c.Data["json"] = resp
 		} else {
 			logs.Error("Customer update failed ", err.Error())
-			var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Customer update failed"}
+			var resp = models.CustomerResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Customer update failed"}
 			c.Data["json"] = resp
 		}
 	}
@@ -733,7 +733,7 @@ func (c *CustomersController) UpdateCustomerImage() {
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
 			errorMessage := "Error: Failed to save the image file"
 
-			resp := models.CustomerResponseDTO{StatusCode: 601, Customer: nil, StatusDesc: "Error updating user. " + errorMessage}
+			resp := models.CustomerResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error updating user. " + errorMessage}
 
 			c.Data["json"] = resp
 			c.ServeJSON()
@@ -752,19 +752,19 @@ func (c *CustomersController) UpdateCustomerImage() {
 
 			logs.Debug("Returned customer is", v)
 
-			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Profile image updated successfully"}
+			var resp = models.CustomerResponseDTO{StatusCode: 200, Result: v, StatusDesc: "Profile image updated successfully"}
 			c.Data["json"] = resp
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = models.CustomerResponseDTO{StatusCode: 602, Customer: nil, StatusDesc: "Error updating user"}
+			var resp = models.CustomerResponseDTO{StatusCode: 602, Result: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = models.CustomerResponseDTO{StatusCode: 603, Customer: nil, StatusDesc: "Error updating user"}
+		var resp = models.CustomerResponseDTO{StatusCode: 603, Result: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
