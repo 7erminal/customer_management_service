@@ -4,33 +4,6 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE TABLE IF NOT EXISTS currencies (
-  currency_id BIGINT NOT NULL AUTO_INCREMENT,
-  symbol VARCHAR(20) NOT NULL DEFAULT '',
-  currency VARCHAR(50) NOT NULL DEFAULT '',
-  active INT NULL,
-  date_created DATETIME NOT NULL,
-  date_modified DATETIME NOT NULL,
-  created_by INT NULL,
-  modified_by INT NULL,
-  PRIMARY KEY (currency_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS countries (
-  country_id BIGINT NOT NULL AUTO_INCREMENT,
-  country VARCHAR(255) NOT NULL DEFAULT '',
-  description VARCHAR(500) NOT NULL DEFAULT '',
-  country_code VARCHAR(20) NOT NULL DEFAULT '',
-  default_currency BIGINT NOT NULL,
-  date_created DATETIME NOT NULL,
-  date_modified DATETIME NOT NULL,
-  created_by INT NOT NULL DEFAULT 0,
-  modified_by INT NOT NULL DEFAULT 0,
-  PRIMARY KEY (country_id),
-  KEY idx_countries_default_currency (default_currency),
-  CONSTRAINT fk_countries_default_currency FOREIGN KEY (default_currency) REFERENCES currencies(currency_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE IF NOT EXISTS actions (
   action_id BIGINT NOT NULL AUTO_INCREMENT,
   action VARCHAR(50) NOT NULL DEFAULT '',
@@ -121,8 +94,7 @@ CREATE TABLE IF NOT EXISTS branches (
   created_by INT NULL,
   modified_by INT NULL,
   PRIMARY KEY (branch_id),
-  KEY idx_branches_country_id (country_id),
-  CONSTRAINT fk_branches_country FOREIGN KEY (country_id) REFERENCES countries(country_id)
+  KEY idx_branches_country_id (country_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS user_extra_details (
