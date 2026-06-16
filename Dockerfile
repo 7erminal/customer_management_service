@@ -1,39 +1,49 @@
-# Base image is in https://registry.hub.docker.com/_/golang/
-# Refer to https://blog.golang.org/docker for usage
-FROM golang:1.18-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
-# ENV GOPATH /go
+WORKDIR /src
 
-WORKDIR /usr/app
+RUN apk add --no-cache git ca-certificates
 
-# Copy go mod and sum files
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
 COPY . .
 
-# Install beego & bee
-RUN go install github.com/beego/bee/v2@latest
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/customer_management_service .
 
-# Build the Go app and create an executable named 'main'
-RUN go build -o main .
+FROM alpine:3.20
 
-# Stage 2: Create a smaller image to run the application
-FROM alpine:latest
+WORKDIR /app
 
-# Set the Current Working Directory inside the container to /app
-WORKDIR /usr/app
+RUN apk add --no-cache ca-certificates tzdata \
+	&& addgroup -S appgroup \
+	&& adduser -S appuser -G appgroup \
+	&& mkdir -p /logs /app/conf /app/swagger /app/uploads \
+	&& chown -R appuser:appgroup /logs /app
 
-# Copy the executable from the builder stage to /app
-COPY --from=builder /usr/app/main .
+COPY --from=builder /out/customer_management_service /app/customer_management_service
+COPY conf /app/conf
+COPY swagger /app/swagger
 
-# Copy configuration files (if any) from the builder stage to /app/conf
-COPY --from=builder /usr/app/conf ./conf
+COPY <<'EOF' /app/entrypoint.sh
+#!/bin/sh
+set -eu
 
-# RUN bee run -downdoc=true -gendoc=true
+if [ -n "${APP_HTTP_PORT:-}" ]; then
+  export BEEGO_HTTPPORT="${APP_HTTP_PORT}"
+fi
 
-EXPOSE 8083
+if [ -n "${BEEGO_RUNMODE:-}" ]; then
+  export BEEGO_RUNMODE
+fi
 
-CMD ["./main"]
+exec /app/customer_management_service
+EOF
+
+RUN chmod +x /app/entrypoint.sh
+
+USER appuser
+
+EXPOSE 5083
+
+ENTRYPOINT ["/app/entrypoint.sh"]

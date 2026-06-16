@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: naki-customer-management-service
+  namespace: naki
+  labels:
+    app: naki-customer-management-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: naki-customer-management-service
+  template:
+    metadata:
+      labels:
+        app: naki-customer-management-service
+    spec:
+      imagePullSecrets:
+        - name: acr-pull-secret
+      containers:
+        - name: naki-customer-management-service
+          image: nakiacrplatform.azurecr.io/samples/naki:naki-customer-management-service-1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5083
+          envFrom:
+            - configMapRef:
+                name: naki-customer-management-config
+            - secretRef:
+                name: naki-customer-management-secrets
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 12
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 25
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

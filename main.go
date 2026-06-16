@@ -2,6 +2,8 @@ package main
 
 import (
 	_ "customer_management_service/routers"
+	"fmt"
+	"net/url"
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/logs"
@@ -11,13 +13,51 @@ import (
 	"github.com/beego/beego/v2/server/web/filter/cors"
 )
 
-func main() {
-	sqlConn, err := beego.AppConfig.String("sqlconn")
+func init() {
+	// 1. Fetch values from app.conf
+	// val, _ := beego.AppConfig.GetSection("default")
+	user, err := beego.AppConfig.String("pguser")
 	if err != nil {
-		logs.Error("%s", err)
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
+	}
+	pass, err := beego.AppConfig.String("pgpass")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
+	}
+	host, err := beego.AppConfig.String("pghost")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
+	}
+	port, err := beego.AppConfig.String("pgport")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
+	}
+	dbName, err := beego.AppConfig.String("pgdb")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
 	}
 
-	orm.RegisterDataBase("default", "mysql", sqlConn)
+	// 2. Register the driver name
+	orm.RegisterDriver("postgres", orm.DRPostgres)
+
+	// 3. Construct connection string (handle special characters in password)
+	dataSource := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		user, url.QueryEscape(pass), host, port, dbName,
+	)
+
+	// 4. Register the default database alias
+	// Max connection pool limits can be configured here as the 4th/5th optional arguments
+	orm.RegisterDataBase("default", "postgres", dataSource)
+}
+
+func main() {
+	// sqlConn, err := beego.AppConfig.String("sqlconn")
+	// if err != nil {
+	// 	logs.Error("%s", err)
+	// }
+
+	// orm.RegisterDataBase("default", "mysql", sqlConn)
 	logs.SetLogger(logs.AdapterFile, `{"filename":"../logs/customer_management_application.log"}`)
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
