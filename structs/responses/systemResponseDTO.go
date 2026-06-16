@@ -30,3 +30,9 @@ type CountryResponseDTO struct {
 	Country    *Countries
 	StatusDesc string
 }
+
+type CurrencyResponseDTO struct {
+	StatusCode int
+	Currency   *Currencies
+	StatusDesc string
+}
