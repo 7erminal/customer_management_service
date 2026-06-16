@@ -8,5 +8,5 @@ data:
   BEEGO_RUNMODE: "prod"
   DB_HOST: "postgres-platform.nakilink.postgres.database.azure.com"
   DB_PORT: "5432"
-  DB_NAME: "customer_management"
+  DB_NAME: "customer_management_test"
   DB_SSLMODE: "require"
