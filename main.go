@@ -12,6 +12,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/beego/beego/v2/server/web/filter/cors"
+	_ "github.com/lib/pq"
 )
 
 func setup() {
