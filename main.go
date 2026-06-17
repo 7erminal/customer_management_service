@@ -4,6 +4,7 @@ import (
 	_ "customer_management_service/routers"
 	"fmt"
 	"net/url"
+	"os"
 
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/logs"
@@ -13,7 +14,8 @@ import (
 	"github.com/beego/beego/v2/server/web/filter/cors"
 )
 
-func init() {
+func setup() {
+	fmt.Println("Setting up the database connection...")
 	// 1. Fetch values from app.conf
 	// val, _ := beego.AppConfig.GetSection("default")
 	user, err := beego.AppConfig.String("pguser")
@@ -36,19 +38,45 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
 	}
+	pgTest, err := beego.AppConfig.String("pgtest")
+	if err != nil {
+		panic(fmt.Sprintf("Failed to fetch configuration: %v", err))
+	}
+	logs.Info("Postgres test value is: ", pgTest)
 
 	// 2. Register the driver name
 	orm.RegisterDriver("postgres", orm.DRPostgres)
 
+	if user == "" {
+		user = os.Getenv("DB_USER")
+	}
+	if pass == "" {
+		pass = os.Getenv("DB_PASSWORD")
+	}
+	if host == "" {
+		host = os.Getenv("DB_HOST")
+	}
+	if port == "" {
+		port = os.Getenv("DB_PORT")
+	}
+	if dbName == "" {
+		dbName = os.Getenv("DB_NAME")
+	}
+
+	fmt.Printf("Database credentials are: user=%s, host=%s, port=%s, dbName=%s\n", user, host, port, dbName)
+
 	// 3. Construct connection string (handle special characters in password)
 	dataSource := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		"postgres://%s:%s@%s:%s/%s?sslmode=require",
 		user, url.QueryEscape(pass), host, port, dbName,
 	)
 
 	// 4. Register the default database alias
 	// Max connection pool limits can be configured here as the 4th/5th optional arguments
-	orm.RegisterDataBase("default", "postgres", dataSource)
+	dberr := orm.RegisterDataBase("default", "postgres", dataSource)
+	if dberr != nil {
+		panic(fmt.Sprintf("Failed to register database: %v", dberr))
+	}
 }
 
 func main() {
@@ -57,9 +85,22 @@ func main() {
 	// 	logs.Error("%s", err)
 	// }
 
-	// orm.RegisterDataBase("default", "mysql", sqlConn)
-	logs.SetLogger(logs.AdapterFile, `{"filename":"../logs/customer_management_application.log"}`)
+	logs.SetLogger(logs.AdapterConsole)
 
+	beego.LoadAppConfig("ini", "/app/conf/app.conf")
+
+	// orm.RegisterDataBase("default", "mysql", sqlConn)
+	// logs.SetLogger(logs.AdapterFile, `{"filename":"../logs/customer_management_application.log"}`)
+
+	appname, err := beego.AppConfig.String("appname")
+	if err != nil {
+		logs.Error("%s", err)
+	}
+	logs.Info("Config file path: %s", appname)
+	logs.Info("HTTP port from conf: %d", beego.BConfig.Listen.HTTPPort)
+	logs.Info("pgtest: %s", func() string { v, _ := beego.AppConfig.String("pgtest"); return v }())
+
+	setup()
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://localhost:8000", "http://152.67.134.169", "http://13.40.60.131:8001", "http://185.249.227.127:9001", "http://185.249.227.127:9002", "http://167.86.115.44:8002", "http://5.252.55.191", "makufoodsltd.net", "https://makufoodsltd.net", "https://www.makufoodsltd.com", "https://makufoodsltd.com", "makufoodsltd.com", "https://admin.bridgeafrica.group", "https://mestechgh.com", "https://admin.mestechgh.com", "https://client.mestechgh.com", "https://authentication.mestechgh.com"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
