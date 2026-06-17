@@ -10,3 +10,6 @@ data:
   DB_PORT: "5432"
   DB_NAME: "customer_management_test"
   DB_SSLMODE: "require"
+  ACCOUNTS_BASE_URL: "http://naki-accounts-service"
+  AUTHENTICATION_BASE_URL: "http://naki-authentication-service"
+  SYSTEM_BASE_URL: "http://naki-system-service"

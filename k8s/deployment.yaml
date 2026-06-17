@@ -19,7 +19,7 @@ spec:
         - name: acr-pull-secret
       containers:
         - name: naki-customer-management-service
-          image: nakiacrplatform.azurecr.io/samples/naki:naki-customer-management-service-8
+          image: nakiacrplatform.azurecr.io/samples/naki:naki-customer-management-service-9
           imagePullPolicy: Always
           ports:
             - name: http
