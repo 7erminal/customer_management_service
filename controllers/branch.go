@@ -4,6 +4,7 @@ import (
 	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
 	"customer_management_service/structs/responses"
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -54,6 +55,10 @@ func (c *BranchController) GetOne() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Successfully fetched branch details for ", id)
+
+		// Log branch details in json
+		branchDetails, _ := json.Marshal(v)
+		logs.Info("Branch details are ", string(branchDetails))
 
 		countryM := responses.CountryResp{}
 		currencyM := responses.CurrencyResp{}
