@@ -4,8 +4,10 @@ import (
 	"customer_management_service/models"
 	"customer_management_service/structs/responses"
 	"errors"
+	"strconv"
 	"strings"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -42,7 +44,19 @@ func (c *BranchController) Post() {
 // @Failure 403 :id is empty
 // @router /:id [get]
 func (c *BranchController) GetOne() {
-
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	v, err := models.GetCustomer_categoriesById(id)
+	if err != nil {
+		logs.Error("Error fetching branch details for ", id, " is ", err.Error())
+		var resp = responses.BranchResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching branch details for " + strconv.FormatInt(id, 10) + " is " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		logs.Info("Successfully fetched branch details for ", id)
+		var resp = responses.BranchResponseDTO{StatusCode: 200, Result: &v, StatusDesc: "Successfully fetched branch details for " + strconv.FormatInt(id, 10)}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
 }
 
 // GetAll ...
