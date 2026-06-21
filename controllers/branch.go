@@ -53,7 +53,17 @@ func (c *BranchController) GetOne() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Successfully fetched branch details for ", id)
-		var resp = responses.BranchResponseDTO{StatusCode: 200, Result: &v, StatusDesc: "Successfully fetched branch details for " + strconv.FormatInt(id, 10)}
+		branchResp := responses.BranchResp{
+			BranchId:     v.BranchId,
+			BranchName:   v.Branch,
+			Location:     v.Location,
+			Active:       v.Active,
+			DateCreated:  v.DateCreated,
+			DateModified: v.DateModified,
+			CreatedBy:    v.CreatedBy,
+			ModifiedBy:   v.ModifiedBy,
+		}
+		var resp = responses.BranchResponseDTO{StatusCode: 200, Result: &branchResp, StatusDesc: "Successfully fetched branch details for " + strconv.FormatInt(id, 10)}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
