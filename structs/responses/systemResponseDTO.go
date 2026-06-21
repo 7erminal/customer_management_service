@@ -27,12 +27,12 @@ type Countries struct {
 
 type CountryResponseDTO struct {
 	StatusCode int
-	Country    *Countries
+	Result     *Countries
 	StatusDesc string
 }
 
 type CurrencyResponseDTO struct {
 	StatusCode int
-	Currency   *Currencies
+	Result     *Currencies
 	StatusDesc string
 }
