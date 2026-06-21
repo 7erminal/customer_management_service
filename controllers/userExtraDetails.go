@@ -138,7 +138,12 @@ func (c *UserExtraDetailsController) GetAll() {
 		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
 		c.Data["json"] = resp
 	} else {
-		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched categories"}
+		customersResp := []models.Customers{}
+		for _, cust := range l {
+			m := cust.(models.Customers)
+			customersResp = append(customersResp, m)
+		}
+		resp := responses.CustomersDTO{StatusCode: 200, Customers: &customersResp, StatusDesc: "Successfully fetched categories"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

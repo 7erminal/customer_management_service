@@ -65,6 +65,12 @@ func init() {
 				&controllers.Identification_typesController{},
 			),
 		),
+
+		beego.NSNamespace("/branches",
+			beego.NSInclude(
+				&controllers.BranchController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

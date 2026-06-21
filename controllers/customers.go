@@ -401,12 +401,15 @@ func (c *CustomersController) GetAll() {
 		resp := responses.StringResponseDTO{StatusCode: 301, Value: err.Error(), StatusDesc: "Error fetching customers"}
 		c.Data["json"] = resp
 	} else {
-		if l == nil {
-			l = []interface{}{}
+		customersResp := []models.Customers{}
+		for _, urs := range l {
+			m := urs.(models.Customers)
+
+			customersResp = append(customersResp, m)
 		}
 		// fmt.Printf("Type of customers: %T\n", l)
 		// fmt.Printf("Value of customers: %+v\n", l)
-		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
+		resp := responses.CustomersDTO{StatusCode: 200, Customers: &customersResp, StatusDesc: "Successfully fetched customers"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -481,7 +484,12 @@ func (c *CustomersController) GetAllByBranch() {
 			}
 			fmt.Printf("Type of customers: %T\n", l)
 			fmt.Printf("Value of customers: %+v\n", l)
-			resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
+			customersResp := []models.Customers{}
+			for _, cust := range l {
+				m := cust.(models.Customers)
+				customersResp = append(customersResp, m)
+			}
+			resp := responses.CustomersDTO{StatusCode: 200, Customers: &customersResp, StatusDesc: "Successfully fetched customers"}
 			c.Data["json"] = resp
 		}
 	} else {

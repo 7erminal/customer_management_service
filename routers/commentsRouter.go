@@ -7,6 +7,51 @@ import (
 
 func init() {
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "Post",
+            Router: `/`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "GetAll",
+            Router: `/`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "GetOne",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "Put",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "Delete",
+            Router: `/:id`,
+            AllowHTTPMethods: []string{"delete"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:Customer_categoriesController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_categoriesController"],
         beego.ControllerComments{
             Method: "Post",
