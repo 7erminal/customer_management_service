@@ -46,7 +46,7 @@ func (c *BranchController) Post() {
 func (c *BranchController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetCustomer_categoriesById(id)
+	v, err := models.GetBranchesById(id)
 	if err != nil {
 		logs.Error("Error fetching branch details for ", id, " is ", err.Error())
 		var resp = responses.BranchResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching branch details for " + strconv.FormatInt(id, 10) + " is " + err.Error()}
