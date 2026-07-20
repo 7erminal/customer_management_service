@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -60,6 +61,7 @@ func (c *Customer_categoriesController) Post() {
 func (c *Customer_categoriesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
+	logs.Info("Fetching category details for id: ", id)
 	v, err := models.GetCustomer_categoriesById(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
