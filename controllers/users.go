@@ -236,7 +236,7 @@ func (c *UsersController) SignUp() {
 		proceed = true
 	}
 
-	if eu, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
+	if _, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
 		logs.Debug("About to debug")
 
 		proceed = false
@@ -387,7 +387,7 @@ func (c *UsersController) SignUp() {
 		// c.Data["json"] = err.Error()
 		logs.Error("User with email already exists...")
 		logs.Error("Error is ", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: eu, StatusDesc: "User already exists. Username, email or mobile number already exists."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
 		c.Data["json"] = resp
 	}
 
