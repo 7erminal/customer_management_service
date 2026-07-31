@@ -225,9 +225,45 @@ func (c *CustomersController) AddCustomer() {
 
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{
+				FullName:         rname,
+				Branch:           &branch,
+				ImagePath:        filePath,
+				PhoneNumber:      rphonenumber,
+				Location:         rlocation,
+				Email:            remail,
+				Gender:           rgender,
+				Dob:              dobm,
+				Shop:             nil,
+				Nickname:         rnickname,
+				CustomerCategory: &category,
+				DateCreated:      time.Now(),
+				DateModified:     time.Now(),
+				Active:           activeStatus,
+				LastTxnDate:      time.Now(),
+				CreatedBy:        int(user),
+				ModifiedBy:       int(user)}
 		} else {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{
+				FullName:             rname,
+				Branch:               &branch,
+				ImagePath:            filePath,
+				PhoneNumber:          rphonenumber,
+				Location:             rlocation,
+				Email:                remail,
+				Gender:               rgender,
+				Dob:                  dobm,
+				IdentificationType:   &idType,
+				IdentificationNumber: ridnumber,
+				Shop:                 nil,
+				Nickname:             rnickname,
+				CustomerCategory:     &category,
+				DateCreated:          time.Now(),
+				DateModified:         time.Now(),
+				Active:               activeStatus,
+				LastTxnDate:          time.Now(),
+				CreatedBy:            int(user),
+				ModifiedBy:           int(user)}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
