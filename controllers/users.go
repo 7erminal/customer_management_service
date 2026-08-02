@@ -377,8 +377,13 @@ func (c *UsersController) SignUp() {
 				logs.Error("An error occurred...")
 				logs.Error(err.Error())
 
-				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
-				c.Data["json"] = resp
+				if strings.Contains(err.Error(), "duplicate") {
+					var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
+					c.Data["json"] = resp
+				} else {
+					var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+					c.Data["json"] = resp
+				}
 
 				// c.Data["json"] = err.Error()
 			}
