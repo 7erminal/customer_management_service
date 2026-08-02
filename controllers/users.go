@@ -236,7 +236,7 @@ func (c *UsersController) SignUp() {
 		proceed = true
 	}
 
-	if _, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
+	if _, err := models.GetUsersByUsername(v.Username); err != nil && proceed {
 		logs.Debug("About to debug")
 
 		proceed = false
