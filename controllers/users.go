@@ -386,7 +386,7 @@ func (c *UsersController) SignUp() {
 	} else {
 		// c.Data["json"] = err.Error()
 		logs.Error("User with email already exists...")
-		logs.Error("Error is ", err.Error())
+		// logs.Error("Error is ", err.Error())
 		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
 		c.Data["json"] = resp
 	}
