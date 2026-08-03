@@ -223,6 +223,8 @@ func (c *CustomersController) AddCustomer() {
 			activeStatus = 2
 		}
 
+		logs.Info("Status is ", status, " and status int is ", activeStatus)
+		logs.Info("About to add customer record with name ", rname, " and email ", remail, " and phone number ", rphonenumber, " and dob ", dobm, ridnumber, " and nickname ", rnickname, " and location ", rlocation, " and image path ", filePath)
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
 			cust = models.Customers{
