@@ -213,7 +213,9 @@ func (c *CustomersController) AddCustomer() {
 			branch = *branch_
 		}
 
+		logs.Info("get adding user")
 		user, _ := strconv.ParseInt(raddedBy, 10, 64)
+		logs.Info("Added user ", raddedBy)
 
 		activeStatus := 0
 
