@@ -200,22 +200,47 @@ func (c *CustomersController) AddCustomer() {
 			rgender = "N"
 		}
 
+		logs.Info("get adding user")
+		userId, _ := strconv.ParseInt(raddedBy, 10, 64)
+		logs.Info("Added user ", raddedBy)
+
+		// Get user
+		// System user is always 1001
+		user := models.Users{}
+		if user_, err := models.GetUsersById(userId); err != nil {
+			logs.Error("User provided: ", raddedBy, " does not exist ", err.Error())
+		} else {
+			user = *user_
+		}
+
 		branch := models.Branches{}
-		idB, _ := strconv.ParseInt(rbranch, 10, 64)
-		if branch_, err := models.GetBranchesById(idB); err != nil {
-			logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
-			if branch_, err := models.GetBranchesByName(rbranch); err != nil {
-				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+		if rbranch == "" {
+			branchid := user.UserDetails.Branch.BranchId
+			branchIdStr := strconv.FormatInt(branchid, 10)
+			if branch_, err := models.GetBranchesById(branchid); err != nil {
+				logs.Error("Branch provided: ", branchIdStr, " does not exist ", err.Error())
+				if branch_, err := models.GetBranchesByName(branchIdStr); err != nil {
+					logs.Error("Branch provided: ", branchIdStr, " does not exist ", err.Error())
+				} else {
+					branch = *branch_
+				}
 			} else {
 				branch = *branch_
 			}
 		} else {
-			branch = *branch_
-		}
 
-		logs.Info("get adding user")
-		user, _ := strconv.ParseInt(raddedBy, 10, 64)
-		logs.Info("Added user ", raddedBy)
+			idB, _ := strconv.ParseInt(rbranch, 10, 64)
+			if branch_, err := models.GetBranchesById(idB); err != nil {
+				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+				if branch_, err := models.GetBranchesByName(rbranch); err != nil {
+					logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+				} else {
+					branch = *branch_
+				}
+			} else {
+				branch = *branch_
+			}
+		}
 
 		activeStatus := 0
 
@@ -245,8 +270,8 @@ func (c *CustomersController) AddCustomer() {
 				DateModified:     time.Now(),
 				Active:           activeStatus,
 				LastTxnDate:      time.Now(),
-				CreatedBy:        int(user),
-				ModifiedBy:       int(user)}
+				CreatedBy:        int(user.UserId),
+				ModifiedBy:       int(user.UserId)}
 		} else {
 			cust = models.Customers{
 				FullName:             rname,
@@ -266,8 +291,8 @@ func (c *CustomersController) AddCustomer() {
 				DateModified:         time.Now(),
 				Active:               activeStatus,
 				LastTxnDate:          time.Now(),
-				CreatedBy:            int(user),
-				ModifiedBy:           int(user)}
+				CreatedBy:            int(user.UserId),
+				ModifiedBy:           int(user.UserId)}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
