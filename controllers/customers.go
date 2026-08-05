@@ -154,7 +154,7 @@ func (c *CustomersController) AddCustomer() {
 	}
 
 	if !proceed {
-
+		logs.Error("Error parsing date", rdob)
 		var resp = models.CustomerResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
