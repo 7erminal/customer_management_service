@@ -165,8 +165,13 @@ func (c *CustomersController) AddCustomer() {
 		ccid, _ := strconv.ParseInt(rcategoryid, 0, 64)
 		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
 			logs.Error("Customer category does not exist")
-			if cc, errr := models.GetCustomer_categoriesByName(rcategoryid); errr != nil {
+			if cc, errr := models.GetCustomer_categoriesByCode(rcategoryid); errr != nil {
 				logs.Error("Customer category does not exist")
+				if cc, errr := models.GetCustomer_categoriesByName(rcategoryid); errr != nil {
+					logs.Error("Customer category does not exist")
+				} else {
+					category = *cc
+				}
 			} else {
 				category = *cc
 			}
