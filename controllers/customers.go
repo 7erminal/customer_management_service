@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -163,7 +162,7 @@ func (c *CustomersController) AddCustomer() {
 	} else {
 		// Assign dob
 		category := models.Customer_categories{}
-		log.Println("Category received is ", rcategoryid)
+		logs.Info("Category received is ", rcategoryid)
 		ccid, _ := strconv.ParseInt(rcategoryid, 0, 64)
 		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
 			logs.Error("Customer category does not exist")
