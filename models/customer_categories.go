@@ -13,6 +13,7 @@ import (
 type Customer_categories struct {
 	CustomerCategoryId int64     `orm:"auto"`
 	Category           string    `orm:"size(100)"`
+	Code               string    `orm:"size(100)"`
 	Description        string    `orm:"size(255); null"`
 	DateCreated        time.Time `orm:"type(datetime)"`
 	DateModified       time.Time `orm:"type(datetime)"`
@@ -44,12 +45,21 @@ func GetCustomer_categoriesById(id int64) (v *Customer_categories, err error) {
 	return nil, err
 }
 
-// GetCustomer_categoriesById retrieves Customer_categories by Id. Returns error if
-// Id doesn't exist
+// GetCustomer_categoriesByName retrieves Customer_categories by Name. Returns error if
+// Name doesn't exist
 func GetCustomer_categoriesByName(name string) (v *Customer_categories, err error) {
 	o := orm.NewOrm()
 	v = &Customer_categories{Category: name}
 	if err = o.QueryTable(new(Customer_categories)).Filter("Category", name).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
+func GetCustomer_categoriesByCode(code string) (v *Customer_categories, err error) {
+	o := orm.NewOrm()
+	v = &Customer_categories{Code: code}
+	if err = o.QueryTable(new(Customer_categories)).Filter("Code", code).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err

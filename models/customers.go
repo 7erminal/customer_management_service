@@ -32,7 +32,7 @@ type Customers struct {
 	CreatedBy            int
 	ModifiedBy           int
 	Active               int
-	LastTxnDate          time.Time                      `orm:"type(datetime)"`
+	LastTxnDate          time.Time                      `orm:"column(last_txn_date);type(datetime)"`
 	EmergencyContacts    []*Customer_emergency_contacts `orm:"reverse(many);null;"`
 	Guarantors           []*Customer_guarantors         `orm:"reverse(many);null;"`
 }

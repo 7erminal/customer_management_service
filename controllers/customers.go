@@ -153,7 +153,7 @@ func (c *CustomersController) AddCustomer() {
 	}
 
 	if !proceed {
-
+		logs.Error("Error parsing date", rdob)
 		var resp = models.CustomerResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
@@ -162,11 +162,17 @@ func (c *CustomersController) AddCustomer() {
 	} else {
 		// Assign dob
 		category := models.Customer_categories{}
+		logs.Info("Category received is ", rcategoryid)
 		ccid, _ := strconv.ParseInt(rcategoryid, 0, 64)
 		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
 			logs.Error("Customer category does not exist")
-			if cc, errr := models.GetCustomer_categoriesByName(rcategoryid); errr != nil {
+			if cc, errr := models.GetCustomer_categoriesByCode(rcategoryid); errr != nil {
 				logs.Error("Customer category does not exist")
+				if cc, errr := models.GetCustomer_categoriesByName(rcategoryid); errr != nil {
+					logs.Error("Customer category does not exist")
+				} else {
+					category = *cc
+				}
 			} else {
 				category = *cc
 			}
@@ -200,20 +206,47 @@ func (c *CustomersController) AddCustomer() {
 			rgender = "N"
 		}
 
+		logs.Info("get adding user")
+		userId, _ := strconv.ParseInt(raddedBy, 10, 64)
+		logs.Info("Added user ", raddedBy)
+
+		// Get user
+		// System user is always 1001
+		user := models.Users{}
+		if user_, err := models.GetUsersById(userId); err != nil {
+			logs.Error("User provided: ", raddedBy, " does not exist ", err.Error())
+		} else {
+			user = *user_
+		}
+
 		branch := models.Branches{}
-		idB, _ := strconv.ParseInt(rbranch, 10, 64)
-		if branch_, err := models.GetBranchesById(idB); err != nil {
-			logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
-			if branch_, err := models.GetBranchesByName(rbranch); err != nil {
-				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+		if rbranch == "" {
+			branchid := user.UserDetails.Branch.BranchId
+			branchIdStr := strconv.FormatInt(branchid, 10)
+			if branch_, err := models.GetBranchesById(branchid); err != nil {
+				logs.Error("Branch provided: ", branchIdStr, " does not exist ", err.Error())
+				if branch_, err := models.GetBranchesByName(branchIdStr); err != nil {
+					logs.Error("Branch provided: ", branchIdStr, " does not exist ", err.Error())
+				} else {
+					branch = *branch_
+				}
 			} else {
 				branch = *branch_
 			}
 		} else {
-			branch = *branch_
-		}
 
-		user, _ := strconv.ParseInt(raddedBy, 10, 64)
+			idB, _ := strconv.ParseInt(rbranch, 10, 64)
+			if branch_, err := models.GetBranchesById(idB); err != nil {
+				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+				if branch_, err := models.GetBranchesByName(rbranch); err != nil {
+					logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
+				} else {
+					branch = *branch_
+				}
+			} else {
+				branch = *branch_
+			}
+		}
 
 		activeStatus := 0
 
@@ -223,11 +256,49 @@ func (c *CustomersController) AddCustomer() {
 			activeStatus = 2
 		}
 
+		logs.Info("Status is ", status, " and status int is ", activeStatus)
+		logs.Info("About to add customer record with name ", rname, " and email ", remail, " and phone number ", rphonenumber, " and dob ", dobm, ridnumber, " and nickname ", rnickname, " and location ", rlocation, " and image path ", filePath)
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{
+				FullName:         rname,
+				Branch:           &branch,
+				ImagePath:        filePath,
+				PhoneNumber:      rphonenumber,
+				Location:         rlocation,
+				Email:            remail,
+				Gender:           rgender,
+				Dob:              dobm,
+				Shop:             nil,
+				Nickname:         rnickname,
+				CustomerCategory: &category,
+				DateCreated:      time.Now(),
+				DateModified:     time.Now(),
+				Active:           activeStatus,
+				LastTxnDate:      time.Now(),
+				CreatedBy:        int(user.UserId),
+				ModifiedBy:       int(user.UserId)}
 		} else {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+			cust = models.Customers{
+				FullName:             rname,
+				Branch:               &branch,
+				ImagePath:            filePath,
+				PhoneNumber:          rphonenumber,
+				Location:             rlocation,
+				Email:                remail,
+				Gender:               rgender,
+				Dob:                  dobm,
+				IdentificationType:   &idType,
+				IdentificationNumber: ridnumber,
+				Shop:                 nil,
+				Nickname:             rnickname,
+				CustomerCategory:     &category,
+				DateCreated:          time.Now(),
+				DateModified:         time.Now(),
+				Active:               activeStatus,
+				LastTxnDate:          time.Now(),
+				CreatedBy:            int(user.UserId),
+				ModifiedBy:           int(user.UserId)}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {

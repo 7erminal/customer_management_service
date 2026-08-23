@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS customer_categories (
   customer_category_id BIGINT NOT NULL AUTO_INCREMENT,
   category VARCHAR(100) NOT NULL DEFAULT '',
   description VARCHAR(255) NULL,
+  code VARCHAR(100) NOT NULL DEFAULT '',
   date_created DATETIME NOT NULL,
   date_modified DATETIME NOT NULL,
   created_by INT NOT NULL DEFAULT 0,
