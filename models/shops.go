@@ -20,8 +20,8 @@ type Shops struct {
 	Email               string
 	Image               string    `orm:"size(100);omitempty"`
 	ShopLocation        string    `orm:"size(255)"`
-	DateCreated         time.Time `orm:"type(datetime)"`
-	DateModified        time.Time `orm:"type(datetime)"`
+	DateCreated         time.Time `orm:"type(datetime);auto_now_add"`
+	DateModified        time.Time `orm:"type(datetime);auto_now"`
 	CreatedBy           int
 	ModifiedBy          int
 	Active              int
