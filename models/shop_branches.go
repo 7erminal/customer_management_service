@@ -10,53 +10,46 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 )
 
-type Shops struct {
-	ShopId              int64 `orm:"auto"`
-	ShopName            string
-	ShopDescription     string `orm:"size(255)"`
-	ShopAssistantName   string `orm:"size(100)"`
-	ShopAssistantNumber string `orm:"size(100)"`
-	PhoneNumber         string
-	Email               string
-	Image               string    `orm:"size(100);omitempty"`
-	ShopLocation        string    `orm:"size(255)"`
-	DateCreated         time.Time `orm:"type(datetime)"`
-	DateModified        time.Time `orm:"type(datetime)"`
-	CreatedBy           int
-	ModifiedBy          int
-	Active              int
-	ShopBranches        []*ShopBranches `orm:"reverse(many)"`
+type ShopBranches struct {
+	Id           int64     `orm:"auto;column(shop_branch_id)"`
+	Shop         *Shops    `orm:"rel(fk);column(shop_id)"`
+	Branch       *Branches `orm:"rel(fk);column(branch_id)"`
+	DateCreated  time.Time `orm:"type(datetime)"`
+	DateModified time.Time `orm:"type(datetime)"`
+	CreatedBy    int
+	ModifiedBy   int
+	Active       int
 }
 
 func init() {
-	orm.RegisterModel(new(Shops))
+	orm.RegisterModel(new(ShopBranches))
 }
 
-// AddShops insert a new Shops into database and returns
+// AddShopBranches insert a new ShopBranches into database and returns
 // last inserted Id on success.
-func AddShops(m *Shops) (id int64, err error) {
+func AddShopBranches(m *ShopBranches) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetShopsById retrieves Shops by Id. Returns error if
+// GetShopBranchesById retrieves ShopBranches by Id. Returns error if
 // Id doesn't exist
-func GetShopsById(id int64) (v *Shops, err error) {
+func GetShopBranchesById(id int64) (v *ShopBranches, err error) {
 	o := orm.NewOrm()
-	v = &Shops{ShopId: id}
-	if err = o.QueryTable(new(Shops)).Filter("ShopId", id).RelatedSel().One(v); err == nil {
+	v = &ShopBranches{Id: id}
+	if err = o.QueryTable(new(ShopBranches)).Filter("Id", id).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllShops retrieves all Shops matches certain condition. Returns empty list if
+// GetAllShopBranches retrieves all ShopBranches matches certain condition. Returns empty list if
 // no records exist
-func GetAllShops(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllShopBranches(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Shops))
+	qs := o.QueryTable(new(ShopBranches))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -102,7 +95,7 @@ func GetAllShops(query map[string]string, fields []string, sortby []string, orde
 		}
 	}
 
-	var l []Shops
+	var l []ShopBranches
 	qs = qs.OrderBy(sortFields...).RelatedSel()
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
@@ -125,11 +118,11 @@ func GetAllShops(query map[string]string, fields []string, sortby []string, orde
 	return nil, err
 }
 
-// UpdateShops updates Shops by Id and returns error if
+// UpdateShopBranchesById updates ShopBranches by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateShopsById(m *Shops) (err error) {
+func UpdateShopBranchesById(m *ShopBranches) (err error) {
 	o := orm.NewOrm()
-	v := Shops{ShopId: m.ShopId}
+	v := ShopBranches{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -140,15 +133,15 @@ func UpdateShopsById(m *Shops) (err error) {
 	return
 }
 
-// DeleteShops deletes Shops by Id and returns error if
+// DeleteShopBranches deletes ShopBranches by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteShops(id int64) (err error) {
+func DeleteShopBranches(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Shops{ShopId: id}
+	v := ShopBranches{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Shops{ShopId: id}); err == nil {
+		if num, err = o.Delete(&ShopBranches{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

@@ -511,6 +511,24 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
+        beego.ControllerComments{
+            Method: "AddBranch",
+            Router: `/branches`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
+        beego.ControllerComments{
+            Method: "RemoveBranch",
+            Router: `/branches`,
+            AllowHTTPMethods: []string{"delete"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:UserExtraDetailsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:UserExtraDetailsController"],
         beego.ControllerComments{
             Method: "GetAll",

@@ -71,6 +71,12 @@ func init() {
 				&controllers.BranchController{},
 			),
 		),
+
+		beego.NSNamespace("/shops",
+			beego.NSInclude(
+				&controllers.ShopsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

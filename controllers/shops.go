@@ -76,6 +76,7 @@ func (c *ShopsController) Post() {
 		}
 		c.Data["json"] = apiResp
 	} else {
+		logs.Error("Error fetching shops ", err.Error())
 		statusCode = 500
 		message = "Internal Server Error"
 		apiResp := responses.ShopResponse{
@@ -103,6 +104,7 @@ func (c *ShopsController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetShopsById(id)
 	if err != nil {
+		logs.Error("Error fetching shop by ID ", err.Error())
 		statusCode = 404
 		message = "Not Found"
 		apiResp := responses.ShopResponse{
@@ -197,6 +199,7 @@ func (c *ShopsController) GetAll() {
 
 	l, err := models.GetAllShops(query, fields, sortby, order, offset, limit)
 	if err != nil {
+		logs.Error("Error fetching all shops ", err.Error())
 		statusCode = 500
 		message = "Internal Server Error"
 		apiResp := responses.ShopsResponse{
@@ -308,10 +311,238 @@ func (c *ShopsController) Put() {
 func (c *ShopsController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteShops(id); err == nil {
-		c.Data["json"] = "OK"
+	// if err := models.DeleteShops(id); err == nil {
+	// 	c.Data["json"] = "OK"
+	// } else {
+	// 	c.Data["json"] = err.Error()
+	// }
+	statusCode := 500
+	message := "Internal Server Error"
+	resp := responses.ShopResponse{
+		StatusCode: statusCode,
+		StatusDesc: message,
+		Result:     responses.ShopResp{},
+	}
+	if shop, err := models.GetShopsById(id); err == nil {
+		shop.Active = 6
+		if err := models.UpdateShopsById(shop); err == nil {
+			statusCode = 200
+			message = "OK"
+			resp.StatusCode = statusCode
+			resp.StatusDesc = message
+			resp.Result = responses.ShopResp{
+				ShopId:              strconv.FormatInt(shop.ShopId, 10),
+				ShopName:            shop.ShopName,
+				ShopDescription:     shop.ShopDescription,
+				ShopAssistantName:   shop.ShopAssistantName,
+				ShopAssistantNumber: shop.ShopAssistantNumber,
+				PhoneNumber:         shop.PhoneNumber,
+				Email:               shop.Email,
+				Image:               shop.Image,
+				ShopLocation:        shop.ShopLocation,
+				DateCreated:         shop.DateCreated,
+				DateModified:        shop.DateModified,
+				CreatedBy:           shop.CreatedBy,
+				ModifiedBy:          shop.ModifiedBy,
+				Active:              shop.Active,
+			}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Error updating shop ", err.Error())
+			resp.StatusCode = 500
+			resp.StatusDesc = err.Error()
+			c.Data["json"] = resp
+		}
 	} else {
-		c.Data["json"] = err.Error()
+		logs.Error("Error fetching shop by ID ", err.Error())
+		resp.StatusCode = 500
+		resp.StatusDesc = err.Error()
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
+}
+
+// AddBranch ...
+// @Title Post
+// @Description create ShopBranches
+// @Param	body		body 	requests.ShopBranchRequest	true		"body for ShopBranches content"
+// @Success 201 {int} models.ShopBranches
+// @Failure 403 body is empty
+// @router /branches [post]
+func (c *ShopsController) AddBranch() {
+	var shopBranchRequest requests.ShopBranchRequest
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &shopBranchRequest); err != nil {
+		logs.Error("Error parsing request body ", err.Error())
+		c.Data["json"] = responses.ShopResponse{
+			StatusCode: 400,
+			StatusDesc: "Bad Request",
+			Result:     responses.ShopResp{},
+		}
+		c.ServeJSON()
+		return
+	}
+	shopBranch := &models.ShopBranches{
+		Shop: &models.Shops{
+			ShopId: func() int64 {
+				id, _ := strconv.ParseInt(shopBranchRequest.ShopId, 10, 64)
+				return id
+			}(),
+		},
+		Branch: &models.Branches{
+			BranchId: func() int64 {
+				id, _ := strconv.ParseInt(shopBranchRequest.BranchId, 10, 64)
+				return id
+			}(),
+		},
+	}
+	if id, err := models.AddShopBranches(shopBranch); err == nil {
+		logs.Info("Successfully added shop branch with ID ", id)
+		logs.Info("Getting shop details ")
+		shop, err := models.GetShopsById(shopBranch.Shop.ShopId)
+		if err != nil {
+			logs.Error("Error fetching shop details ", err.Error())
+		} else {
+			logs.Info("Successfully fetched shop details for shop ID ", shop.ShopId)
+
+			shopBranchResp_ := []responses.ShopBranchResp{}
+
+			for _, sb := range shop.ShopBranches {
+				shopBranchResp_ = append(shopBranchResp_, responses.ShopBranchResp{
+					ShopBranch: responses.BranchResp{
+						BranchId:     sb.Branch.BranchId,
+						BranchName:   sb.Branch.Branch,
+						Description:  sb.Branch.Location,
+						Location:     sb.Branch.Location,
+						Country:      nil,
+						Active:       sb.Branch.Active,
+						DateCreated:  sb.Branch.DateCreated,
+						DateModified: sb.Branch.DateModified,
+					},
+					ShopId:   strconv.FormatInt(sb.Shop.ShopId, 10),
+					BranchId: strconv.FormatInt(sb.Branch.BranchId, 10),
+				})
+			}
+			c.Data["json"] = responses.ShopResponse{
+				StatusCode: 200,
+				StatusDesc: "Created",
+				Result: responses.ShopResp{
+					ShopBranches:        shopBranchResp_,
+					ShopId:              strconv.FormatInt(shop.ShopId, 10),
+					ShopName:            shop.ShopName,
+					ShopDescription:     shop.ShopDescription,
+					ShopAssistantName:   shop.ShopAssistantName,
+					ShopAssistantNumber: shop.ShopAssistantNumber,
+					PhoneNumber:         shop.PhoneNumber,
+					Email:               shop.Email,
+					Image:               shop.Image,
+					ShopLocation:        shop.ShopLocation,
+					DateCreated:         shop.DateCreated,
+					DateModified:        shop.DateModified,
+					CreatedBy:           shop.CreatedBy,
+					ModifiedBy:          shop.ModifiedBy,
+					Active:              shop.Active,
+				},
+			}
+
+		}
+	} else {
+		logs.Error("Error adding shop branch ", err.Error())
+		c.Data["json"] = responses.ShopResponse{
+			StatusCode: 500,
+			StatusDesc: err.Error(),
+			Result:     responses.ShopResp{},
+		}
+	}
+	c.ServeJSON()
+}
+
+// RemoveShopBranch ...
+// @Title Delete
+// @Description remove ShopBranches
+// @Param	body		body 	requests.ShopBranchRequest	true		"body for ShopBranches content"
+// @Success 200 {int} models.ShopBranches
+// @Failure 403 body is empty
+// @router /branches [delete]
+func (c *ShopsController) RemoveBranch() {
+	var fields []string
+	var sortby []string
+	var order []string
+	var query = make(map[string]string)
+	var limit int64 = 10
+	var offset int64
+
+	statusCode := 608
+	message := "Attempting to remove shop branch"
+
+	shopBranchRequest := requests.ShopBranchRequest{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &shopBranchRequest); err != nil {
+		logs.Error("Error parsing request body ", err.Error())
+		statusCode = 400
+		message = "Invalid request body"
+		c.Data["json"] = responses.ShopResponse{
+			StatusCode: statusCode,
+			StatusDesc: message,
+			Result:     responses.ShopResp{},
+		}
+		c.ServeJSON()
+		return
+	}
+
+	shopBranch := &models.ShopBranches{
+		Shop: &models.Shops{
+			ShopId: func() int64 {
+				id, _ := strconv.ParseInt(shopBranchRequest.ShopId, 10, 64)
+				return id
+			}(),
+		},
+		Branch: &models.Branches{
+			BranchId: func() int64 {
+				id, _ := strconv.ParseInt(shopBranchRequest.BranchId, 10, 64)
+				return id
+			}(),
+		},
+	}
+
+	query_ := "Shop: " + strconv.FormatInt(shopBranch.Shop.ShopId, 10) + ", Branch: " + strconv.FormatInt(shopBranch.Branch.BranchId, 10)
+	if v := query_; v != "" {
+		for _, cond := range strings.Split(v, ",") {
+			kv := strings.SplitN(cond, ":", 2)
+			if len(kv) != 2 {
+				c.Data["json"] = errors.New("Error: invalid query key/value pair")
+				c.ServeJSON()
+				return
+			}
+			k, v := kv[0], kv[1]
+			query[k] = v
+		}
+	}
+
+	if shopBranchs, err := models.GetAllShopBranches(query, fields, sortby, order, offset, limit); err == nil {
+		for _, sb := range shopBranchs {
+			logs.Info("Attempting to remove shop branch: ", sb)
+			m := sb.(models.ShopBranches)
+			if err := models.DeleteShopBranches(m.Id); err == nil {
+				logs.Info("Successfully removed shop branch")
+				statusCode = 200
+				message = "Deleted"
+			} else {
+				logs.Error("Error removing shop branch ", err.Error())
+				statusCode = 500
+				message = err.Error()
+			}
+
+		}
+	} else {
+		logs.Error("Error fetching shop branch ", err.Error())
+		statusCode = 500
+		message = err.Error()
+	}
+
+	c.Data["json"] = responses.ShopResponse{
+		StatusCode: statusCode,
+		StatusDesc: message,
+		Result:     responses.ShopResp{},
+	}
+	c.ServeJSON()
+
 }

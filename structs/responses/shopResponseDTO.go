@@ -2,6 +2,12 @@ package responses
 
 import "time"
 
+type ShopBranchResp struct {
+	ShopBranch BranchResp
+	ShopId     string
+	BranchId   string
+}
+
 type ShopResp struct {
 	ShopId              string
 	ShopName            string
@@ -17,6 +23,7 @@ type ShopResp struct {
 	CreatedBy           int
 	ModifiedBy          int
 	Active              int
+	ShopBranches        []ShopBranchResp
 }
 
 type ShopListResponseDTO struct {
