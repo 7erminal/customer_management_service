@@ -6,6 +6,7 @@ type ShopRequest struct {
 	Email           string
 	ImageUrl        string
 	Description     string
+	Location        string
 	AssistantName   string
 	AssistantNumber string
 }
