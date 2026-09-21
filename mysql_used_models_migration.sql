@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS shops (
   phone_number VARCHAR(255) NOT NULL DEFAULT '',
   email VARCHAR(255) NOT NULL DEFAULT '',
   image VARCHAR(100) NOT NULL DEFAULT '',
+  shop_location VARCHAR(255) NOT NULL DEFAULT '',
   date_created DATETIME NOT NULL,
   date_modified DATETIME NOT NULL,
   created_by INT NOT NULL DEFAULT 0,
@@ -96,6 +97,22 @@ CREATE TABLE IF NOT EXISTS branches (
   modified_by INT NULL,
   PRIMARY KEY (branch_id),
   KEY idx_branches_country_id (country_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS shop_branches (
+  shop_branch_id BIGINT NOT NULL AUTO_INCREMENT,
+  shop_id BIGINT NOT NULL,
+  branch_id BIGINT NOT NULL,
+  date_created DATETIME NOT NULL,
+  date_modified DATETIME NOT NULL,
+  created_by INT NOT NULL DEFAULT 0,
+  modified_by INT NOT NULL DEFAULT 0,
+  active INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (shop_branch_id),
+  KEY idx_shop_branches_shop_id (shop_id),
+  KEY idx_shop_branches_branch_id (branch_id),
+  CONSTRAINT fk_shop_branches_shop FOREIGN KEY (shop_id) REFERENCES shops(shop_id),
+  CONSTRAINT fk_shop_branches_branch FOREIGN KEY (branch_id) REFERENCES branches(branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS user_extra_details (
@@ -258,5 +275,25 @@ CREATE TABLE IF NOT EXISTS customer_guarantors (
   KEY idx_customer_guarantors_customer_id (customer_id),
   CONSTRAINT fk_customer_guarantors_customer FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Incremental alters for existing databases ---------------------------------
+
+SET @has_shop_location := (
+  SELECT COUNT(*)
+  FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'shops'
+    AND COLUMN_NAME = 'shop_location'
+);
+
+SET @shops_shop_location_sql := IF(
+  @has_shop_location = 0,
+  'ALTER TABLE shops ADD COLUMN shop_location VARCHAR(255) NOT NULL DEFAULT '''' AFTER image',
+  'SELECT 1'
+);
+
+PREPARE shops_shop_location_stmt FROM @shops_shop_location_sql;
+EXECUTE shops_shop_location_stmt;
+DEALLOCATE PREPARE shops_shop_location_stmt;
 
 SET FOREIGN_KEY_CHECKS = 1;

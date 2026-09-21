@@ -3,6 +3,7 @@ package controllers
 import (
 	"customer_management_service/controllers/functions"
 	"customer_management_service/models"
+	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
@@ -35,7 +36,62 @@ func (c *BranchController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *BranchController) Post() {
+	var branchRequestDTO requests.BranchRequestDTO
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &branchRequestDTO); err != nil {
+		logs.Error("Error parsing request body: ", err.Error())
+		var resp = responses.BranchResponseDTO{StatusCode: 400, Result: nil, StatusDesc: "Error parsing request body: " + err.Error()}
+		c.Data["json"] = resp
+		c.ServeJSON()
+		return
+	}
 
+	if country, err := functions.GetCountryWithCode(&c.Controller, branchRequestDTO.CountryCode); err != nil {
+		logs.Error("Error fetching country details for ", branchRequestDTO.CountryCode, " is ", err.Error())
+		var resp = responses.BranchResponseDTO{StatusCode: 400, Result: nil, StatusDesc: "Error fetching country details for " + branchRequestDTO.CountryCode + " is " + err.Error()}
+		c.Data["json"] = resp
+		c.ServeJSON()
+		return
+	} else {
+
+		addedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 10, 64)
+		branchModel := models.Branches{
+			Branch:      branchRequestDTO.Branch,
+			Country:     country.Result.CountryId,
+			PhoneNumber: branchRequestDTO.PhoneNumber,
+			Location:    branchRequestDTO.Location,
+			CreatedBy:   int(addedByInt),
+			ModifiedBy:  int(addedByInt),
+		}
+
+		// Call the model function to create the branch
+		_, err := models.AddBranches(&branchModel)
+		if err != nil {
+			logs.Error("Error creating branch: ", err.Error())
+			var resp = responses.BranchResponseDTO{StatusCode: 500, Result: nil, StatusDesc: "Error creating branch: " + err.Error()}
+			c.Data["json"] = resp
+		} else {
+			logs.Info("Successfully created branch with ID ", branchModel.BranchId)
+			countryResp := responses.CountryResp{
+				CountryId:   country.Result.CountryId,
+				Country:     country.Result.Country,
+				CountryCode: country.Result.CountryCode,
+				Currency:    nil,
+			}
+			branchResp := responses.BranchResp{
+				BranchId:     branchModel.BranchId,
+				BranchName:   branchModel.Branch,
+				Country:      &countryResp,
+				Location:     branchModel.Location,
+				CreatedBy:    branchModel.CreatedBy,
+				ModifiedBy:   branchModel.ModifiedBy,
+				DateCreated:  branchModel.DateCreated,
+				DateModified: branchModel.DateModified,
+			}
+			var resp = responses.BranchResponseDTO{StatusCode: 201, Result: &branchResp, StatusDesc: "Successfully created branch"}
+			c.Data["json"] = resp
+		}
+	}
+	c.ServeJSON()
 }
 
 // GetOne ...
@@ -222,5 +278,45 @@ func (c *BranchController) Put() {
 // @Failure 403 id is empty
 // @router /:id [delete]
 func (c *BranchController) Delete() {
-
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+	if branch, err := models.GetBranchesById(id); err == nil {
+		branch.Active = 6
+		if err := models.UpdateBranchesById(branch); err == nil {
+			statusCode := 200
+			message := "OK"
+			logs.Info("Successfully updated branch with ID ", branch.BranchId)
+			branchResp := responses.BranchResp{
+				BranchId:     branch.BranchId,
+				BranchName:   branch.Branch,
+				Location:     branch.Location,
+				Active:       branch.Active,
+				DateCreated:  branch.DateCreated,
+				DateModified: branch.DateModified,
+				CreatedBy:    branch.CreatedBy,
+				ModifiedBy:   branch.ModifiedBy,
+			}
+			resp := responses.BranchResponseDTO{
+				StatusCode: statusCode,
+				StatusDesc: message,
+				Result:     &branchResp,
+			}
+			c.Data["json"] = resp
+		} else {
+			resp := responses.BranchResponseDTO{
+				StatusCode: 500,
+				StatusDesc: err.Error(),
+				Result:     &responses.BranchResp{},
+			}
+			c.Data["json"] = resp
+		}
+	} else {
+		resp := responses.BranchResponseDTO{
+			StatusCode: 500,
+			StatusDesc: err.Error(),
+			Result:     &responses.BranchResp{},
+		}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
 }
