@@ -87,7 +87,7 @@ func (c *BranchController) Post() {
 				DateCreated:  branchModel.DateCreated,
 				DateModified: branchModel.DateModified,
 			}
-			var resp = responses.BranchResponseDTO{StatusCode: 201, Result: &branchResp, StatusDesc: "Successfully created branch"}
+			var resp = responses.BranchResponseDTO{StatusCode: 200, Result: &branchResp, StatusDesc: "Successfully created branch"}
 			c.Data["json"] = resp
 		}
 	}
