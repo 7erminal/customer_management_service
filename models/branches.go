@@ -17,8 +17,8 @@ type Branches struct {
 	Location     string
 	PhoneNumber  string
 	Active       int       `orm:"omitempty"`
-	DateCreated  time.Time `orm:"type(datetime);omitempty"`
-	DateModified time.Time `orm:"type(datetime);omitempty"`
+	DateCreated  time.Time `orm:"type(datetime);auto_now_add"`
+	DateModified time.Time `orm:"type(datetime);auto_now"`
 	CreatedBy    int       `orm:"omitempty"`
 	ModifiedBy   int       `orm:"omitempty"`
 }
