@@ -6,4 +6,5 @@ type BranchRequestDTO struct {
 	PhoneNumber string
 	Location    string
 	AddedBy     string
+	Active      string
 }

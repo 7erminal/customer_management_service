@@ -53,12 +53,19 @@ func (c *BranchController) Post() {
 		return
 	} else {
 
+		branchActive := 0
 		addedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 10, 64)
+		if branchRequestDTO.Active == "true" {
+			branchActive = 1
+		} else {
+			branchActive = 0
+		}
 		branchModel := models.Branches{
 			Branch:      branchRequestDTO.Branch,
 			Country:     country.Result.CountryId,
 			PhoneNumber: branchRequestDTO.PhoneNumber,
 			Location:    branchRequestDTO.Location,
+			Active:      branchActive,
 			CreatedBy:   int(addedByInt),
 			ModifiedBy:  int(addedByInt),
 		}
