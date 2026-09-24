@@ -222,7 +222,9 @@ func (c *BranchController) GetAll() {
 		}
 	}
 
+	logs.Info("About to run query with parameters: ", query)
 	l, err := models.GetAllBranches(query, fields, sortby, order, offset, limit)
+	logs.Info("Query executed, checking for errors")
 	if err != nil {
 		statusCode = 301
 		message = "Error fetching branch details"
