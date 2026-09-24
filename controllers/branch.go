@@ -208,9 +208,10 @@ func (c *BranchController) GetAll() {
 	}
 	// query: k:v,k:v
 	query_ := c.GetString("query")
-	logs.Info("Trimming space for ", query_)
 	if query_ != "" {
 		query_ = strings.TrimSpace(query_) + ",Active:1"
+	} else {
+		query_ = "Active:1"
 	}
 	logs.Info("Trimmed query string: ", query_)
 	if v := query_; v != "" {
