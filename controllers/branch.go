@@ -209,7 +209,7 @@ func (c *BranchController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllCustomer_categories(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllBranches(query, fields, sortby, order, offset, limit)
 	if err != nil {
 		resp := responses.BranchesResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching category details"}
 		c.Data["json"] = resp
