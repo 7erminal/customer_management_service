@@ -175,6 +175,10 @@ func (c *BranchController) GetAll() {
 	var limit int64 = 10
 	var offset int64
 
+	statusCode := 404
+	logs.Info("Fetching all branches")
+	message := "Fetching all branches"
+
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
@@ -211,7 +215,9 @@ func (c *BranchController) GetAll() {
 
 	l, err := models.GetAllBranches(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		resp := responses.BranchesResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching category details"}
+		statusCode = 301
+		message = "Error fetching branch details"
+		resp := responses.BranchesResponseDTO{StatusCode: statusCode, Result: nil, StatusDesc: message}
 		c.Data["json"] = resp
 	} else {
 		branchesResp := []responses.BranchResp{}
@@ -252,7 +258,9 @@ func (c *BranchController) GetAll() {
 				ModifiedBy:   m.ModifiedBy,
 			})
 		}
-		resp := responses.BranchesResponseDTO{StatusCode: 200, Result: &branchesResp, StatusDesc: "Successfully fetched categories"}
+		statusCode = 200
+		message = "Successfully fetched branches"
+		resp := responses.BranchesResponseDTO{StatusCode: statusCode, Result: &branchesResp, StatusDesc: message}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
