@@ -15,8 +15,8 @@ type UserExtraDetails struct {
 	Branch        *Branches `orm:"rel(fk);column(branch);omitempty;null"`
 	Shop          *Shops    `orm:"rel(fk);omitempty;null"`
 	Nickname      string    `orm:"size(100);omitempty;null"`
-	DateCreated   time.Time `orm:"type(datetime)"`
-	DateModified  time.Time `orm:"type(datetime)"`
+	DateCreated   time.Time `orm:"type(datetime);auto_now_add"`
+	DateModified  time.Time `orm:"type(datetime);auto_now"`
 	CreatedBy     int
 	ModifiedBy    int
 	Active        int

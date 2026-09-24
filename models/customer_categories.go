@@ -15,8 +15,8 @@ type Customer_categories struct {
 	Category           string    `orm:"size(100)"`
 	Code               string    `orm:"size(100)"`
 	Description        string    `orm:"size(255); null"`
-	DateCreated        time.Time `orm:"type(datetime)"`
-	DateModified       time.Time `orm:"type(datetime)"`
+	DateCreated        time.Time `orm:"type(datetime);auto_now_add"`
+	DateModified       time.Time `orm:"type(datetime);auto_now"`
 	CreatedBy          int
 	ModifiedBy         int
 	Active             int

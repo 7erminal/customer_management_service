@@ -14,8 +14,8 @@ type ShopBranches struct {
 	Id           int64     `orm:"auto;column(shop_branch_id)"`
 	Shop         *Shops    `orm:"rel(fk);column(shop_id)"`
 	Branch       *Branches `orm:"rel(fk);column(branch_id)"`
-	DateCreated  time.Time `orm:"type(datetime)"`
-	DateModified time.Time `orm:"type(datetime)"`
+	DateCreated  time.Time `orm:"type(datetime);auto_now_add"`
+	DateModified time.Time `orm:"type(datetime);auto_now"`
 	CreatedBy    int
 	ModifiedBy   int
 	Active       int

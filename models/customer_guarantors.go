@@ -15,8 +15,8 @@ type Customer_guarantors struct {
 	Name                string     `orm:"size(120)"`
 	Contact             string     `orm:"size(50)"`
 	Customer            *Customers `orm:"rel(fk)"`
-	DateCreated         time.Time  `orm:"type(datetime)"`
-	DateModified        time.Time  `orm:"type(datetime)"`
+	DateCreated         time.Time  `orm:"type(datetime);auto_now_add"`
+	DateModified        time.Time  `orm:"type(datetime);auto_now"`
 	CreatedBy           int
 	ModifiedBy          int
 }
