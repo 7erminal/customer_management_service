@@ -52,6 +52,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:BranchController"],
+        beego.ControllerComments{
+            Method: "UpdateBranchManager",
+            Router: `/branch-manager/:id`,
+            AllowHTTPMethods: []string{"put"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["customer_management_service/controllers:Customer_categoriesController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_categoriesController"],
         beego.ControllerComments{
             Method: "Post",

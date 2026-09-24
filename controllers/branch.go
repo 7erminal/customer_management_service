@@ -26,6 +26,7 @@ func (c *BranchController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("UpdateBranchManager", c.UpdateBranchManager)
 }
 
 // Post ...
@@ -271,6 +272,64 @@ func (c *BranchController) GetAll() {
 // @router /:id [put]
 func (c *BranchController) Put() {
 
+}
+
+// UpdateBranchManager ...
+// @Title Put Branch Manager
+// @Description update the Branches manager
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Branches	true		"body for Branches content"
+// @Success 200 {object} responses.BranchResponseDTO
+// @Failure 403 :id is not int
+// @router /branch-manager/:id [put]
+func (c *BranchController) UpdateBranchManager() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+
+	var v requests.BranchManagerRequestDTO
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	userId, _ := strconv.ParseInt(v.BranchManager, 0, 64)
+
+	if user, err := models.GetUsersById(userId); err == nil {
+
+		if branch, err := models.GetBranchesById(id); err == nil {
+			// Update the branch manager
+
+			// branch.BranchManager = user
+			logs.Info("Updating branch manager for branch ID ", branch.BranchId)
+			logs.Info("User ID ", user.UserId)
+			if err := models.UpdateBranchesById(branch); err == nil {
+				branchResp := responses.BranchResp{
+					BranchId:     branch.BranchId,
+					BranchName:   branch.Branch,
+					Location:     branch.Location,
+					Active:       branch.Active,
+					DateCreated:  branch.DateCreated,
+					DateModified: branch.DateModified,
+					CreatedBy:    branch.CreatedBy,
+					ModifiedBy:   branch.ModifiedBy,
+				}
+				resp := responses.BranchResponseDTO{StatusCode: 200, Result: &branchResp, StatusDesc: "Branch updated successfully"}
+				c.Ctx.Output.SetStatus(200)
+				c.Data["json"] = resp
+			} else {
+				logs.Error("Branch update failed", err.Error())
+				resp := responses.BranchResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Branch update failed"}
+				c.Data["json"] = resp
+			}
+		} else {
+			logs.Error("Branch update failed", err.Error())
+			resp := responses.BranchResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Branch update failed. Branch not found"}
+			c.Data["json"] = resp
+		}
+
+	} else {
+		logs.Error("Branch update failed", err.Error())
+		resp := responses.BranchResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Branch update failed. User not found"}
+		c.Data["json"] = resp
+	}
+
+	c.ServeJSON()
 }
 
 // Delete ...

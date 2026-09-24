@@ -8,3 +8,7 @@ type BranchRequestDTO struct {
 	AddedBy     string
 	Active      string
 }
+
+type BranchManagerRequestDTO struct {
+	BranchManager string
+}
