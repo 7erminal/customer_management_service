@@ -229,32 +229,11 @@ func (c *BranchController) GetAll() {
 		resp := responses.BranchesResponseDTO{StatusCode: statusCode, Result: nil, StatusDesc: message}
 		c.Data["json"] = resp
 	} else {
+		logs.Info("Number of branches fetched: ", len(l))
 		branchesResp := []responses.BranchResp{}
 		for _, br := range l {
 			m := br.(models.Branches)
 
-			// countryM := responses.CountryResp{}
-			// currencyM := responses.CurrencyResp{}
-			// countryResp, err := functions.GetCountryWithId(&c.Controller, strconv.FormatInt(m.Country, 10))
-			// if err != nil {
-			// 	logs.Error("Error fetching country details for ", m.Country, " is ", err.Error())
-			// 	var resp = responses.BranchResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching country details for " + strconv.FormatInt(m.Country, 10) + " is " + err.Error()}
-			// 	c.Data["json"] = resp
-			// } else {
-			// 	logs.Info("Successfully fetched country details for ", m.Country)
-			// 	currencyM = responses.CurrencyResp{
-			// 		CurrencyId: countryResp.Result.DefaultCurrency.CurrencyId,
-			// 		Currency:   countryResp.Result.DefaultCurrency.Currency,
-			// 		Symbol:     countryResp.Result.DefaultCurrency.Symbol,
-			// 	}
-			// 	countryM = responses.CountryResp{
-			// 		CountryId:   countryResp.Result.CountryId,
-			// 		Country:     countryResp.Result.Country,
-			// 		CountryCode: countryResp.Result.CountryCode,
-			// 		Currency:    &currencyM,
-			// 	}
-
-			// }
 			branchesResp = append(branchesResp, responses.BranchResp{
 				BranchId:   m.BranchId,
 				BranchName: m.Branch,
