@@ -207,7 +207,9 @@ func (c *BranchController) GetAll() {
 		order = strings.Split(v, ",")
 	}
 	// query: k:v,k:v
-	if v := c.GetString("query"); v != "" {
+	query_ := c.GetString("query")
+	query_ = strings.TrimSpace(query_) + ",Active:1"
+	if v := query_; v != "" {
 		for _, cond := range strings.Split(v, ",") {
 			kv := strings.SplitN(cond, ":", 2)
 			if len(kv) != 2 {
