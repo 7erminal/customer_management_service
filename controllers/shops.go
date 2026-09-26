@@ -519,7 +519,7 @@ func (c *ShopsController) AddBranch() {
 // @Param	body		body 	requests.ShopBranchRequest	true		"body for ShopBranches content"
 // @Success 200 {int} models.ShopBranches
 // @Failure 403 body is empty
-// @router /branches [delete]
+// @router /delete-branches [post]
 func (c *ShopsController) RemoveBranch() {
 	var fields []string
 	var sortby []string

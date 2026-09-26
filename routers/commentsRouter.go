@@ -532,8 +532,8 @@ func init() {
     beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:ShopsController"],
         beego.ControllerComments{
             Method: "RemoveBranch",
-            Router: `/branches`,
-            AllowHTTPMethods: []string{"delete"},
+            Router: `/delete-branches`,
+            AllowHTTPMethods: []string{"post"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})
