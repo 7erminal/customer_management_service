@@ -25,6 +25,8 @@ type UpdateShopRequest struct {
 }
 
 type ShopBranchRequest struct {
-	ShopId   string
-	BranchId string
+	ShopId     string
+	BranchId   string
+	CreatedBy  string
+	ModifiedBy string
 }

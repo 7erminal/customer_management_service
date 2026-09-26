@@ -447,6 +447,8 @@ func (c *ShopsController) AddBranch() {
 		c.ServeJSON()
 		return
 	}
+	createdByInt, _ := strconv.ParseInt(shopBranchRequest.CreatedBy, 0, 64)
+	modifiedByInt, _ := strconv.ParseInt(shopBranchRequest.ModifiedBy, 0, 64)
 	shopBranch := &models.ShopBranches{
 		Shop: &models.Shops{
 			ShopId: func() int64 {
@@ -460,6 +462,9 @@ func (c *ShopsController) AddBranch() {
 				return id
 			}(),
 		},
+		Active:     1,
+		CreatedBy:  int(createdByInt),
+		ModifiedBy: int(modifiedByInt),
 	}
 
 	if shop, err := models.GetShopBranchesByIds(shopBranch.Shop.ShopId, shopBranch.Branch.BranchId); err == nil {
