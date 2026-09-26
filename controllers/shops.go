@@ -114,6 +114,45 @@ func (c *ShopsController) GetOne() {
 		}
 		c.Data["json"] = apiResp
 	} else {
+		shopBranchResp := []responses.ShopBranchResp{}
+		branchQuery := map[string]string{"Shop__ShopId": strconv.FormatInt(v.ShopId, 10)}
+		if branchRows, branchErr := models.GetAllShopBranches(branchQuery, []string{}, []string{}, []string{}, 0, 1000); branchErr == nil {
+			for _, row := range branchRows {
+				sb := row.(models.ShopBranches)
+				branchData := responses.BranchResp{}
+				if sb.Branch != nil {
+					branchData = responses.BranchResp{
+						BranchId:     sb.Branch.BranchId,
+						BranchName:   sb.Branch.Branch,
+						Description:  sb.Branch.Location,
+						Location:     sb.Branch.Location,
+						Country:      nil,
+						Active:       sb.Branch.Active,
+						DateCreated:  sb.Branch.DateCreated,
+						DateModified: sb.Branch.DateModified,
+					}
+				}
+
+				shopId := strconv.FormatInt(v.ShopId, 10)
+				if sb.Shop != nil {
+					shopId = strconv.FormatInt(sb.Shop.ShopId, 10)
+				}
+
+				branchId := ""
+				if sb.Branch != nil {
+					branchId = strconv.FormatInt(sb.Branch.BranchId, 10)
+				}
+
+				shopBranchResp = append(shopBranchResp, responses.ShopBranchResp{
+					ShopBranch: branchData,
+					ShopId:     shopId,
+					BranchId:   branchId,
+				})
+			}
+		} else {
+			logs.Error("Error fetching shop branches for shop ID ", v.ShopId, ": ", branchErr.Error())
+		}
+
 		resp = responses.ShopResp{
 			ShopId:              strconv.FormatInt(v.ShopId, 10),
 			ShopName:            v.ShopName,
@@ -129,6 +168,7 @@ func (c *ShopsController) GetOne() {
 			CreatedBy:           v.CreatedBy,
 			ModifiedBy:          v.ModifiedBy,
 			Active:              v.Active,
+			ShopBranches:        shopBranchResp,
 		}
 		apiResp := responses.ShopResponse{
 			StatusCode: 200,
