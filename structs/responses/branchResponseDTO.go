@@ -19,6 +19,7 @@ type BranchResp struct {
 	BranchId     int64
 	BranchName   string
 	Description  string
+	PhoneNumber  string
 	Location     string
 	Country      *CountryResp
 	Active       int

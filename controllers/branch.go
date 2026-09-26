@@ -243,9 +243,10 @@ func (c *BranchController) GetAll() {
 			m := br.(models.Branches)
 
 			branchesResp = append(branchesResp, responses.BranchResp{
-				BranchId:   m.BranchId,
-				BranchName: m.Branch,
-				Location:   m.Location,
+				BranchId:    m.BranchId,
+				BranchName:  m.Branch,
+				Location:    m.Location,
+				PhoneNumber: m.PhoneNumber,
 				// Country:      &countryM,
 				Active:       m.Active,
 				DateCreated:  m.DateCreated,
