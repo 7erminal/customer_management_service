@@ -40,6 +40,7 @@ func (c *ShopsController) Post() {
 	message := ""
 	resp := responses.ShopResp{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	createdByInt, _ := strconv.ParseInt(req.CreatedBy, 0, 64)
 	v := models.Shops{
 		ShopName:            req.Name,
 		ShopLocation:        req.Location,
@@ -49,6 +50,8 @@ func (c *ShopsController) Post() {
 		Image:               req.ImageUrl,
 		ShopAssistantName:   req.AssistantName,
 		ShopAssistantNumber: req.AssistantNumber,
+		CreatedBy:           int(createdByInt),
+		ModifiedBy:          int(createdByInt),
 	}
 	if _, err := models.AddShops(&v); err == nil {
 		c.Ctx.Output.SetStatus(201)
@@ -300,48 +303,65 @@ func (c *ShopsController) Put() {
 
 	statusCode := 200
 	message := "OK"
-	v := models.Shops{
-		ShopId:              id,
-		ShopName:            req.Name,
-		PhoneNumber:         req.PhoneNumber,
-		Email:               req.Email,
-		Image:               req.ImageUrl,
-		ShopDescription:     req.Description,
-		ShopLocation:        req.Location,
-		ShopAssistantName:   req.AssistantName,
-		ShopAssistantNumber: req.AssistantNumber,
-	}
-	if err := models.UpdateShopsById(&v); err == nil {
-		apiResp := responses.ShopResponse{
-			StatusCode: statusCode,
-			StatusDesc: message,
-			Result: responses.ShopResp{
-				ShopId:              strconv.FormatInt(v.ShopId, 10),
-				ShopName:            v.ShopName,
-				ShopDescription:     v.ShopDescription,
-				ShopAssistantName:   v.ShopAssistantName,
-				ShopAssistantNumber: v.ShopAssistantNumber,
-				PhoneNumber:         v.PhoneNumber,
-				Email:               v.Email,
-				Image:               v.Image,
-				ShopLocation:        v.ShopLocation,
-				DateCreated:         v.DateCreated,
-				DateModified:        v.DateModified,
-				CreatedBy:           v.CreatedBy,
-				ModifiedBy:          v.ModifiedBy,
-				Active:              v.Active,
-			},
-		}
-		c.Data["json"] = apiResp
-		// c.Data["json"] = "OK"
-	} else {
-		logs.Error("Error updating shop ", err.Error())
-		statusCode = 500
-		message = err.Error()
+
+	if shop, err := models.GetShopsById(id); err != nil {
+		statusCode = 404
+		message = "Shop not found"
 		c.Data["json"] = responses.ShopResponse{
 			StatusCode: statusCode,
 			StatusDesc: message,
 			Result:     responses.ShopResp{},
+		}
+		c.ServeJSON()
+		return
+	} else {
+		modifiedByInt, _ := strconv.ParseInt(req.ModifiedBy, 0, 64)
+		v := models.Shops{
+			ShopId:              id,
+			ShopName:            req.Name,
+			Active:              shop.Active,
+			PhoneNumber:         req.PhoneNumber,
+			Email:               req.Email,
+			Image:               req.ImageUrl,
+			ShopDescription:     req.Description,
+			ShopLocation:        req.Location,
+			ShopAssistantName:   req.AssistantName,
+			ShopAssistantNumber: req.AssistantNumber,
+			ModifiedBy:          int(modifiedByInt),
+			CreatedBy:           shop.CreatedBy,
+		}
+		if err := models.UpdateShopsById(&v); err == nil {
+			apiResp := responses.ShopResponse{
+				StatusCode: statusCode,
+				StatusDesc: message,
+				Result: responses.ShopResp{
+					ShopId:              strconv.FormatInt(v.ShopId, 10),
+					ShopName:            v.ShopName,
+					ShopDescription:     v.ShopDescription,
+					ShopAssistantName:   v.ShopAssistantName,
+					ShopAssistantNumber: v.ShopAssistantNumber,
+					PhoneNumber:         v.PhoneNumber,
+					Email:               v.Email,
+					Image:               v.Image,
+					ShopLocation:        v.ShopLocation,
+					DateCreated:         v.DateCreated,
+					DateModified:        v.DateModified,
+					CreatedBy:           v.CreatedBy,
+					ModifiedBy:          v.ModifiedBy,
+					Active:              v.Active,
+				},
+			}
+			c.Data["json"] = apiResp
+			// c.Data["json"] = "OK"
+		} else {
+			logs.Error("Error updating shop ", err.Error())
+			statusCode = 500
+			message = err.Error()
+			c.Data["json"] = responses.ShopResponse{
+				StatusCode: statusCode,
+				StatusDesc: message,
+				Result:     responses.ShopResp{},
+			}
 		}
 	}
 	c.ServeJSON()

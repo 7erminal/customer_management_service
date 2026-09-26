@@ -9,6 +9,7 @@ type ShopRequest struct {
 	Location        string
 	AssistantName   string
 	AssistantNumber string
+	CreatedBy       string
 }
 
 type UpdateShopRequest struct {
@@ -20,6 +21,7 @@ type UpdateShopRequest struct {
 	Location        string
 	AssistantName   string
 	AssistantNumber string
+	ModifiedBy      string
 }
 
 type ShopBranchRequest struct {
