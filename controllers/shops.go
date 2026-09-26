@@ -560,18 +560,23 @@ func (c *ShopsController) RemoveBranch() {
 		},
 	}
 
-	query_ := "Shop: " + strconv.FormatInt(shopBranch.Shop.ShopId, 10) + ", Branch: " + strconv.FormatInt(shopBranch.Branch.BranchId, 10)
-	if v := query_; v != "" {
-		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
-				c.Data["json"] = errors.New("Error: invalid query key/value pair")
-				c.ServeJSON()
-				return
-			}
-			k, v := kv[0], kv[1]
-			query[k] = v
-		}
+	// query_ := "Shop: " + strconv.FormatInt(shopBranch.Shop.ShopId, 10) + ", Branch: " + strconv.FormatInt(shopBranch.Branch.BranchId, 10)
+	// if v := query_; v != "" {
+	// 	for _, cond := range strings.Split(v, ",") {
+	// 		kv := strings.SplitN(cond, ":", 2)
+	// 		if len(kv) != 2 {
+	// 			c.Data["json"] = errors.New("Error: invalid query key/value pair")
+	// 			c.ServeJSON()
+	// 			return
+	// 		}
+	// 		k, v := kv[0], kv[1]
+	// 		query[k] = v
+	// 	}
+	// }
+
+	query = map[string]string{
+		"Shop":   strconv.FormatInt(shopBranch.Shop.ShopId, 10),
+		"Branch": strconv.FormatInt(shopBranch.Branch.BranchId, 10),
 	}
 
 	if shopBranchs, err := models.GetAllShopBranches(query, fields, sortby, order, offset, limit); err == nil {
