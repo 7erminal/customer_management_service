@@ -44,6 +44,15 @@ func GetShopBranchesById(id int64) (v *ShopBranches, err error) {
 	return nil, err
 }
 
+func GetShopBranchesByIds(shopid int64, branchid int64) (v *ShopBranches, err error) {
+	o := orm.NewOrm()
+	v = &ShopBranches{}
+	if err = o.QueryTable(new(ShopBranches)).Filter("Shop__ShopId", shopid).Filter("Branch__BranchId", branchid).RelatedSel().One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllShopBranches retrieves all ShopBranches matches certain condition. Returns empty list if
 // no records exist
 func GetAllShopBranches(query map[string]string, fields []string, sortby []string, order []string,

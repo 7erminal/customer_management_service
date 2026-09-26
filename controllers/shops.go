@@ -401,6 +401,17 @@ func (c *ShopsController) AddBranch() {
 			}(),
 		},
 	}
+
+	if shop, err := models.GetShopBranchesByIds(shopBranch.Shop.ShopId, shopBranch.Branch.BranchId); err == nil {
+		logs.Info("Shop branch already exists with ID ", shop.Id)
+		c.Data["json"] = responses.ShopResponse{
+			StatusCode: 400,
+			StatusDesc: "Shop branch already exists",
+			Result:     responses.ShopResp{},
+		}
+		c.ServeJSON()
+		return
+	}
 	if id, err := models.AddShopBranches(shopBranch); err == nil {
 		logs.Info("Successfully added shop branch with ID ", id)
 		logs.Info("Getting shop details ")
