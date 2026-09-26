@@ -150,6 +150,7 @@ func (c *BranchController) GetOne() {
 			BranchId:     v.BranchId,
 			BranchName:   v.Branch,
 			Location:     v.Location,
+			PhoneNumber:  v.PhoneNumber,
 			Country:      &countryM,
 			Active:       v.Active,
 			DateCreated:  v.DateCreated,
