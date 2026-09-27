@@ -9,6 +9,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
@@ -268,12 +269,85 @@ func (c *BranchController) GetAll() {
 // @Title Put
 // @Description update the Branch
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Branch	true		"body for Branch content"
-// @Success 200 {object} models.Branch
-// @Failure 403 :id is not int
+// @Param	body		body 	requests.BranchRequestDTO	true		"body for Branch content"
+// @Success 200 {object} responses.BranchResponseDTO
+// @Failure 400 Invalid branch ID
+// @Failure 404 Branch not found
+// @Failure 500 Internal server error
 // @router /:id [put]
 func (c *BranchController) Put() {
+	logs.Info("Updating branch with ID: ", c.Ctx.Input.Param(":id"))
+	idStr := c.Ctx.Input.Param(":id")
+	logs.Info("Branch ID to update: ", idStr)
+	id, err := strconv.ParseInt(idStr, 0, 64)
+	if err != nil {
+		logs.Error("Invalid branch ID: ", idStr)
+		c.Data["json"] = errors.New("Invalid branch ID")
+		c.ServeJSON()
+		return
+	}
+	logs.Info("Parsed branch ID: ", id)
 
+	statusCode := 400
+	statusDesc := ""
+	respData := responses.BranchResp{}
+
+	var branchRequestDTO requests.BranchRequestDTO
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &branchRequestDTO); err != nil {
+		logs.Error("Error parsing request body: ", err.Error())
+		var resp = responses.BranchResponseDTO{StatusCode: 400, Result: nil, StatusDesc: "Error parsing request body: " + err.Error()}
+		c.Data["json"] = resp
+		c.ServeJSON()
+		return
+	}
+
+	active := 0
+	if branchRequestDTO.Active == "true" {
+		active = 1
+	}
+
+	modifiedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 0, 64)
+
+	if branch, err := models.GetBranchesById(id); err == nil {
+		branch.Branch = branchRequestDTO.Branch
+		branch.Location = branchRequestDTO.Location
+		branch.PhoneNumber = branchRequestDTO.PhoneNumber
+		branch.Active = active
+		branch.DateModified = time.Now()
+		branch.ModifiedBy = int(modifiedByInt)
+
+		if err := models.UpdateBranchesById(branch); err == nil {
+			statusCode = 200
+			statusDesc = "Branch updated successfully"
+			respData = responses.BranchResp{
+				BranchId:     branch.BranchId,
+				BranchName:   branch.Branch,
+				Location:     branch.Location,
+				PhoneNumber:  branch.PhoneNumber,
+				Active:       branch.Active,
+				DateCreated:  branch.DateCreated,
+				DateModified: branch.DateModified,
+				CreatedBy:    branch.CreatedBy,
+				ModifiedBy:   branch.ModifiedBy,
+			}
+			logs.Info("Branch updated successfully")
+			resp := responses.BranchResponseDTO{StatusCode: statusCode, Result: &respData, StatusDesc: statusDesc}
+			c.Data["json"] = resp
+		} else {
+			logs.Error("Branch update failed")
+			statusCode = 500
+			statusDesc = "Branch update failed"
+			resp := responses.BranchResponseDTO{StatusCode: statusCode, Result: nil, StatusDesc: statusDesc}
+			c.Data["json"] = resp
+		}
+	} else {
+		logs.Error("Branch not found")
+		statusCode = 404
+		statusDesc = "Branch not found"
+		resp := responses.BranchResponseDTO{StatusCode: statusCode, Result: nil, StatusDesc: statusDesc}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
 }
 
 // UpdateBranchManager ...
