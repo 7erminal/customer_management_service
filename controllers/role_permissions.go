@@ -45,7 +45,7 @@ func (c *Role_permissionsController) Post() {
 			if action, err := models.GetActionsByName(v.Action); err == nil {
 				if rolePermission, err := models.GetRolePermissionByRoleActionPermission(roleInt, v.Action, v.PermissionCode); err == nil {
 					if rolePermission != nil {
-						var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Role permission already exists"}
+						var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Role permission already exists"}
 						c.Data["json"] = resp
 						c.ServeJSON()
 						return
@@ -53,26 +53,34 @@ func (c *Role_permissionsController) Post() {
 				}
 				var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 				if _, err := models.AddRole_permissions(&rolePermission); err == nil {
+					logs.Info("Role permission added successfully")
+					if role, err = models.GetRolesById(roleInt); err != nil {
+						logs.Error("Unable to fetch role using id ", roleInt)
+						var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
+						c.Data["json"] = resp
+						c.ServeJSON()
+						return
+					}
 					c.Ctx.Output.SetStatus(200)
-					var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: &rolePermission, StatusDesc: "Role Permission added"}
+					var resp = responses.RoleResponseDTO{StatusCode: 200, Role: role, StatusDesc: "Role Permission added"}
 					c.Data["json"] = resp
 				} else {
-					var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
+					var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
 					c.Data["json"] = resp
 				}
 			} else {
 				logs.Error("Unable to fetch action using name ", v.Action)
-				var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
+				var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
 				c.Data["json"] = resp
 			}
 		} else {
 			logs.Error("Unable to fetch permission using code ", v.PermissionCode)
-			var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
+			var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Error("Unable to fetch role using id ", v.Role)
-		var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
+		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 
@@ -206,9 +214,15 @@ func (c *Role_permissionsController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	if err := models.DeleteRole_permissions(id); err == nil {
-		c.Data["json"] = "OK"
+		// c.Data["json"] = "OK"
+		logs.Info("Role permission deleted successfully")
+		resp := responses.RoleResponseDTO{StatusCode: 200, Role: nil, StatusDesc: "Role permission deleted successfully"}
+		c.Data["json"] = resp
+
 	} else {
-		c.Data["json"] = err.Error()
+		logs.Error("Error deleting role permission: %v", err)
+		resp := responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error deleting role permission ::: " + err.Error()}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
