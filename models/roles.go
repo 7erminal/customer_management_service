@@ -19,7 +19,7 @@ type Roles struct {
 	CreatedBy       int
 	ModifiedBy      int
 	Active          int
-	RolePermissions []Role_permissions `orm:"reverse(many)"`
+	RolePermissions []*Role_permissions `orm:"reverse(many)"`
 }
 
 func init() {
