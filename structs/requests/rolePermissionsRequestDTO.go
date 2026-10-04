@@ -1,7 +1,7 @@
 package requests
 
 type RolePermissionRequest struct {
-	Role           int64
+	Role           string
 	Action         string
 	PermissionCode string
 }

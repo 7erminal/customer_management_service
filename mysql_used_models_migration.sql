@@ -297,3 +297,141 @@ EXECUTE shops_shop_location_stmt;
 DEALLOCATE PREPARE shops_shop_location_stmt;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE role_permissions
+ADD UNIQUE KEY uq_role_perm_action (role_id, permission_id, action_id);
+
+
+
+
+-- Data
+
+START TRANSACTION;
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'CREATE',  'Create a new record',                         NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'CREATE');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'READ',    'Read or view record details',                 NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'READ');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'UPDATE',  'Modify an existing record',                   NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'UPDATE');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'DELETE',  'Remove a record',                             NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'DELETE');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'APPROVE', 'Approve a pending record',                    NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'APPROVE');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'REJECT',  'Reject a pending record',                     NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'REJECT');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'EXPORT',  'Export data to CSV, PDF, or other formats',   NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'EXPORT');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'IMPORT',  'Bulk import data into the system',            NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'IMPORT');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'ASSIGN',  'Assign a record to a user or team',           NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'ASSIGN');
+
+INSERT INTO actions
+(action, description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'LIST',    'List or search records',                      NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (SELECT 1 FROM actions WHERE action = 'LIST');
+
+COMMIT;
+
+
+
+START TRANSACTION;
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Invoices', 'INVOICE', 'Invoice records', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'INVOICE'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Users', 'USER', 'User management', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'USER'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Roles', 'ROLE', 'Role management', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'ROLE'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Customers', 'CUSTOMER', 'Customer records', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'CUSTOMER'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Reports', 'REPORT', 'Reporting module', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'REPORT'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Payments', 'PAYMENT', 'Payment records', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'PAYMENT'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Settings', 'SETTINGS', 'System settings', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'SETTINGS'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Notifications', 'NOTIFICATION', 'Notification management', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'NOTIFICATION'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Items', 'ITEM', 'Item management', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'ITEM'
+);
+
+INSERT INTO permissions
+(permission, permission_code, permission_description, date_created, date_modified, created_by, modified_by, active)
+SELECT 'Transactions', 'TRANSACTION', 'Transaction records', NOW(), NOW(), 1, 1, 1
+WHERE NOT EXISTS (
+  SELECT 1 FROM permissions WHERE permission_code = 'TRANSACTION'
+);
+
+COMMIT;
