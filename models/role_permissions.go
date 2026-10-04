@@ -45,6 +45,20 @@ func GetRole_permissionsById(id int64) (v *Role_permissions, err error) {
 	return nil, err
 }
 
+// Get permission role action
+func GetRolePermissionByRoleActionPermission(roleId int64, actionName string, permissionCode string) (v *Role_permissions, err error) {
+	o := orm.NewOrm()
+	v = &Role_permissions{}
+	if err = o.QueryTable(new(Role_permissions)).
+		Filter("Action__Action", actionName).
+		Filter("Permission__PermissionCode", permissionCode).
+		RelatedSel().
+		One(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
 // GetAllRole_permissions retrieves all Role_permissions matches certain condition. Returns empty list if
 // no records exist
 func GetAllRole_permissions(query map[string]string, fields []string, sortby []string, order []string,
