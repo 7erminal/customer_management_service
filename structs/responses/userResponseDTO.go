@@ -32,24 +32,24 @@ type UserResp struct {
 
 type UserResponseDTO struct {
 	StatusCode int
-	User       *models.Users
+	Result     *models.Users
 	StatusDesc string
 }
 
 type UsersResponseDTO struct {
 	StatusCode int
-	Users      *[]models.Users
+	Result     *[]models.Users
 	StatusDesc string
 }
 
 type UsersAllCustomersDTO struct {
 	StatusCode int
-	Users      *[]models.Users
+	Result     *[]models.Users
 	StatusDesc string
 }
 
 type UsersBranchResponseDTO struct {
 	StatusCode int
-	Users      *[]models.Users
+	Result     *[]models.Users
 	StatusDesc string
 }

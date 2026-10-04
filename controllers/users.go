@@ -98,7 +98,7 @@ func (c *UsersController) SignUp2() {
 
 			logs.Error(err.Error())
 
-			var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+			var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 			c.Data["json"] = resp
 		} else {
 			logs.Debug("Returned user B is", v)
@@ -126,7 +126,7 @@ func (c *UsersController) SignUp2() {
 				if err != nil {
 					c.Data["json"] = err.Error()
 
-					var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+					var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 					c.Data["json"] = resp
 				} else {
 					addUserModel.UserDetails = &userDetails
@@ -157,19 +157,19 @@ func (c *UsersController) SignUp2() {
 						// 	Branch:        cust.Branch,
 						// }
 						c.Ctx.Output.SetStatus(200)
-						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully"}
 
 						c.Data["json"] = resp
 					} else {
 						logs.Error("Error updating customer ID for user ")
-						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}
 				}
 			} else {
 				// c.Data["json"] = err.Error()\
 				logs.Error(err.Error())
-				var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
+				var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error adding customer"}
 				c.Data["json"] = resp
 			}
 
@@ -178,7 +178,7 @@ func (c *UsersController) SignUp2() {
 	} else {
 		logs.Error(err.Error())
 
-		var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+		var resp = responses.UserResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error adding user"}
 		c.Data["json"] = resp
 
 		// c.Data["json"] = err.Error()
@@ -226,7 +226,7 @@ func (c *UsersController) SignUp() {
 		logs.Error("Error fetching role:: ", err.Error())
 		role = nil
 
-		var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid role specified. Please enter date in the format (YYYY-MM-DD)."}
+		var resp = responses.UserResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Invalid role specified. Please enter date in the format (YYYY-MM-DD)."}
 		c.Data["json"] = resp
 
 		if !v.RoleRequired {
@@ -267,7 +267,7 @@ func (c *UsersController) SignUp() {
 
 		if !proceed {
 			logs.Error("Error parsing date. Please enter date in the format (YYYY-MM-DD).")
-			var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
+			var resp = responses.UserResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Invalid date. Please enter date in the format (YYYY-MM-DD)."}
 			c.Data["json"] = resp
 
 			// c.Data["json"] = error.Error()
@@ -356,20 +356,20 @@ func (c *UsersController) SignUp() {
 						logs.Info("User found and verified....sending user data")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
-						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully"}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
 						logs.Error("Error updating user ID for user ")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
-						var resp = responses.UserResponseDTO{StatusCode: 200, User: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}
 
 				} else {
 					// c.Data["json"] = err.Error()
 					logs.Error("Error adding user, ", err.Error())
-					var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error adding customer"}
+					var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error adding customer"}
 					c.Data["json"] = resp
 				}
 				// c.Data["json"] = v
@@ -378,7 +378,7 @@ func (c *UsersController) SignUp() {
 				logs.Error("An error occurred...")
 				logs.Error(err.Error())
 
-				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error adding user"}
+				var resp = responses.UserResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error adding user"}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = err.Error()
@@ -387,7 +387,7 @@ func (c *UsersController) SignUp() {
 	} else {
 		// c.Data["json"] = err.Error()
 		logs.Error("User with email already exists...")
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "User already exists. Username, email or mobile number already exists."}
 		c.Data["json"] = resp
 	}
 
@@ -409,7 +409,7 @@ func (c *UsersController) VerifyUsername() {
 
 	if err != nil {
 		logs.Error("Error::", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error getting user"}
 		c.Data["json"] = resp
 	} else {
 		logs.Info("User found....sending user data")
@@ -419,7 +419,7 @@ func (c *UsersController) VerifyUsername() {
 		// if err != nil {
 		// 	c.Data["json"] = err.Error()
 
-		// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+		// 	var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 		// 	c.Data["json"] = resp
 		// } else {
 
@@ -447,10 +447,10 @@ func (c *UsersController) VerifyUsername() {
 		// 		ModifiedBy:    v.ModifiedBy,
 		// 		Branch:        cust.Branch,
 		// 	}
-		// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User details fetched"}
+		// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User details fetched"}
 		// 	c.Data["json"] = resp
 		// }
-		var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -472,7 +472,7 @@ func (c *UsersController) VerifyUser() {
 
 	if err != nil {
 		logs.Error("Error::", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user"}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error getting user"}
 		c.Data["json"] = resp
 	} else {
 		v.IsVerified = true
@@ -483,7 +483,7 @@ func (c *UsersController) VerifyUser() {
 			// if err != nil {
 			// 	c.Data["json"] = err.Error()
 
-			// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+			// 	var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 			// 	c.Data["json"] = resp
 			// } else {
 			// 	logs.Info("Customer found ", cust)
@@ -512,13 +512,13 @@ func (c *UsersController) VerifyUser() {
 			// 		ModifiedBy:    v.ModifiedBy,
 			// 		Branch:        cust.Branch,
 			// 	}
-			// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "User verified"}
+			// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User verified"}
 			// 	c.Data["json"] = resp
 			// }
-			var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User verified"}
+			var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User verified"}
 			c.Data["json"] = resp
 		} else {
-			var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "User not verified ::: " + err.Error()}
+			var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "User not verified ::: " + err.Error()}
 			c.Data["json"] = resp
 		}
 	}
@@ -914,12 +914,12 @@ func (c *UsersController) GetOne() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v, err := models.GetUsersById(id)
 	if err != nil {
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Getting user details ", v.UserDetails)
 
-		var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "User details fetched"}
+		var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -1000,7 +1000,7 @@ func (c *UsersController) GetAll() {
 
 	l, err := models.GetAllUsers(query, fields, sortby, order, offset, limit, search)
 	if err != nil {
-		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
 		usersResp := []models.Users{}
@@ -1009,7 +1009,7 @@ func (c *UsersController) GetAll() {
 
 			usersResp = append(usersResp, m)
 		}
-		resp := responses.UsersResponseDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
+		resp := responses.UsersResponseDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -1077,7 +1077,7 @@ func (c *UsersController) GetUsersWithRole() {
 		logs.Info("Role fetched ", role.Role)
 		l, err := models.GetAllUsersWithRole(role, query, fields, sortby, order, offset, limit)
 		if err != nil {
-			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
@@ -1087,12 +1087,12 @@ func (c *UsersController) GetUsersWithRole() {
 
 				usersResp = append(usersResp, m)
 			}
-			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Error("Error getting role ", err.Error())
-		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 
@@ -1161,7 +1161,7 @@ func (c *UsersController) GetUsersUnderBranch() {
 		logs.Info("Branch fetched ", branch.Branch)
 		l, err := models.GetAllUsersByBranch(branch, query, fields, sortby, order, offset, limit)
 		if err != nil {
-			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
@@ -1171,12 +1171,12 @@ func (c *UsersController) GetUsersUnderBranch() {
 
 				usersResp = append(usersResp, m)
 			}
-			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Users: &usersResp, StatusDesc: "Users fetched successfully"}
+			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Error("Error getting role ", err.Error())
-		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Users: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
+		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 
@@ -1305,7 +1305,7 @@ func (c *UsersController) UpdateUserImage() {
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
 			errorMessage := "Error: Failed to save the image file"
 
-			resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+			resp := responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error updating user. " + errorMessage}
 
 			c.Data["json"] = resp
 			c.ServeJSON()
@@ -1326,7 +1326,7 @@ func (c *UsersController) UpdateUserImage() {
 			if err != nil {
 				c.Data["json"] = err.Error()
 
-				var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned user is", v)
@@ -1336,7 +1336,7 @@ func (c *UsersController) UpdateUserImage() {
 				// if err != nil {
 				// 	c.Data["json"] = err.Error()
 
-				// 	var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				// 	var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 				// 	c.Data["json"] = resp
 				// } else {
 
@@ -1365,23 +1365,23 @@ func (c *UsersController) UpdateUserImage() {
 				// 		Branch:        cust.Branch,
 				// 	}
 
-				// 	var resp = responses.UserResponseDTO{StatusCode: 200, User: &userResp, StatusDesc: "Profile image updated successfully"}
+				// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "Profile image updated successfully"}
 				// 	c.Data["json"] = resp
 				// }
-				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: "Profile image updated successfully"}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "Profile image updated successfully"}
 				c.Data["json"] = resp
 			}
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = responses.UserResponseDTO{StatusCode: 602, User: nil, StatusDesc: "Error updating user"}
+			var resp = responses.UserResponseDTO{StatusCode: 602, Result: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = responses.UserResponseDTO{StatusCode: 603, User: nil, StatusDesc: "Error updating user"}
+		var resp = responses.UserResponseDTO{StatusCode: 603, Result: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
@@ -1433,7 +1433,7 @@ func (c *UsersController) Put() {
 			// c.Data["json"] = map[string]string{"error": "Failed to save the image file."}
 			errorMessage := "Error: Failed to save the image file"
 
-			resp := responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error updating user. " + errorMessage}
+			resp := responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error updating user. " + errorMessage}
 
 			c.Data["json"] = resp
 			c.ServeJSON()
@@ -1530,7 +1530,7 @@ func (c *UsersController) Put() {
 				logs.Error("Error returned fetching customer ", err.Error())
 				c.Data["json"] = err.Error()
 
-				var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+				var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 				c.Data["json"] = resp
 			} else {
 				logs.Debug("Returned customer is", userDetails)
@@ -1579,7 +1579,7 @@ func (c *UsersController) Put() {
 				// 	Branch:        cust.Branch,
 				// }
 
-				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = v
@@ -1587,14 +1587,14 @@ func (c *UsersController) Put() {
 		} else {
 			// c.Data["json"] = err.Error()
 			logs.Debug("Error updating user", err.Error())
-			var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
+			var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error updating user"}
 			c.Data["json"] = resp
 		}
 	} else {
 		logs.Debug("Error fetching user")
 
 		logs.Debug("Error updating user")
-		var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
+		var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error updating user"}
 		c.Data["json"] = resp
 	}
 
@@ -1636,7 +1636,7 @@ func (c *UsersController) UpdateUserRole() {
 
 			if err := models.UpdateUsersById(v); err == nil {
 				message := "Profile updated successfully"
-				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = v
@@ -1644,19 +1644,19 @@ func (c *UsersController) UpdateUserRole() {
 			} else {
 				// c.Data["json"] = err.Error()
 				logs.Debug("Error updating user", err.Error())
-				var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
+				var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error updating user"}
 				c.Data["json"] = resp
 			}
 		} else {
 			logs.Error("There was an error getting the provided role")
 
-			var resp = responses.UserResponseDTO{StatusCode: 605, User: nil, StatusDesc: "Error updating user. Role not found."}
+			var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "Error updating user. Role not found."}
 			c.Data["json"] = resp
 		}
 
 	} else {
 		logs.Error("Error updating user ", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error updating user. User not found."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error updating user. User not found."}
 		c.Data["json"] = resp
 	}
 
@@ -1697,7 +1697,7 @@ func (c *UsersController) UpdateUserPassword() {
 
 			logs.Error(err.Error())
 
-			var resp = responses.UserResponseDTO{StatusCode: 605, User: nil, StatusDesc: "Old password does not match"}
+			var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "Old password does not match"}
 			c.Data["json"] = resp
 
 		} else {
@@ -1705,14 +1705,14 @@ func (c *UsersController) UpdateUserPassword() {
 
 			if err != nil {
 				logs.Error("Error hashing password ", err.Error())
-				var resp = responses.UserResponseDTO{StatusCode: 606, User: nil, StatusDesc: "Error hashing new password"}
+				var resp = responses.UserResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error hashing new password"}
 				c.Data["json"] = resp
 			} else {
 				v.Password = string(hashedPassword)
 
 				if err := models.UpdateUsersById(v); err == nil {
 					message := "Password updated successfully"
-					var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+					var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
 					c.Data["json"] = resp
 
 					// c.Data["json"] = v
@@ -1720,7 +1720,7 @@ func (c *UsersController) UpdateUserPassword() {
 				} else {
 					// c.Data["json"] = err.Error()
 					logs.Debug("Error updating user", err.Error())
-					var resp = responses.UserResponseDTO{StatusCode: 608, User: nil, StatusDesc: "Error updating user"}
+					var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "Error updating user"}
 					c.Data["json"] = resp
 				}
 			}
@@ -1729,7 +1729,7 @@ func (c *UsersController) UpdateUserPassword() {
 
 	} else {
 		logs.Error("Error updating user ", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error updating user. User not found."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error updating user. User not found."}
 		c.Data["json"] = resp
 	}
 
@@ -1770,7 +1770,7 @@ func (c *UsersController) UpdateUserBranch() {
 			logs.Error("Error returned fetching user details ", err.Error())
 			c.Data["json"] = err.Error()
 
-			var resp = responses.UserResponseDTO{StatusCode: 601, User: nil, StatusDesc: "Error fetching user"}
+			var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 			c.Data["json"] = resp
 		} else {
 			logs.Debug("Returned user details is", userDetails)
@@ -1780,7 +1780,7 @@ func (c *UsersController) UpdateUserBranch() {
 			if err != nil {
 				logs.Error("Error fetching branch specified")
 				message = "Branch not found"
-				var resp = responses.UserResponseDTO{StatusCode: 605, User: nil, StatusDesc: message}
+				var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: message}
 				c.Data["json"] = resp
 			} else {
 				userDetails.Branch = branch
@@ -1789,10 +1789,10 @@ func (c *UsersController) UpdateUserBranch() {
 					logs.Error("Failed to update user branch")
 					message = "Failed to update branch"
 
-					var resp = responses.UserResponseDTO{StatusCode: 608, User: v, StatusDesc: message}
+					var resp = responses.UserResponseDTO{StatusCode: 608, Result: v, StatusDesc: message}
 					c.Data["json"] = resp
 				} else {
-					var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
+					var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
 					c.Data["json"] = resp
 				}
 
@@ -1806,7 +1806,7 @@ func (c *UsersController) UpdateUserBranch() {
 
 	} else {
 		logs.Error("Error updating user ", err.Error())
-		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error updating user. User not found."}
+		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error updating user. User not found."}
 		c.Data["json"] = resp
 	}
 
