@@ -45,8 +45,8 @@ func GetRolesById(id int64) (v *Roles, err error) {
 	return nil, err
 }
 
-// GetRolesById retrieves Roles by Id. Returns error if
-// Id doesn't exist
+// GetRolesByName retrieves Roles by Name. Returns error if
+// Name doesn't exist
 func GetRolesByName(roleName string) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{Role: roleName}

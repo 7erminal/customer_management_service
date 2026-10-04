@@ -191,10 +191,63 @@ func (c *RolesController) Put() {
 func (c *RolesController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteRoles(id); err == nil {
-		c.Data["json"] = "OK"
+	logs.Info("Deleting role with ID: ", id)
+	statusCode := 400
+	statusMessage := "Deleting role"
+
+	roleId := idStr
+	if role, err := models.GetRolesById(id); err != nil {
+		logs.Error("Error getting role by ID: ", err)
+		statusCode = 404
+		statusMessage = "Role not found"
+		if role, err = models.GetRolesByName(idStr); err != nil {
+			logs.Error("Error getting role by name: ", err)
+			statusCode = 404
+			statusMessage = "Role not found by name"
+		} else {
+			roleId = strconv.FormatInt(role.RoleId, 10)
+		}
 	} else {
-		c.Data["json"] = err.Error()
+		logs.Info("Role found: ", role)
+		roleId = strconv.FormatInt(role.RoleId, 10)
+	}
+
+	roleIdInt, _ := strconv.ParseInt(roleId, 0, 64)
+
+	query := map[string]string{"RoleId": roleId}
+	fields := []string{}
+	sortby := []string{}
+	order := []string{}
+	offset := int64(0)
+	limit := int64(100)
+	l, err := models.GetAllRole_permissions(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		logs.Error("Error getting role permissions: ", err)
+	} else {
+		logs.Info("Role permissions found: ", l)
+
+		for _, urs := range l {
+			m := urs.(models.Role_permissions)
+
+			if err := models.DeleteRole_permissions(m.RolePermissionId); err == nil {
+				// c.Data["json"] = "OK"
+				logs.Info("Role permission deleted successfully")
+			} else {
+				logs.Error("Error deleting role permission: %v", err)
+			}
+		}
+	}
+	if err := models.DeleteRoles(roleIdInt); err == nil {
+		statusCode = 200
+		statusMessage = "Role deleted successfully"
+		resp := responses.RoleResponseDTO{StatusCode: statusCode, StatusDesc: statusMessage}
+		c.Data["json"] = resp
+	} else {
+		logs.Error("Error deleting role: ", err)
+		statusCode = 400
+		statusMessage = "Error deleting role"
+		resp := responses.RoleResponseDTO{StatusCode: statusCode, StatusDesc: statusMessage + " ::: " + err.Error()}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }
