@@ -16,6 +16,6 @@ type RolesResponseDTO struct {
 
 type RolesAllResponseDTO struct {
 	StatusCode int
-	Roles      *[]interface{}
+	Roles      *[]models.Roles
 	StatusDesc string
 }

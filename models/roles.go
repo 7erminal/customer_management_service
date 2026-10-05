@@ -26,6 +26,24 @@ func init() {
 	orm.RegisterModel(new(Roles))
 }
 
+func loadRolePermissionsDetails(o orm.Ormer, role *Roles) error {
+	if role == nil {
+		return nil
+	}
+
+	var rolePermissions []*Role_permissions
+	_, err := o.QueryTable(new(Role_permissions)).
+		Filter("Role__RoleId", role.RoleId).
+		RelatedSel().
+		All(&rolePermissions)
+	if err != nil {
+		return err
+	}
+
+	role.RolePermissions = rolePermissions
+	return nil
+}
+
 // AddRoles insert a new Roles into database and returns
 // last inserted Id on success.
 func AddRoles(m *Roles) (id int64, err error) {
@@ -40,6 +58,9 @@ func GetRolesById(id int64) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{RoleId: id}
 	if err = o.QueryTable(new(Roles)).Filter("RoleId", id).RelatedSel().One(v); err == nil {
+		if err = loadRolePermissionsDetails(o, v); err != nil {
+			return nil, err
+		}
 		return v, nil
 	}
 	return nil, err
@@ -51,6 +72,9 @@ func GetRolesByName(roleName string) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{Role: roleName}
 	if err = o.QueryTable(new(Roles)).Filter("Role", roleName).RelatedSel().One(v); err == nil {
+		if err = loadRolePermissionsDetails(o, v); err != nil {
+			return nil, err
+		}
 		return v, nil
 	}
 	return nil, err
@@ -111,8 +135,11 @@ func GetAllRoles(query map[string]string, fields []string, sortby []string, orde
 	qs = qs.OrderBy(sortFields...).RelatedSel()
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
-			for _, v := range l {
-				ml = append(ml, v)
+			for i := range l {
+				if loadErr := loadRolePermissionsDetails(o, &l[i]); loadErr != nil {
+					return nil, loadErr
+				}
+				ml = append(ml, l[i])
 			}
 		} else {
 			// trim unused fields

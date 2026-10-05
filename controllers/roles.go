@@ -151,10 +151,17 @@ func (c *RolesController) GetAll() {
 
 	l, err := models.GetAllRoles(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		var resp = responses.RolesAllResponseDTO{StatusCode: 604, Roles: nil, StatusDesc: "Error getting roles ::: " + err.Error()}
+		logs.Error("An error occurred while fetching roles: ", err)
+		var resp = responses.RolesAllResponseDTO{StatusCode: 604, Roles: &[]models.Roles{}, StatusDesc: "Error getting roles ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.RolesAllResponseDTO{StatusCode: 200, Roles: &l, StatusDesc: "Roles fetched"}
+		rolePermissions := []models.Roles{}
+		for _, urs := range l {
+			m := urs.(models.Roles)
+
+			rolePermissions = append(rolePermissions, m)
+		}
+		var resp = responses.RolesAllResponseDTO{StatusCode: 200, Roles: &rolePermissions, StatusDesc: "Roles fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
