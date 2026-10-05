@@ -213,16 +213,41 @@ func (c *Role_permissionsController) Put() {
 func (c *Role_permissionsController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteRole_permissions(id); err == nil {
-		// c.Data["json"] = "OK"
-		logs.Info("Role permission deleted successfully")
-		resp := responses.RoleResponseDTO{StatusCode: 200, Role: nil, StatusDesc: "Role permission deleted successfully"}
-		c.Data["json"] = resp
 
+	v := requests.RolePermissionRequest{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+
+	statusCode := 400
+	statusMessage := "Role permission not found"
+	role := &models.Roles{}
+
+	idStrr := v.Role
+	roleId, _ := strconv.ParseInt(idStrr, 0, 64)
+	if roleP, err := models.GetRolePermissionByRoleActionPermission(roleId, v.Action, v.PermissionCode); err == nil {
+		if roleP != nil {
+			if err := models.DeleteRole_permissions(id); err == nil {
+				// c.Data["json"] = "OK"
+				logs.Info("Role permission deleted successfully")
+				statusCode = 200
+				statusMessage = "Role permission deleted successfully"
+
+			} else {
+				logs.Error("Error deleting role permission: %v", err)
+				statusCode = 500
+				statusMessage = "Error deleting role permission: " + err.Error()
+			}
+		}
 	} else {
-		logs.Error("Error deleting role permission: %v", err)
-		resp := responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error deleting role permission ::: " + err.Error()}
-		c.Data["json"] = resp
+		logs.Error("Role permission not found")
+		statusCode = 404
+		statusMessage = "Role permission not found"
 	}
+
+	if statusCode == 200 {
+		logs.Info("Role permission deleted successfully")
+		role, _ = models.GetRolesById(roleId)
+	}
+	resp := responses.RoleResponseDTO{StatusCode: statusCode, Role: role, StatusDesc: statusMessage}
+	c.Data["json"] = resp
 	c.ServeJSON()
 }
