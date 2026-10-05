@@ -6,6 +6,7 @@ import (
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"errors"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -219,6 +220,22 @@ func (c *Role_permissionsController) Delete() {
 		PermissionCode: c.GetString("PermissionCode"),
 		Action:         c.GetString("Action"),
 	}
+
+	// Some clients send DELETE params as x-www-form-urlencoded body.
+	if (v.Role == "" || v.PermissionCode == "" || v.Action == "") && len(c.Ctx.Input.RequestBody) > 0 {
+		if formValues, err := url.ParseQuery(string(c.Ctx.Input.RequestBody)); err == nil {
+			if v.Role == "" {
+				v.Role = formValues.Get("Role")
+			}
+			if v.PermissionCode == "" {
+				v.PermissionCode = formValues.Get("PermissionCode")
+			}
+			if v.Action == "" {
+				v.Action = formValues.Get("Action")
+			}
+		}
+	}
+
 	if v.Role == "" || v.PermissionCode == "" || v.Action == "" {
 		json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	}
