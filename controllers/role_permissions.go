@@ -217,6 +217,9 @@ func (c *Role_permissionsController) Delete() {
 	v := requests.RolePermissionRequest{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
+	logs.Info("Request json is ")
+	logs.Info("Request json is ", string(c.Ctx.Input.RequestBody))
+
 	statusCode := 400
 	statusMessage := "Role permission not found"
 	role := &models.Roles{}
