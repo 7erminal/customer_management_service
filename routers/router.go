@@ -82,6 +82,11 @@ func init() {
 				&controllers.ActionsController{},
 			),
 		),
+		beego.NSNamespace("/images",
+			beego.NSInclude(
+				&controllers.ImageController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
