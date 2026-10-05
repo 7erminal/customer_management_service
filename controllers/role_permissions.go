@@ -232,6 +232,7 @@ func (c *Role_permissionsController) Delete() {
 
 	idStrr := v.Role
 	roleId, _ := strconv.ParseInt(idStrr, 0, 64)
+	logs.Info("Sending action: ", v.Action, " for role: ", v.Role, " and permission: ", v.PermissionCode)
 	if roleP, err := models.GetRolePermissionByRoleActionPermission(roleId, v.Action, v.PermissionCode); err == nil {
 		if roleP != nil {
 			if err := models.DeleteRole_permissions(roleP.RolePermissionId); err == nil {
