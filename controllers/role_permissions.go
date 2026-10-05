@@ -225,6 +225,8 @@ func (c *Role_permissionsController) Delete() {
 
 	logs.Info("Request json is ")
 	logs.Info("Request json is ", string(c.Ctx.Input.RequestBody))
+	logs.Info("Request body: ", string(c.Ctx.Input.RequestBody), " Role: ", c.GetString("Role"), " PermissionCode: ", c.GetString("PermissionCode"), " Action: ", c.GetString("Action"))
+	logs.Info("Parsed request: ", v)
 
 	statusCode := 400
 	statusMessage := "Role permission not found"
