@@ -212,10 +212,16 @@ func (c *Role_permissionsController) Put() {
 // @router /:id [delete]
 func (c *Role_permissionsController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
+	_, _ = strconv.ParseInt(idStr, 0, 64)
 
-	v := requests.RolePermissionRequest{}
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	v := requests.RolePermissionRequest{
+		Role:           c.GetString("Role"),
+		PermissionCode: c.GetString("PermissionCode"),
+		Action:         c.GetString("Action"),
+	}
+	if v.Role == "" || v.PermissionCode == "" || v.Action == "" {
+		json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	}
 
 	logs.Info("Request json is ")
 	logs.Info("Request json is ", string(c.Ctx.Input.RequestBody))
@@ -228,7 +234,7 @@ func (c *Role_permissionsController) Delete() {
 	roleId, _ := strconv.ParseInt(idStrr, 0, 64)
 	if roleP, err := models.GetRolePermissionByRoleActionPermission(roleId, v.Action, v.PermissionCode); err == nil {
 		if roleP != nil {
-			if err := models.DeleteRole_permissions(id); err == nil {
+			if err := models.DeleteRole_permissions(roleP.RolePermissionId); err == nil {
 				// c.Data["json"] = "OK"
 				logs.Info("Role permission deleted successfully")
 				statusCode = 200

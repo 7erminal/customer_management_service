@@ -50,6 +50,7 @@ func GetRolePermissionByRoleActionPermission(roleId int64, actionName string, pe
 	o := orm.NewOrm()
 	v = &Role_permissions{}
 	if err = o.QueryTable(new(Role_permissions)).
+		Filter("Role__RoleId", roleId).
 		Filter("Action__Action", actionName).
 		Filter("Permission__PermissionCode", permissionCode).
 		RelatedSel().
