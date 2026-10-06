@@ -16,8 +16,8 @@ type Identification_types struct {
 	Code                 string    `orm:"size(100)"`
 	DateCreated          time.Time `orm:"type(datetime)"`
 	DateModified         time.Time `orm:"type(datetime)"`
-	CreatedBy            int
-	ModifiedBy           int
+	CreatedBy            string
+	ModifiedBy           string
 	Active               int
 }
 

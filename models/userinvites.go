@@ -20,8 +20,8 @@ type UserInvites struct {
 	Status          string
 	DateCreated     time.Time `orm:"type(datetime)"`
 	DateModified    time.Time `orm:"type(datetime)"`
-	CreatedBy       int
-	ModifiedBy      int
+	CreatedBy       string
+	ModifiedBy      string
 	Active          int
 }
 

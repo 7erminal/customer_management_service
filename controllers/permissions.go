@@ -45,7 +45,7 @@ func (c *PermissionsController) Post() {
 		permissionPrefix = v.Permission
 	}
 	permissionCode := strings.ToUpper(permissionPrefix)
-	permission := models.Permissions{Permission: v.Permission, PermissionDescription: v.Description, PermissionCode: permissionCode, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+	permission := models.Permissions{Permission: v.Permission, PermissionDescription: v.Description, PermissionCode: permissionCode, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: v.AddedBy, ModifiedBy: v.AddedBy}
 	if _, err := models.AddPermissions(&permission); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &permission, StatusDesc: "Permission added"}

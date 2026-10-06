@@ -3,7 +3,7 @@ package models
 type CustomerCategoriesRequestDTO struct {
 	Category    string `orm:"size(100)"`
 	Description string `orm:"size(255); null"`
-	CreatedBy   int
+	CreatedBy   string
 }
 
 type CustomerCategoriesResponseDTO struct {

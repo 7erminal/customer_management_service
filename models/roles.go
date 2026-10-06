@@ -16,8 +16,8 @@ type Roles struct {
 	Description     string    `orm:"size(500)"`
 	DateCreated     time.Time `orm:"type(datetime);auto_now_add"`
 	DateModified    time.Time `orm:"type(datetime);auto_now"`
-	CreatedBy       int
-	ModifiedBy      int
+	CreatedBy       string
+	ModifiedBy      string
 	Active          int
 	RolePermissions []*Role_permissions `orm:"reverse(many)"`
 }

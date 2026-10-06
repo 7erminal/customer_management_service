@@ -618,7 +618,7 @@ func (c *UsersController) InviteUser() {
 				logs.Info("Email to invite is ", v.Email)
 				logs.Info("Role to invite is ", role)
 				proceed = false
-				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: v.InviteBy, ModifiedBy: v.InviteBy}
 
 				ui, err := models.AddUserInvites(&userInvite)
 

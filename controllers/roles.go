@@ -39,13 +39,13 @@ func (c *RolesController) URLMapping() {
 func (c *RolesController) Post() {
 	var v requests.RolesRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	var role models.Roles = models.Roles{Role: v.Role, Description: v.Description, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+	var role models.Roles = models.Roles{Role: v.Role, Description: v.Description, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: v.AddedBy, ModifiedBy: v.AddedBy}
 	if _, err := models.AddRoles(&role); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &role, StatusDesc: "Role added"}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
+		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role ::: " + err.Error()}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

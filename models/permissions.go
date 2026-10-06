@@ -17,8 +17,8 @@ type Permissions struct {
 	PermissionDescription string    `orm:"size(500)"`
 	DateCreated           time.Time `orm:"type(datetime)"`
 	DateModified          time.Time `orm:"type(datetime)"`
-	CreatedBy             int
-	ModifiedBy            int
+	CreatedBy             string
+	ModifiedBy            string
 	Active                int
 }
 

@@ -52,7 +52,7 @@ func (c *Role_permissionsController) Post() {
 						return
 					}
 				}
-				var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+				var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: v.AddedBy, ModifiedBy: v.AddedBy}
 				if _, err := models.AddRole_permissions(&rolePermission); err == nil {
 					logs.Info("Role permission added successfully")
 					if role, err = models.GetRolesById(roleInt); err != nil {
