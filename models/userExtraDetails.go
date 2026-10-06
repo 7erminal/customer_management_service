@@ -17,8 +17,8 @@ type UserExtraDetails struct {
 	Nickname      string    `orm:"size(100);omitempty;null"`
 	DateCreated   time.Time `orm:"type(datetime);auto_now_add"`
 	DateModified  time.Time `orm:"type(datetime);auto_now"`
-	CreatedBy     int
-	ModifiedBy    int
+	CreatedBy     string    `orm:"column(created_by);null"`
+	ModifiedBy    string    `orm:"column(modified_by);null"`
 	Active        int
 }
 

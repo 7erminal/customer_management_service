@@ -55,12 +55,12 @@ func (c *UsersController) URLMapping() {
 // SignUp2 ...
 // @Title SignUp2
 // @Description Sign up
-// @Param	body		body 	models.UserCredentialsDTO	true		"body for SignUp content"
+// @Param	body		body 	requests.SignUpCredDTO	true		"body for SignUp content"
 // @Success 201 {object} models.UserResponseDTO
 // @Failure 403 body is empty
 // @router /2/sign-up [post]
 func (c *UsersController) SignUp2() {
-	var v models.UserCredentialsDTO
+	var v requests.SignUpCredDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
@@ -83,7 +83,15 @@ func (c *UsersController) SignUp2() {
 	// dobm, error := time.Parse("2006-01-02 15:04:05.000", v.Dob)
 
 	// Assign dob
-	var addUserModel = models.Users{Username: v.Username, UserType: 1, Password: string(hashedPassword), DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
+	var addUserModel = models.Users{
+		Username:     v.Username,
+		UserType:     1,
+		Password:     string(hashedPassword),
+		DateCreated:  time.Now(),
+		DateModified: time.Now(),
+		Active:       1,
+		CreatedBy:    v.AddedBy,
+		ModifiedBy:   v.AddedBy}
 
 	if _, err := models.AddUsers(&addUserModel); err == nil {
 		c.Ctx.Output.SetStatus(201)
@@ -111,8 +119,8 @@ func (c *UsersController) SignUp2() {
 				DateCreated:  time.Now(),
 				DateModified: time.Now(),
 				Active:       1,
-				CreatedBy:    1,
-				ModifiedBy:   1,
+				CreatedBy:    v.AddedBy,
+				ModifiedBy:   v.AddedBy,
 			}
 
 			if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
@@ -190,12 +198,12 @@ func (c *UsersController) SignUp2() {
 // SignUp ...
 // @Title SignUp
 // @Description Sign up
-// @Param	body		body 	models.SignUpDTO	true		"body for SignUp content"
-// @Success 201 {object} models.UserResponseDTO
+// @Param	body		body 	requests.SignUpDTO	true		"body for SignUp content"
+// @Success 201 {object} responses.UserResponseDTO
 // @Failure 403 body is empty
 // @router /sign-up [post]
 func (c *UsersController) SignUp() {
-	var v models.SignUpDTO
+	var v requests.SignUpDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
@@ -285,6 +293,9 @@ func (c *UsersController) SignUp() {
 			if gender == "f" || gender == "F" || gender == "female" {
 				gender = "FEMALE"
 			}
+
+			addedBy := v.AddedBy
+
 			var addUserModel = models.Users{
 				FullName:     v.Name,
 				UserType:     1,
@@ -297,8 +308,8 @@ func (c *UsersController) SignUp() {
 				DateCreated:  time.Now(),
 				DateModified: time.Now(),
 				Active:       1,
-				CreatedBy:    1,
-				ModifiedBy:   1,
+				CreatedBy:    addedBy,
+				ModifiedBy:   addedBy,
 				Username:     v.Username,
 			}
 
@@ -334,8 +345,8 @@ func (c *UsersController) SignUp() {
 					DateCreated:  time.Now(),
 					DateModified: time.Now(),
 					Active:       1,
-					CreatedBy:    1,
-					ModifiedBy:   1,
+					CreatedBy:    addedBy,
+					ModifiedBy:   addedBy,
 				}
 
 				logs.Info("User details add after")
@@ -1484,7 +1495,7 @@ func (c *UsersController) Put() {
 		v.Address = raddress
 		v.ImagePath = filePath
 		v.Email = remail
-		v.ModifiedBy = int(updatedBy)
+		v.ModifiedBy = rmodifiedby
 		// Convert dob string to date
 		var dobm time.Time
 

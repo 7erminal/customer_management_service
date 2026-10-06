@@ -258,6 +258,7 @@ func (c *CustomersController) AddCustomer() {
 
 		logs.Info("Status is ", status, " and status int is ", activeStatus)
 		logs.Info("About to add customer record with name ", rname, " and email ", remail, " and phone number ", rphonenumber, " and dob ", dobm, ridnumber, " and nickname ", rnickname, " and location ", rlocation, " and image path ", filePath)
+
 		var cust models.Customers
 		if idType.IdentificationTypeId == 0 {
 			cust = models.Customers{
@@ -276,8 +277,8 @@ func (c *CustomersController) AddCustomer() {
 				DateModified:     time.Now(),
 				Active:           activeStatus,
 				LastTxnDate:      time.Now(),
-				CreatedBy:        int(user.UserId),
-				ModifiedBy:       int(user.UserId)}
+				CreatedBy:        raddedBy,
+				ModifiedBy:       raddedBy}
 		} else {
 			cust = models.Customers{
 				FullName:             rname,
@@ -297,8 +298,8 @@ func (c *CustomersController) AddCustomer() {
 				DateModified:         time.Now(),
 				Active:               activeStatus,
 				LastTxnDate:          time.Now(),
-				CreatedBy:            int(user.UserId),
-				ModifiedBy:           int(user.UserId)}
+				CreatedBy:            raddedBy,
+				ModifiedBy:           raddedBy}
 		}
 
 		if _, err := models.AddCustomer(&cust); err == nil {
@@ -635,7 +636,7 @@ func (c *CustomersController) Put() {
 		rbranch := c.Ctx.Input.Query("Branch")
 		rmodifiedby := c.Ctx.Input.Query("ModifiedBy")
 		rstatus := c.Ctx.Input.Query("Status")
-		user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
+		// user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
 		logs.Info("File path is ", filePath, " and customer image path is ", cust.ImagePath)
 		if filePath == "" && cust.ImagePath != "" {
 			filePath = cust.ImagePath
@@ -648,7 +649,7 @@ func (c *CustomersController) Put() {
 		cust.Nickname = rnickname
 		cust.Location = rlocation
 		cust.ImagePath = filePath
-		cust.ModifiedBy = int(user)
+		cust.ModifiedBy = rmodifiedby
 		statusInt, err := strconv.Atoi(rstatus)
 		if err != nil {
 			logs.Error("Invalid status value: ", rstatus, " error: ", err)

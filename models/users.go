@@ -32,8 +32,8 @@ type Users struct {
 	IsVerified    bool              `orm:"column(is_verified);null"`
 	DateCreated   time.Time         `orm:"column(date_created);type(datetime);null;auto_now_add"`
 	DateModified  time.Time         `orm:"column(date_modified);type(datetime);null;auto_now"`
-	CreatedBy     int               `orm:"column(created_by);null"`
-	ModifiedBy    int               `orm:"column(modified_by);null"`
+	CreatedBy     string            `orm:"column(created_by);null"`
+	ModifiedBy    string            `orm:"column(modified_by);null"`
 }
 
 func (t *Users) TableName() string {

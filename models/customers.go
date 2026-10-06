@@ -29,8 +29,8 @@ type Customers struct {
 	Dob                  time.Time             `orm:"column(dob);type(datetime)"`
 	DateCreated          time.Time             `orm:"type(datetime)"`
 	DateModified         time.Time             `orm:"type(datetime)"`
-	CreatedBy            int
-	ModifiedBy           int
+	CreatedBy            string                `orm:"column(created_by);null"`
+	ModifiedBy           string                `orm:"column(modified_by);null"`
 	Active               int
 	LastTxnDate          time.Time                      `orm:"column(last_txn_date);type(datetime)"`
 	EmergencyContacts    []*Customer_emergency_contacts `orm:"reverse(many);null;"`
