@@ -25,8 +25,8 @@ type BranchResp struct {
 	Active       int
 	DateCreated  time.Time
 	DateModified time.Time
-	CreatedBy    int
-	ModifiedBy   int
+	CreatedBy    string
+	ModifiedBy   string
 }
 
 type BranchResponseDTO struct {

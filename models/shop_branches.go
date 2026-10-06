@@ -16,8 +16,8 @@ type ShopBranches struct {
 	Branch       *Branches `orm:"rel(fk);column(branch_id)"`
 	DateCreated  time.Time `orm:"type(datetime);auto_now_add"`
 	DateModified time.Time `orm:"type(datetime);auto_now"`
-	CreatedBy    int
-	ModifiedBy   int
+	CreatedBy    string    `orm:"omitempty"`
+	ModifiedBy   string    `orm:"omitempty"`
 	Active       int
 }
 

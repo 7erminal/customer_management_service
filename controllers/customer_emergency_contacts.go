@@ -43,7 +43,7 @@ func (c *Customer_emergency_contactsController) Post() {
 	logs.Info("Customer ID: ", req.CustomerId)
 	// customerId := strconv.FormatInt(req.CustomerId, 64)
 	customer := models.Customers{CustomerId: req.CustomerId}
-	var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+	var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: req.AddedBy, ModifiedBy: req.AddedBy}
 
 	if _, err := models.AddCustomer_emergency_contacts(&v); err == nil {
 		c.Ctx.Output.SetStatus(200)
@@ -165,7 +165,7 @@ func (c *Customer_emergency_contactsController) Put() {
 
 		logs.Info("Request body - Name: ", req.Name)
 		json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-		var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{CustomerEmergencyContactId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, DateModified: time.Now(), ModifiedBy: 1}
+		var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{CustomerEmergencyContactId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, DateModified: time.Now(), ModifiedBy: req.ModifiedBy}
 		// v := models.Customer_emergency_contacts{CustomerEmergencyContactId: id}
 		if err := models.UpdateCustomer_emergency_contactsById(&v); err == nil {
 			var resp = models.CustomerEmergencyContactResponseDTO{StatusCode: 200, CustomerEmergencyContact: &v, StatusDesc: "Customer emergency contact updated successfully"}

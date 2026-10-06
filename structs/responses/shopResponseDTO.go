@@ -20,8 +20,8 @@ type ShopResp struct {
 	ShopLocation        string
 	DateCreated         time.Time
 	DateModified        time.Time
-	CreatedBy           int
-	ModifiedBy          int
+	CreatedBy           string
+	ModifiedBy          string
 	Active              int
 	ShopBranches        []ShopBranchResp
 }

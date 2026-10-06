@@ -56,7 +56,6 @@ func (c *BranchController) Post() {
 	} else {
 
 		branchActive := 0
-		addedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 10, 64)
 		if branchRequestDTO.Active == "true" {
 			branchActive = 1
 		} else {
@@ -68,8 +67,8 @@ func (c *BranchController) Post() {
 			PhoneNumber: branchRequestDTO.PhoneNumber,
 			Location:    branchRequestDTO.Location,
 			Active:      branchActive,
-			CreatedBy:   int(addedByInt),
-			ModifiedBy:  int(addedByInt),
+			CreatedBy:   branchRequestDTO.AddedBy,
+			ModifiedBy:  branchRequestDTO.AddedBy,
 		}
 
 		// Call the model function to create the branch
@@ -91,6 +90,7 @@ func (c *BranchController) Post() {
 				BranchName:   branchModel.Branch,
 				Country:      &countryResp,
 				Location:     branchModel.Location,
+				Active:       branchModel.Active,
 				CreatedBy:    branchModel.CreatedBy,
 				ModifiedBy:   branchModel.ModifiedBy,
 				DateCreated:  branchModel.DateCreated,
@@ -306,7 +306,7 @@ func (c *BranchController) Put() {
 		active = 1
 	}
 
-	modifiedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 0, 64)
+	// modifiedByInt, _ := strconv.ParseInt(branchRequestDTO.AddedBy, 0, 64)
 
 	if branch, err := models.GetBranchesById(id); err == nil {
 		branch.Branch = branchRequestDTO.Branch
@@ -314,7 +314,7 @@ func (c *BranchController) Put() {
 		branch.PhoneNumber = branchRequestDTO.PhoneNumber
 		branch.Active = active
 		branch.DateModified = time.Now()
-		branch.ModifiedBy = int(modifiedByInt)
+		branch.ModifiedBy = branchRequestDTO.AddedBy
 
 		if err := models.UpdateBranchesById(branch); err == nil {
 			statusCode = 200

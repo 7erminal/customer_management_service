@@ -22,8 +22,8 @@ type Shops struct {
 	ShopLocation        string    `orm:"size(255)"`
 	DateCreated         time.Time `orm:"type(datetime);auto_now_add"`
 	DateModified        time.Time `orm:"type(datetime);auto_now"`
-	CreatedBy           int
-	ModifiedBy          int
+	CreatedBy           string
+	ModifiedBy          string
 	Active              int
 	ShopBranches        []*ShopBranches `orm:"reverse(many)"`
 }

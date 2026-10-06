@@ -40,7 +40,7 @@ func (c *ShopsController) Post() {
 	message := ""
 	resp := responses.ShopResp{}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	createdByInt, _ := strconv.ParseInt(req.CreatedBy, 0, 64)
+	// createdByInt, _ := strconv.ParseInt(req.CreatedBy, 0, 64)
 	v := models.Shops{
 		ShopName:            req.Name,
 		ShopLocation:        req.Location,
@@ -50,8 +50,8 @@ func (c *ShopsController) Post() {
 		Image:               req.ImageUrl,
 		ShopAssistantName:   req.AssistantName,
 		ShopAssistantNumber: req.AssistantNumber,
-		CreatedBy:           int(createdByInt),
-		ModifiedBy:          int(createdByInt),
+		CreatedBy:           req.CreatedBy,
+		ModifiedBy:          req.CreatedBy,
 	}
 	if _, err := models.AddShops(&v); err == nil {
 		c.Ctx.Output.SetStatus(201)
@@ -315,7 +315,7 @@ func (c *ShopsController) Put() {
 		c.ServeJSON()
 		return
 	} else {
-		modifiedByInt, _ := strconv.ParseInt(req.ModifiedBy, 0, 64)
+		// modifiedByInt, _ := strconv.ParseInt(req.ModifiedBy, 0, 64)
 		v := models.Shops{
 			ShopId:              id,
 			ShopName:            req.Name,
@@ -327,7 +327,7 @@ func (c *ShopsController) Put() {
 			ShopLocation:        req.Location,
 			ShopAssistantName:   req.AssistantName,
 			ShopAssistantNumber: req.AssistantNumber,
-			ModifiedBy:          int(modifiedByInt),
+			ModifiedBy:          req.ModifiedBy,
 			CreatedBy:           shop.CreatedBy,
 		}
 		if err := models.UpdateShopsById(&v); err == nil {
@@ -447,8 +447,8 @@ func (c *ShopsController) AddBranch() {
 		c.ServeJSON()
 		return
 	}
-	createdByInt, _ := strconv.ParseInt(shopBranchRequest.CreatedBy, 0, 64)
-	modifiedByInt, _ := strconv.ParseInt(shopBranchRequest.ModifiedBy, 0, 64)
+	// createdByInt, _ := strconv.ParseInt(shopBranchRequest.CreatedBy, 0, 64)
+	// modifiedByInt, _ := strconv.ParseInt(shopBranchRequest.ModifiedBy, 0, 64)
 	shopBranch := &models.ShopBranches{
 		Shop: &models.Shops{
 			ShopId: func() int64 {
@@ -463,8 +463,8 @@ func (c *ShopsController) AddBranch() {
 			}(),
 		},
 		Active:     1,
-		CreatedBy:  int(createdByInt),
-		ModifiedBy: int(modifiedByInt),
+		CreatedBy:  shopBranchRequest.CreatedBy,
+		ModifiedBy: shopBranchRequest.ModifiedBy,
 	}
 
 	if shop, err := models.GetShopBranchesByIds(shopBranch.Shop.ShopId, shopBranch.Branch.BranchId); err == nil {

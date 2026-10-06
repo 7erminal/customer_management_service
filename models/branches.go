@@ -19,8 +19,8 @@ type Branches struct {
 	Active       int       `orm:"omitempty"`
 	DateCreated  time.Time `orm:"type(datetime);auto_now_add"`
 	DateModified time.Time `orm:"type(datetime);auto_now"`
-	CreatedBy    int       `orm:"omitempty"`
-	ModifiedBy   int       `orm:"omitempty"`
+	CreatedBy    string    `orm:"omitempty"`
+	ModifiedBy   string    `orm:"omitempty"`
 }
 
 func init() {

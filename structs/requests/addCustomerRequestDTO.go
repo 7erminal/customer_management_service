@@ -37,20 +37,24 @@ type AddCustomerEmergencyContactRequestDTO struct {
 	Name        string
 	PhoneNumber string
 	CustomerId  int64
+	AddedBy     string
 }
 
 type AddCustomerGuarantorRequestDTO struct {
 	Name        string
 	PhoneNumber string
 	CustomerId  int64
+	AddedBy     string
 }
 
 type EditCustomerEmergencyContactRequestDTO struct {
 	Name        string
 	PhoneNumber string
+	ModifiedBy  string
 }
 
 type EditCustomerGuarantorRequestDTO struct {
 	Name        string
 	PhoneNumber string
+	ModifiedBy  string
 }

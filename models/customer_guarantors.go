@@ -17,8 +17,8 @@ type Customer_guarantors struct {
 	Customer            *Customers `orm:"rel(fk)"`
 	DateCreated         time.Time  `orm:"type(datetime);auto_now_add"`
 	DateModified        time.Time  `orm:"type(datetime);auto_now"`
-	CreatedBy           int
-	ModifiedBy          int
+	CreatedBy           string
+	ModifiedBy          string
 }
 
 func init() {

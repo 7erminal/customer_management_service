@@ -40,7 +40,7 @@ func (c *Customer_guarantorsController) Post() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	// customerId, _ := strconv.ParseInt(req.CustomerId, 0, 64)
 	customer := models.Customers{CustomerId: req.CustomerId}
-	var v models.Customer_guarantors = models.Customer_guarantors{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
+	var v models.Customer_guarantors = models.Customer_guarantors{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: req.AddedBy, ModifiedBy: req.AddedBy}
 	if _, err := models.AddCustomer_guarantors(&v); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: &v, StatusDesc: "Customer guarantor created successfully"}
@@ -148,14 +148,14 @@ func (c *Customer_guarantorsController) GetAll() {
 func (c *Customer_guarantorsController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var req requests.AddCustomerGuarantorRequestDTO
+	var req requests.EditCustomerGuarantorRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 
 	name := c.Ctx.Input.Query("Name")
 	phoneNumber := c.Ctx.Input.Query("PhoneNumber")
 
 	if cust, err := models.GetCustomer_guarantorsById(id); err == nil {
-		v := models.Customer_guarantors{CustomerGuarantorId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, ModifiedBy: 1, DateModified: time.Now()}
+		v := models.Customer_guarantors{CustomerGuarantorId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, ModifiedBy: req.ModifiedBy, DateModified: time.Now()}
 
 		if err := models.UpdateCustomer_guarantorsById(&v); err == nil {
 			// c.Data["json"] = "OK"
