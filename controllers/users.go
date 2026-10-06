@@ -200,7 +200,7 @@ func (c *UsersController) SignUp() {
 	logs.Info("Received ", v)
 
 	// authorization := c.Ctx.Input.Header("Authorization")
-	application := c.Ctx.Input.Header("Application")
+	// application := c.Ctx.Input.Header("Application")
 
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 
@@ -346,10 +346,6 @@ func (c *UsersController) SignUp() {
 					// Check application and register
 					// If application is rides then create an account
 					// Formulate request to send to create account
-					if application == "RIDE" {
-						logs.Info("Ride application. Registering account")
-						functions.RegisterAccount(&c.Controller, addUserModel.UserId)
-					}
 
 					addUserModel.UserDetails = &userDetails
 					if err := models.UpdateUsersById(&addUserModel); err == nil {
