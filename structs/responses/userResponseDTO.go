@@ -27,6 +27,7 @@ type UserResp struct {
 	CreatedBy     string
 	ModifiedBy    string
 	Branch        *Branches
+	UserDetails   *UserExtraDetails
 }
 
 type UserResponseDTO struct {
