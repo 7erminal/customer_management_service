@@ -5,7 +5,7 @@ import (
 )
 
 type Roles struct {
-	RoleId          int64     `orm:"auto"`
+	RoleId          string    `orm:"auto"`
 	Role            string    `orm:"size(100)"`
 	Description     string    `orm:"size(500)"`
 	DateCreated     time.Time `orm:"type(datetime);auto_now_add"`

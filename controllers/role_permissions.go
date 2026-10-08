@@ -64,7 +64,7 @@ func (c *Role_permissionsController) Post() {
 					}
 					c.Ctx.Output.SetStatus(200)
 					respRole := responses.Roles{
-						RoleId:       role.RoleId,
+						RoleId:       strconv.FormatInt(role.RoleId, 10),
 						Role:         role.Role,
 						Description:  role.Description,
 						DateCreated:  role.DateCreated,
@@ -116,7 +116,7 @@ func (c *Role_permissionsController) GetOne() {
 		var rolePermResp *responses.Role_permissions
 		if v.Role != nil && v.Permission != nil && v.Action != nil {
 			roleResp := responses.Roles{
-				RoleId:       v.Role.RoleId,
+				RoleId:       strconv.FormatInt(v.Role.RoleId, 10),
 				Role:         v.Role.Role,
 				Description:  v.Role.Description,
 				DateCreated:  v.Role.DateCreated,
@@ -231,7 +231,7 @@ func (c *Role_permissionsController) GetAll() {
 			m := urs.(models.Role_permissions)
 
 			roleResp := responses.Roles{
-				RoleId:       m.Role.RoleId,
+				RoleId:       strconv.FormatInt(m.Role.RoleId, 10),
 				Role:         m.Role.Role,
 				Description:  m.Role.Description,
 				DateCreated:  m.Role.DateCreated,
@@ -377,7 +377,7 @@ func (c *Role_permissionsController) Delete() {
 		logs.Info("Role permission deleted successfully")
 		if role, err := models.GetRolesById(roleId); err == nil && role != nil {
 			roleResp = &responses.Roles{
-				RoleId:       role.RoleId,
+				RoleId:       strconv.FormatInt(role.RoleId, 10),
 				Role:         role.Role,
 				Description:  role.Description,
 				DateCreated:  role.DateCreated,

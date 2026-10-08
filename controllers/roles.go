@@ -43,7 +43,7 @@ func (c *RolesController) Post() {
 	if _, err := models.AddRoles(&role); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		respRole := responses.Roles{
-			RoleId:       role.RoleId,
+			RoleId:       strconv.FormatInt(role.RoleId, 10),
 			Role:         role.Role,
 			Description:  role.Description,
 			DateCreated:  role.DateCreated,
@@ -80,7 +80,7 @@ func (c *RolesController) GetOne() {
 	} else {
 		logs.Info("Role fetched")
 		respRole := responses.Roles{
-			RoleId:       v.RoleId,
+			RoleId:       strconv.FormatInt(v.RoleId, 10),
 			Role:         v.Role,
 			Description:  v.Description,
 			DateCreated:  v.DateCreated,
@@ -110,7 +110,7 @@ func (c *RolesController) GetOneByName() {
 		c.Data["json"] = resp
 	} else {
 		respRole := responses.Roles{
-			RoleId:       v.RoleId,
+			RoleId:       strconv.FormatInt(v.RoleId, 10),
 			Role:         v.Role,
 			Description:  v.Description,
 			DateCreated:  v.DateCreated,
@@ -190,7 +190,7 @@ func (c *RolesController) GetAll() {
 			m := urs.(models.Roles)
 
 			rolePermissions = append(rolePermissions, responses.Roles{
-				RoleId:       m.RoleId,
+				RoleId:       strconv.FormatInt(m.RoleId, 10),
 				Role:         m.Role,
 				Description:  m.Description,
 				DateCreated:  m.DateCreated,
