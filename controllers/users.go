@@ -1195,7 +1195,9 @@ func (c *UsersController) GetOne() {
 		var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		logs.Info("Getting user details ", v.UserDetails.Branch)
+		jsonData, _ := json.MarshalIndent(v, "", "  ")
+		logs.Info("Getting user details ", string(jsonData))
+
 		userResp := responses.UserResp{}
 		if country, err := functions.GetCountryWithId(&c.Controller, v.UserDetails.Branch.Country); err == nil {
 
