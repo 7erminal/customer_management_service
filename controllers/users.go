@@ -554,7 +554,11 @@ func (c *UsersController) VerifyUsername() {
 		logs.Info("User found....sending user data")
 		logs.Info("User data::: ", v)
 		userResp := responses.UserResp{}
-		if country, err := functions.GetCountryWithId(&c.Controller, v.UserDetails.Branch.Country); err == nil {
+		branchid := ""
+		if v.UserDetails.Branch != nil {
+			branchid = strconv.FormatInt(v.UserDetails.Branch.BranchId, 10)
+		}
+		if country, err := functions.GetCountryWithId(&c.Controller, branchid); err == nil {
 
 			userResp = responses.UserResp{
 				UserId:        strconv.FormatInt(v.UserId, 10),
