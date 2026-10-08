@@ -61,10 +61,10 @@ func (c *BranchController) Post() {
 		} else {
 			branchActive = 0
 		}
-		countryId, _ := strconv.ParseInt(country.Result.CountryId, 10, 64)
+		// countryId, _ := strconv.ParseInt(country.Result.CountryId, 10, 64)
 		branchModel := models.Branches{
 			Branch:      branchRequestDTO.Branch,
-			Country:     countryId,
+			Country:     country.Result.CountryId,
 			PhoneNumber: branchRequestDTO.PhoneNumber,
 			Location:    branchRequestDTO.Location,
 			Active:      branchActive,
@@ -128,10 +128,10 @@ func (c *BranchController) GetOne() {
 
 		countryM := responses.CountryResp{}
 		currencyM := responses.CurrencyResp{}
-		countryResp, err := functions.GetCountryWithId(&c.Controller, strconv.FormatInt(v.Country, 10))
+		countryResp, err := functions.GetCountryWithId(&c.Controller, v.Country)
 		if err != nil {
 			logs.Error("Error fetching country details for ", v.Country, " is ", err.Error())
-			var resp = responses.BranchResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching country details for " + strconv.FormatInt(v.Country, 10) + " is " + err.Error()}
+			var resp = responses.BranchResponseDTO{StatusCode: 301, Result: nil, StatusDesc: "Error fetching country details for " + v.Country + " is " + err.Error()}
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Successfully fetched country details for ", v.Country)

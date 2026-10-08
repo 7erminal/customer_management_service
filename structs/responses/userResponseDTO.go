@@ -1,7 +1,6 @@
 package responses
 
 import (
-	"customer_management_service/models"
 	"time"
 )
 
@@ -21,13 +20,13 @@ type UserResp struct {
 	IdNumber      string
 	MaritalStatus string
 	Active        int
-	Role          *models.Roles
+	Role          *Roles
 	IsVerified    bool
 	DateCreated   time.Time
 	DateModified  time.Time
 	CreatedBy     string
 	ModifiedBy    string
-	Branch        *models.Branches
+	Branch        *Branches
 }
 
 type UserResponseDTO struct {

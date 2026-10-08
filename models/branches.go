@@ -13,7 +13,7 @@ import (
 type Branches struct {
 	BranchId     int64  `orm:"auto"`
 	Branch       string `orm:"size(80)"`
-	Country      int64  `orm:"null;column(country_id)"`
+	Country      string `orm:"null;column(country_id)"`
 	Location     string
 	PhoneNumber  string
 	Active       int       `orm:"omitempty"`
