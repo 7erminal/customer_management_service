@@ -557,6 +557,8 @@ func (c *UsersController) VerifyUsername() {
 		branchid := ""
 		if v.UserDetails.Branch != nil {
 			branchid = strconv.FormatInt(v.UserDetails.Branch.BranchId, 10)
+		} else {
+			branchid = "2"
 		}
 		if country, err := functions.GetCountryWithId(&c.Controller, branchid); err == nil {
 
