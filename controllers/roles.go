@@ -79,15 +79,31 @@ func (c *RolesController) GetOne() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Role fetched")
+		permissions := []*responses.Role_permissions{}
+
+		for _, perm := range v.RolePermissions {
+			permissions = append(permissions, &responses.Role_permissions{
+				RolePermissionId: strconv.FormatInt(perm.RolePermissionId, 10),
+				Role:             &responses.Roles{RoleId: strconv.FormatInt(v.RoleId, 10), Role: v.Role},
+				Permission:       &responses.Permissions{PermissionCode: perm.Permission.PermissionCode},
+				Action:           &responses.Actions{Action: perm.Action.Action},
+				DateCreated:      perm.DateCreated,
+				DateModified:     perm.DateModified,
+				CreatedBy:        perm.CreatedBy,
+				ModifiedBy:       perm.ModifiedBy,
+				Active:           perm.Active,
+			})
+		}
 		respRole := responses.Roles{
-			RoleId:       strconv.FormatInt(v.RoleId, 10),
-			Role:         v.Role,
-			Description:  v.Description,
-			DateCreated:  v.DateCreated,
-			DateModified: v.DateModified,
-			Active:       v.Active,
-			CreatedBy:    v.CreatedBy,
-			ModifiedBy:   v.ModifiedBy,
+			RoleId:          strconv.FormatInt(v.RoleId, 10),
+			Role:            v.Role,
+			Description:     v.Description,
+			DateCreated:     v.DateCreated,
+			DateModified:    v.DateModified,
+			Active:          v.Active,
+			CreatedBy:       v.CreatedBy,
+			ModifiedBy:      v.ModifiedBy,
+			RolePermissions: permissions,
 		}
 		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role fetched"}
 		c.Data["json"] = resp
@@ -110,15 +126,32 @@ func (c *RolesController) GetOneByName() {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting role ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		permissions := []*responses.Role_permissions{}
+
+		for _, perm := range v.RolePermissions {
+			permissions = append(permissions, &responses.Role_permissions{
+				RolePermissionId: strconv.FormatInt(perm.RolePermissionId, 10),
+				Role:             &responses.Roles{RoleId: strconv.FormatInt(v.RoleId, 10), Role: v.Role},
+				Permission:       &responses.Permissions{PermissionCode: perm.Permission.PermissionCode},
+				Action:           &responses.Actions{Action: perm.Action.Action},
+				DateCreated:      perm.DateCreated,
+				DateModified:     perm.DateModified,
+				CreatedBy:        perm.CreatedBy,
+				ModifiedBy:       perm.ModifiedBy,
+				Active:           perm.Active,
+			})
+		}
+
 		respRole := responses.Roles{
-			RoleId:       strconv.FormatInt(v.RoleId, 10),
-			Role:         v.Role,
-			Description:  v.Description,
-			DateCreated:  v.DateCreated,
-			DateModified: v.DateModified,
-			Active:       v.Active,
-			CreatedBy:    v.CreatedBy,
-			ModifiedBy:   v.ModifiedBy,
+			RoleId:          strconv.FormatInt(v.RoleId, 10),
+			Role:            v.Role,
+			Description:     v.Description,
+			DateCreated:     v.DateCreated,
+			DateModified:    v.DateModified,
+			Active:          v.Active,
+			CreatedBy:       v.CreatedBy,
+			ModifiedBy:      v.ModifiedBy,
+			RolePermissions: permissions,
 		}
 		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role fetched"}
 		c.Data["json"] = resp
