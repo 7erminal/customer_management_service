@@ -38,8 +38,8 @@ func (c *Customer_guarantorsController) URLMapping() {
 func (c *Customer_guarantorsController) Post() {
 	var req requests.AddCustomerGuarantorRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
-	// customerId, _ := strconv.ParseInt(req.CustomerId, 0, 64)
-	customer := models.Customers{CustomerId: req.CustomerId}
+	customerId, _ := strconv.ParseInt(req.CustomerId, 10, 64)
+	customer := models.Customers{CustomerId: customerId}
 	var v models.Customer_guarantors = models.Customer_guarantors{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: req.AddedBy, ModifiedBy: req.AddedBy}
 	if _, err := models.AddCustomer_guarantors(&v); err == nil {
 		c.Ctx.Output.SetStatus(200)

@@ -26,7 +26,7 @@ type SignUpDTO struct {
 }
 
 type UpdateUserPasswordRequest struct {
-	UserId      int64  `validate:"required"`
+	UserId      string `validate:"required"`
 	OldPassword string `validate:"required"`
 	NewPassword string `validate:"required"`
 }

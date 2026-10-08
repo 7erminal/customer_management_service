@@ -1,7 +1,7 @@
 package requests
 
 type CustomerCredentialRequestDTO struct {
-	CustomerId int64
+	CustomerId string
 	Username   string
 	Password   string
 	Pin        string

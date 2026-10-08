@@ -25,8 +25,8 @@ type UpdateCustomerRequestDTO struct {
 	Email       string
 	Dob         string
 	AddedBy     string
-	Branch      int64
-	Status      int
+	Branch      string
+	Status      string
 }
 
 type UpdateCustomerLastTxnRequest struct {
@@ -36,14 +36,14 @@ type UpdateCustomerLastTxnRequest struct {
 type AddCustomerEmergencyContactRequestDTO struct {
 	Name        string
 	PhoneNumber string
-	CustomerId  int64
+	CustomerId  string
 	AddedBy     string
 }
 
 type AddCustomerGuarantorRequestDTO struct {
 	Name        string
 	PhoneNumber string
-	CustomerId  int64
+	CustomerId  string
 	AddedBy     string
 }
 

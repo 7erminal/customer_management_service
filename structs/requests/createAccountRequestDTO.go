@@ -1,5 +1,5 @@
 package requests
 
 type CreateAccountRequestDTO struct {
-	UserId int64
+	UserId string
 }

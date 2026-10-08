@@ -41,8 +41,8 @@ func (c *Customer_emergency_contactsController) Post() {
 	logs.Info("Request body: ", req)
 	logs.Info("Request body: ", c.Ctx.Input.RequestBody)
 	logs.Info("Customer ID: ", req.CustomerId)
-	// customerId := strconv.FormatInt(req.CustomerId, 64)
-	customer := models.Customers{CustomerId: req.CustomerId}
+	customerId, _ := strconv.ParseInt(req.CustomerId, 10, 64)
+	customer := models.Customers{CustomerId: customerId}
 	var v models.Customer_emergency_contacts = models.Customer_emergency_contacts{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: req.AddedBy, ModifiedBy: req.AddedBy}
 
 	if _, err := models.AddCustomer_emergency_contacts(&v); err == nil {
