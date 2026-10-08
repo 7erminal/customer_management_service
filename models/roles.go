@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 type Roles struct {
@@ -71,6 +72,7 @@ func GetRolesById(id int64) (v *Roles, err error) {
 func GetRolesByName(roleName string) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{Role: roleName}
+	logs.Info("Querying role with name: [" + roleName + "]")
 	if err = o.QueryTable(new(Roles)).Filter("Role", roleName).RelatedSel().One(v); err == nil {
 		if err = loadRolePermissionsDetails(o, v); err != nil {
 			return nil, err

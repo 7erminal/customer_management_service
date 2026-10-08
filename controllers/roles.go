@@ -104,7 +104,8 @@ func (c *RolesController) GetOne() {
 // @router /role/:role [get]
 func (c *RolesController) GetOneByName() {
 	role := c.Ctx.Input.Param(":role")
-	v, err := models.GetRolesByName(strings.Trim(role, " "))
+	logs.Info("Role received is ", role)
+	v, err := models.GetRolesByName(strings.TrimSpace(role))
 	if err != nil {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting role ::: " + err.Error()}
 		c.Data["json"] = resp
