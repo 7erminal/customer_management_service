@@ -1,16 +1,27 @@
 package responses
 
-import "customer_management_service/models"
+import "time"
+
+type Actions struct {
+	ActionId     string
+	Action       string
+	Description  string
+	DateCreated  time.Time
+	DateModified time.Time
+	CreatedBy    int
+	ModifiedBy   int
+	Active       int
+}
 
 type ActionResponseDTO struct {
 	StatusCode int
-	Action     *models.Actions
+	Action     *Actions
 	StatusDesc string
 }
 
 type ActionsResponseDTO struct {
 	StatusCode int
-	Actions    *[]models.Actions
+	Actions    *[]Actions
 	StatusDesc string
 }
 

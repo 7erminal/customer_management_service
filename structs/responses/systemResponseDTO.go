@@ -3,26 +3,26 @@ package responses
 import "time"
 
 type Currencies struct {
-	CurrencyId   int64
+	CurrencyId   string
 	Symbol       string
 	Currency     string
 	Active       int
 	DateCreated  time.Time
 	DateModified time.Time
-	CreatedBy    int
-	ModifiedBy   int
+	CreatedBy    string
+	ModifiedBy   string
 }
 
 type Countries struct {
-	CountryId       int64
+	CountryId       string
 	Country         string
 	Description     string
 	CountryCode     string
 	DefaultCurrency *Currencies
 	DateCreated     time.Time
 	DateModified    time.Time
-	CreatedBy       int
-	ModifiedBy      int
+	CreatedBy       string
+	ModifiedBy      string
 }
 
 type CountryResponseDTO struct {

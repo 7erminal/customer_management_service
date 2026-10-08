@@ -6,9 +6,9 @@ import (
 )
 
 type UserResp struct {
-	UserId        int64
+	UserId        string
 	ImagePath     string
-	UserType      int
+	UserType      string
 	FullName      string
 	Username      string
 	Password      string
@@ -25,31 +25,31 @@ type UserResp struct {
 	IsVerified    bool
 	DateCreated   time.Time
 	DateModified  time.Time
-	CreatedBy     int
-	ModifiedBy    int
+	CreatedBy     string
+	ModifiedBy    string
 	Branch        *models.Branches
 }
 
 type UserResponseDTO struct {
 	StatusCode int
-	Result     *models.Users
+	Result     *UserResp
 	StatusDesc string
 }
 
 type UsersResponseDTO struct {
 	StatusCode int
-	Result     *[]models.Users
+	Result     *[]UserResp
 	StatusDesc string
 }
 
 type UsersAllCustomersDTO struct {
 	StatusCode int
-	Result     *[]models.Users
+	Result     *[]UserResp
 	StatusDesc string
 }
 
 type UsersBranchResponseDTO struct {
 	StatusCode int
-	Result     *[]models.Users
+	Result     *[]UserResp
 	StatusDesc string
 }

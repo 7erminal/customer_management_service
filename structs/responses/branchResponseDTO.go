@@ -3,20 +3,20 @@ package responses
 import "time"
 
 type CurrencyResp struct {
-	CurrencyId int64
+	CurrencyId string
 	Symbol     string
 	Currency   string
 }
 
 type CountryResp struct {
-	CountryId   int64
+	CountryId   string
 	Country     string
 	CountryCode string
 	Currency    *CurrencyResp
 }
 
 type BranchResp struct {
-	BranchId     int64
+	BranchId     string
 	BranchName   string
 	Description  string
 	PhoneNumber  string

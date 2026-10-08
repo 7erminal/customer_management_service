@@ -1,13 +1,13 @@
 package responses
 
 type IDTypeResponse struct {
-	IdentificationTypeId int64
+	IdentificationTypeId string
 	Name                 string
 	Code                 string
 }
 
 type IDTypesResponseDTO struct {
 	StatusCode int
-	IdTypes    *[]interface{}
+	IdTypes    *[]IDTypeResponse
 	StatusDesc string
 }

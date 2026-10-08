@@ -53,18 +53,28 @@ func (c *ActionsController) Post() {
 		Active:       1,
 	}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	var actionResp *responses.Actions
 	if _, err := models.AddActions(&acModel); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		statusCode = 200
 		statusMessage = "Action created successfully"
-
+		actionResp = &responses.Actions{
+			ActionId:     strconv.FormatInt(acModel.ActionId, 10),
+			Action:       acModel.Action,
+			Description:  acModel.Description,
+			DateCreated:  acModel.DateCreated,
+			DateModified: acModel.DateModified,
+			CreatedBy:    acModel.CreatedBy,
+			ModifiedBy:   acModel.ModifiedBy,
+			Active:       acModel.Active,
+		}
 	} else {
 		c.Data["json"] = err.Error()
 	}
 	resp := responses.ActionResponseDTO{
 		StatusCode: statusCode,
 		StatusDesc: statusMessage,
-		Action:     &acModel,
+		Action:     actionResp,
 	}
 	c.Data["json"] = resp
 	c.ServeJSON()
@@ -84,20 +94,29 @@ func (c *ActionsController) GetOne() {
 
 	statusCode := 400
 	statusMessage := "Failed to get action"
-	data := models.Actions{ActionId: id}
+	var actionResp *responses.Actions
 	if err != nil {
 		logs.Error(err)
 		statusCode = 400
 		statusMessage = "Failed to get action"
 	} else {
-		data = *v
+		actionResp = &responses.Actions{
+			ActionId:     strconv.FormatInt(v.ActionId, 10),
+			Action:       v.Action,
+			Description:  v.Description,
+			DateCreated:  v.DateCreated,
+			DateModified: v.DateModified,
+			CreatedBy:    v.CreatedBy,
+			ModifiedBy:   v.ModifiedBy,
+			Active:       v.Active,
+		}
 		statusCode = 200
 		statusMessage = "Action retrieved successfully"
 	}
 	c.Data["json"] = responses.ActionResponseDTO{
 		StatusCode: statusCode,
 		StatusDesc: statusMessage,
-		Action:     &data,
+		Action:     actionResp,
 	}
 	c.ServeJSON()
 }
@@ -158,7 +177,7 @@ func (c *ActionsController) GetAll() {
 
 	statusCode := 400
 	statusMessage := "Failed to get actions"
-	data := []models.Actions{}
+	data := []responses.Actions{}
 
 	l, err := models.GetAllActions(query, fields, sortby, order, offset, limit)
 	if err != nil {
@@ -168,7 +187,16 @@ func (c *ActionsController) GetAll() {
 	} else {
 		for _, action := range l {
 			m := action.(models.Actions)
-			data = append(data, m)
+			data = append(data, responses.Actions{
+				ActionId:     strconv.FormatInt(m.ActionId, 10),
+				Action:       m.Action,
+				Description:  m.Description,
+				DateCreated:  m.DateCreated,
+				DateModified: m.DateModified,
+				CreatedBy:    m.CreatedBy,
+				ModifiedBy:   m.ModifiedBy,
+				Active:       m.Active,
+			})
 		}
 		statusCode = 200
 		statusMessage = "Actions retrieved successfully"

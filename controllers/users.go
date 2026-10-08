@@ -165,12 +165,60 @@ func (c *UsersController) SignUp2() {
 						// 	Branch:        cust.Branch,
 						// }
 						c.Ctx.Output.SetStatus(200)
-						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully"}
+						userResp := responses.UserResp{
+							UserId:        strconv.FormatInt(addUserModel.UserId, 10),
+							ImagePath:     addUserModel.ImagePath,
+							UserType:      strconv.Itoa(addUserModel.UserType),
+							FullName:      addUserModel.FullName,
+							Username:      addUserModel.Username,
+							Password:      addUserModel.Password,
+							Email:         addUserModel.Email,
+							PhoneNumber:   addUserModel.PhoneNumber,
+							Gender:        addUserModel.Gender,
+							Dob:           addUserModel.Dob,
+							Address:       addUserModel.Address,
+							IdType:        addUserModel.IdType,
+							IdNumber:      addUserModel.IdNumber,
+							MaritalStatus: addUserModel.MaritalStatus,
+							Active:        addUserModel.Active,
+							Role:          addUserModel.Role,
+							IsVerified:    addUserModel.IsVerified,
+							DateCreated:   addUserModel.DateCreated,
+							DateModified:  addUserModel.DateModified,
+							CreatedBy:     addUserModel.CreatedBy,
+							ModifiedBy:    addUserModel.ModifiedBy,
+							Branch:        nil,
+						}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User created successfully"}
 
 						c.Data["json"] = resp
 					} else {
 						logs.Error("Error updating customer ID for user ")
-						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						userResp := responses.UserResp{
+							UserId:        strconv.FormatInt(addUserModel.UserId, 10),
+							ImagePath:     addUserModel.ImagePath,
+							UserType:      strconv.Itoa(addUserModel.UserType),
+							FullName:      addUserModel.FullName,
+							Username:      addUserModel.Username,
+							Password:      addUserModel.Password,
+							Email:         addUserModel.Email,
+							PhoneNumber:   addUserModel.PhoneNumber,
+							Gender:        addUserModel.Gender,
+							Dob:           addUserModel.Dob,
+							Address:       addUserModel.Address,
+							IdType:        addUserModel.IdType,
+							IdNumber:      addUserModel.IdNumber,
+							MaritalStatus: addUserModel.MaritalStatus,
+							Active:        addUserModel.Active,
+							Role:          addUserModel.Role,
+							IsVerified:    addUserModel.IsVerified,
+							DateCreated:   addUserModel.DateCreated,
+							DateModified:  addUserModel.DateModified,
+							CreatedBy:     addUserModel.CreatedBy,
+							ModifiedBy:    addUserModel.ModifiedBy,
+							Branch:        nil,
+						}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}
 				}
@@ -363,13 +411,61 @@ func (c *UsersController) SignUp() {
 						logs.Info("User found and verified....sending user data")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
-						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully"}
+						userResp := responses.UserResp{
+							UserId:        strconv.FormatInt(addUserModel.UserId, 10),
+							ImagePath:     addUserModel.ImagePath,
+							UserType:      strconv.Itoa(addUserModel.UserType),
+							FullName:      addUserModel.FullName,
+							Username:      addUserModel.Username,
+							Password:      addUserModel.Password,
+							Email:         addUserModel.Email,
+							PhoneNumber:   addUserModel.PhoneNumber,
+							Gender:        addUserModel.Gender,
+							Dob:           addUserModel.Dob,
+							Address:       addUserModel.Address,
+							IdType:        addUserModel.IdType,
+							IdNumber:      addUserModel.IdNumber,
+							MaritalStatus: addUserModel.MaritalStatus,
+							Active:        addUserModel.Active,
+							Role:          addUserModel.Role,
+							IsVerified:    addUserModel.IsVerified,
+							DateCreated:   addUserModel.DateCreated,
+							DateModified:  addUserModel.DateModified,
+							CreatedBy:     addUserModel.CreatedBy,
+							ModifiedBy:    addUserModel.ModifiedBy,
+							Branch:        nil,
+						}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User created successfully"}
 						c.Data["json"] = resp
 					} else {
 						logs.Error("Error updating user ID for user ")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
-						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &addUserModel, StatusDesc: "User created successfully. Please check user"}
+						userResp := responses.UserResp{
+							UserId:        strconv.FormatInt(addUserModel.UserId, 10),
+							ImagePath:     addUserModel.ImagePath,
+							UserType:      strconv.Itoa(addUserModel.UserType),
+							FullName:      addUserModel.FullName,
+							Username:      addUserModel.Username,
+							Password:      addUserModel.Password,
+							Email:         addUserModel.Email,
+							PhoneNumber:   addUserModel.PhoneNumber,
+							Gender:        addUserModel.Gender,
+							Dob:           addUserModel.Dob,
+							Address:       addUserModel.Address,
+							IdType:        addUserModel.IdType,
+							IdNumber:      addUserModel.IdNumber,
+							MaritalStatus: addUserModel.MaritalStatus,
+							Active:        addUserModel.Active,
+							Role:          addUserModel.Role,
+							IsVerified:    addUserModel.IsVerified,
+							DateCreated:   addUserModel.DateCreated,
+							DateModified:  addUserModel.DateModified,
+							CreatedBy:     addUserModel.CreatedBy,
+							ModifiedBy:    addUserModel.ModifiedBy,
+							Branch:        nil,
+						}
+						var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User created successfully. Please check user"}
 						c.Data["json"] = resp
 					}
 
@@ -457,7 +553,31 @@ func (c *UsersController) VerifyUsername() {
 		// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User details fetched"}
 		// 	c.Data["json"] = resp
 		// }
-		var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User details fetched"}
+		userResp := responses.UserResp{
+			UserId:        strconv.FormatInt(v.UserId, 10),
+			ImagePath:     v.ImagePath,
+			UserType:      strconv.Itoa(v.UserType),
+			FullName:      v.FullName,
+			Username:      v.Username,
+			Password:      v.Password,
+			Email:         v.Email,
+			PhoneNumber:   v.PhoneNumber,
+			Gender:        v.Gender,
+			Dob:           v.Dob,
+			Address:       v.Address,
+			IdType:        v.IdType,
+			IdNumber:      v.IdNumber,
+			MaritalStatus: v.MaritalStatus,
+			Active:        v.Active,
+			Role:          v.Role,
+			IsVerified:    v.IsVerified,
+			DateCreated:   v.DateCreated,
+			DateModified:  v.DateModified,
+			CreatedBy:     v.CreatedBy,
+			ModifiedBy:    v.ModifiedBy,
+			Branch:        nil,
+		}
+		var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -522,7 +642,31 @@ func (c *UsersController) VerifyUser() {
 			// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User verified"}
 			// 	c.Data["json"] = resp
 			// }
-			var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User verified"}
+			userResp := responses.UserResp{
+				UserId:        strconv.FormatInt(v.UserId, 10),
+				ImagePath:     v.ImagePath,
+				UserType:      strconv.Itoa(v.UserType),
+				FullName:      v.FullName,
+				Username:      v.Username,
+				Password:      v.Password,
+				Email:         v.Email,
+				PhoneNumber:   v.PhoneNumber,
+				Gender:        v.Gender,
+				Dob:           v.Dob,
+				Address:       v.Address,
+				IdType:        v.IdType,
+				IdNumber:      v.IdNumber,
+				MaritalStatus: v.MaritalStatus,
+				Active:        v.Active,
+				Role:          v.Role,
+				IsVerified:    v.IsVerified,
+				DateCreated:   v.DateCreated,
+				DateModified:  v.DateModified,
+				CreatedBy:     v.CreatedBy,
+				ModifiedBy:    v.ModifiedBy,
+				Branch:        nil,
+			}
+			var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User verified"}
 			c.Data["json"] = resp
 		} else {
 			var resp = responses.UserResponseDTO{StatusCode: 608, Result: nil, StatusDesc: "User not verified ::: " + err.Error()}
@@ -926,7 +1070,31 @@ func (c *UsersController) GetOne() {
 	} else {
 		logs.Info("Getting user details ", v.UserDetails)
 
-		var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "User details fetched"}
+		userResp := responses.UserResp{
+			UserId:        strconv.FormatInt(v.UserId, 10),
+			ImagePath:     v.ImagePath,
+			UserType:      strconv.Itoa(v.UserType),
+			FullName:      v.FullName,
+			Username:      v.Username,
+			Password:      v.Password,
+			Email:         v.Email,
+			PhoneNumber:   v.PhoneNumber,
+			Gender:        v.Gender,
+			Dob:           v.Dob,
+			Address:       v.Address,
+			IdType:        v.IdType,
+			IdNumber:      v.IdNumber,
+			MaritalStatus: v.MaritalStatus,
+			Active:        v.Active,
+			Role:          v.Role,
+			IsVerified:    v.IsVerified,
+			DateCreated:   v.DateCreated,
+			DateModified:  v.DateModified,
+			CreatedBy:     v.CreatedBy,
+			ModifiedBy:    v.ModifiedBy,
+			Branch:        nil,
+		}
+		var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "User details fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -1010,11 +1178,34 @@ func (c *UsersController) GetAll() {
 		resp := responses.UsersAllCustomersDTO{StatusCode: 301, Result: nil, StatusDesc: "Fetch users failed ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		usersResp := []models.Users{}
+		usersResp := []responses.UserResp{}
 		for _, urs := range l {
 			m := urs.(models.Users)
-
-			usersResp = append(usersResp, m)
+			userResp := responses.UserResp{
+				UserId:        strconv.FormatInt(m.UserId, 10),
+				ImagePath:     m.ImagePath,
+				UserType:      strconv.Itoa(m.UserType),
+				FullName:      m.FullName,
+				Username:      m.Username,
+				Password:      m.Password,
+				Email:         m.Email,
+				PhoneNumber:   m.PhoneNumber,
+				Gender:        m.Gender,
+				Dob:           m.Dob,
+				Address:       m.Address,
+				IdType:        m.IdType,
+				IdNumber:      m.IdNumber,
+				MaritalStatus: m.MaritalStatus,
+				Active:        m.Active,
+				Role:          m.Role,
+				IsVerified:    m.IsVerified,
+				DateCreated:   m.DateCreated,
+				DateModified:  m.DateModified,
+				CreatedBy:     m.CreatedBy,
+				ModifiedBy:    m.ModifiedBy,
+				Branch:        nil,
+			}
+			usersResp = append(usersResp, userResp)
 		}
 		resp := responses.UsersResponseDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 		c.Data["json"] = resp
@@ -1088,11 +1279,34 @@ func (c *UsersController) GetUsersWithRole() {
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
-			usersResp := []models.Users{}
+			usersResp := []responses.UserResp{}
 			for _, urs := range l {
 				m := urs.(models.Users)
-
-				usersResp = append(usersResp, m)
+				userResp := responses.UserResp{
+					UserId:        strconv.FormatInt(m.UserId, 10),
+					ImagePath:     m.ImagePath,
+					UserType:      strconv.Itoa(m.UserType),
+					FullName:      m.FullName,
+					Username:      m.Username,
+					Password:      m.Password,
+					Email:         m.Email,
+					PhoneNumber:   m.PhoneNumber,
+					Gender:        m.Gender,
+					Dob:           m.Dob,
+					Address:       m.Address,
+					IdType:        m.IdType,
+					IdNumber:      m.IdNumber,
+					MaritalStatus: m.MaritalStatus,
+					Active:        m.Active,
+					Role:          m.Role,
+					IsVerified:    m.IsVerified,
+					DateCreated:   m.DateCreated,
+					DateModified:  m.DateModified,
+					CreatedBy:     m.CreatedBy,
+					ModifiedBy:    m.ModifiedBy,
+					Branch:        nil,
+				}
+				usersResp = append(usersResp, userResp)
 			}
 			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
@@ -1172,11 +1386,34 @@ func (c *UsersController) GetUsersUnderBranch() {
 			c.Data["json"] = resp
 		} else {
 			logs.Info("Users fetched ", l)
-			usersResp := []models.Users{}
+			usersResp := []responses.UserResp{}
 			for _, urs := range l {
 				m := urs.(models.Users)
-
-				usersResp = append(usersResp, m)
+				userResp := responses.UserResp{
+					UserId:        strconv.FormatInt(m.UserId, 10),
+					ImagePath:     m.ImagePath,
+					UserType:      strconv.Itoa(m.UserType),
+					FullName:      m.FullName,
+					Username:      m.Username,
+					Password:      m.Password,
+					Email:         m.Email,
+					PhoneNumber:   m.PhoneNumber,
+					Gender:        m.Gender,
+					Dob:           m.Dob,
+					Address:       m.Address,
+					IdType:        m.IdType,
+					IdNumber:      m.IdNumber,
+					MaritalStatus: m.MaritalStatus,
+					Active:        m.Active,
+					Role:          m.Role,
+					IsVerified:    m.IsVerified,
+					DateCreated:   m.DateCreated,
+					DateModified:  m.DateModified,
+					CreatedBy:     m.CreatedBy,
+					ModifiedBy:    m.ModifiedBy,
+					Branch:        nil,
+				}
+				usersResp = append(usersResp, userResp)
 			}
 			resp := responses.UsersAllCustomersDTO{StatusCode: 200, Result: &usersResp, StatusDesc: "Users fetched successfully"}
 			c.Data["json"] = resp
@@ -1338,44 +1575,31 @@ func (c *UsersController) UpdateUserImage() {
 			} else {
 				logs.Debug("Returned user is", v)
 
-				// cust, err := models.GetCustomersByUser(v)
-
-				// if err != nil {
-				// 	c.Data["json"] = err.Error()
-
-				// 	var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
-				// 	c.Data["json"] = resp
-				// } else {
-
-				// 	userResp := responses.UserResp{
-				// 		UserId:        v.UserId,
-				// 		ImagePath:     v.ImagePath,
-				// 		UserType:      v.UserType,
-				// 		FullName:      v.FullName,
-				// 		Username:      v.Username,
-				// 		Password:      v.Password,
-				// 		Email:         v.Email,
-				// 		PhoneNumber:   v.PhoneNumber,
-				// 		Gender:        v.Gender,
-				// 		Dob:           v.Dob,
-				// 		Address:       v.Address,
-				// 		IdType:        v.IdType,
-				// 		IdNumber:      v.IdNumber,
-				// 		MaritalStatus: v.MaritalStatus,
-				// 		Active:        v.Active,
-				// 		Role:          v.Role,
-				// 		IsVerified:    v.IsVerified,
-				// 		DateCreated:   v.DateCreated,
-				// 		DateModified:  v.DateModified,
-				// 		CreatedBy:     v.CreatedBy,
-				// 		ModifiedBy:    v.ModifiedBy,
-				// 		Branch:        cust.Branch,
-				// 	}
-
-				// 	var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "Profile image updated successfully"}
-				// 	c.Data["json"] = resp
-				// }
-				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: "Profile image updated successfully"}
+				userResp := responses.UserResp{
+					UserId:        strconv.FormatInt(v.UserId, 10),
+					ImagePath:     v.ImagePath,
+					UserType:      strconv.Itoa(v.UserType),
+					FullName:      v.FullName,
+					Username:      v.Username,
+					Password:      v.Password,
+					Email:         v.Email,
+					PhoneNumber:   v.PhoneNumber,
+					Gender:        v.Gender,
+					Dob:           v.Dob,
+					Address:       v.Address,
+					IdType:        v.IdType,
+					IdNumber:      v.IdNumber,
+					MaritalStatus: v.MaritalStatus,
+					Active:        v.Active,
+					Role:          v.Role,
+					IsVerified:    v.IsVerified,
+					DateCreated:   v.DateCreated,
+					DateModified:  v.DateModified,
+					CreatedBy:     v.CreatedBy,
+					ModifiedBy:    v.ModifiedBy,
+					Branch:        nil,
+				}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: "Profile image updated successfully"}
 				c.Data["json"] = resp
 			}
 		} else {
@@ -1561,32 +1785,32 @@ func (c *UsersController) Put() {
 				logs.Info("Branch saved for user is ", userDetails)
 				// logs.Info("Branch saved for user is ", cust.Branch.)
 
-				// userResp := responses.UserResp{
-				// 	UserId:        v.UserId,
-				// 	ImagePath:     v.ImagePath,
-				// 	UserType:      v.UserType,
-				// 	FullName:      v.FullName,
-				// 	Username:      v.Username,
-				// 	Password:      v.Password,
-				// 	Email:         v.Email,
-				// 	PhoneNumber:   v.PhoneNumber,
-				// 	Gender:        v.Gender,
-				// 	Dob:           v.Dob,
-				// 	Address:       v.Address,
-				// 	IdType:        v.IdType,
-				// 	IdNumber:      v.IdNumber,
-				// 	MaritalStatus: v.MaritalStatus,
-				// 	Active:        v.Active,
-				// 	Role:          v.Role,
-				// 	IsVerified:    v.IsVerified,
-				// 	DateCreated:   v.DateCreated,
-				// 	DateModified:  v.DateModified,
-				// 	CreatedBy:     v.CreatedBy,
-				// 	ModifiedBy:    v.ModifiedBy,
-				// 	Branch:        cust.Branch,
-				// }
+				userResp := responses.UserResp{
+					UserId:        strconv.FormatInt(v.UserId, 10),
+					ImagePath:     v.ImagePath,
+					UserType:      strconv.Itoa(v.UserType),
+					FullName:      v.FullName,
+					Username:      v.Username,
+					Password:      v.Password,
+					Email:         v.Email,
+					PhoneNumber:   v.PhoneNumber,
+					Gender:        v.Gender,
+					Dob:           v.Dob,
+					Address:       v.Address,
+					IdType:        v.IdType,
+					IdNumber:      v.IdNumber,
+					MaritalStatus: v.MaritalStatus,
+					Active:        v.Active,
+					Role:          v.Role,
+					IsVerified:    v.IsVerified,
+					DateCreated:   v.DateCreated,
+					DateModified:  v.DateModified,
+					CreatedBy:     v.CreatedBy,
+					ModifiedBy:    v.ModifiedBy,
+					Branch:        nil,
+				}
 
-				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: message}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = v
@@ -1643,7 +1867,31 @@ func (c *UsersController) UpdateUserRole() {
 
 			if err := models.UpdateUsersById(v); err == nil {
 				message := "Profile updated successfully"
-				var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
+				userResp := responses.UserResp{
+					UserId:        strconv.FormatInt(v.UserId, 10),
+					ImagePath:     v.ImagePath,
+					UserType:      strconv.Itoa(v.UserType),
+					FullName:      v.FullName,
+					Username:      v.Username,
+					Password:      v.Password,
+					Email:         v.Email,
+					PhoneNumber:   v.PhoneNumber,
+					Gender:        v.Gender,
+					Dob:           v.Dob,
+					Address:       v.Address,
+					IdType:        v.IdType,
+					IdNumber:      v.IdNumber,
+					MaritalStatus: v.MaritalStatus,
+					Active:        v.Active,
+					Role:          v.Role,
+					IsVerified:    v.IsVerified,
+					DateCreated:   v.DateCreated,
+					DateModified:  v.DateModified,
+					CreatedBy:     v.CreatedBy,
+					ModifiedBy:    v.ModifiedBy,
+					Branch:        nil,
+				}
+				var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: message}
 				c.Data["json"] = resp
 
 				// c.Data["json"] = v
@@ -1719,7 +1967,31 @@ func (c *UsersController) UpdateUserPassword() {
 
 				if err := models.UpdateUsersById(v); err == nil {
 					message := "Password updated successfully"
-					var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
+					userResp := responses.UserResp{
+						UserId:        strconv.FormatInt(v.UserId, 10),
+						ImagePath:     v.ImagePath,
+						UserType:      strconv.Itoa(v.UserType),
+						FullName:      v.FullName,
+						Username:      v.Username,
+						Password:      v.Password,
+						Email:         v.Email,
+						PhoneNumber:   v.PhoneNumber,
+						Gender:        v.Gender,
+						Dob:           v.Dob,
+						Address:       v.Address,
+						IdType:        v.IdType,
+						IdNumber:      v.IdNumber,
+						MaritalStatus: v.MaritalStatus,
+						Active:        v.Active,
+						Role:          v.Role,
+						IsVerified:    v.IsVerified,
+						DateCreated:   v.DateCreated,
+						DateModified:  v.DateModified,
+						CreatedBy:     v.CreatedBy,
+						ModifiedBy:    v.ModifiedBy,
+						Branch:        nil,
+					}
+					var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: message}
 					c.Data["json"] = resp
 
 					// c.Data["json"] = v
@@ -1796,10 +2068,58 @@ func (c *UsersController) UpdateUserBranch() {
 					logs.Error("Failed to update user branch")
 					message = "Failed to update branch"
 
-					var resp = responses.UserResponseDTO{StatusCode: 608, Result: v, StatusDesc: message}
+					userResp := responses.UserResp{
+						UserId:        strconv.FormatInt(v.UserId, 10),
+						ImagePath:     v.ImagePath,
+						UserType:      strconv.Itoa(v.UserType),
+						FullName:      v.FullName,
+						Username:      v.Username,
+						Password:      v.Password,
+						Email:         v.Email,
+						PhoneNumber:   v.PhoneNumber,
+						Gender:        v.Gender,
+						Dob:           v.Dob,
+						Address:       v.Address,
+						IdType:        v.IdType,
+						IdNumber:      v.IdNumber,
+						MaritalStatus: v.MaritalStatus,
+						Active:        v.Active,
+						Role:          v.Role,
+						IsVerified:    v.IsVerified,
+						DateCreated:   v.DateCreated,
+						DateModified:  v.DateModified,
+						CreatedBy:     v.CreatedBy,
+						ModifiedBy:    v.ModifiedBy,
+						Branch:        nil,
+					}
+					var resp = responses.UserResponseDTO{StatusCode: 608, Result: &userResp, StatusDesc: message}
 					c.Data["json"] = resp
 				} else {
-					var resp = responses.UserResponseDTO{StatusCode: 200, Result: v, StatusDesc: message}
+					userResp := responses.UserResp{
+						UserId:        strconv.FormatInt(v.UserId, 10),
+						ImagePath:     v.ImagePath,
+						UserType:      strconv.Itoa(v.UserType),
+						FullName:      v.FullName,
+						Username:      v.Username,
+						Password:      v.Password,
+						Email:         v.Email,
+						PhoneNumber:   v.PhoneNumber,
+						Gender:        v.Gender,
+						Dob:           v.Dob,
+						Address:       v.Address,
+						IdType:        v.IdType,
+						IdNumber:      v.IdNumber,
+						MaritalStatus: v.MaritalStatus,
+						Active:        v.Active,
+						Role:          v.Role,
+						IsVerified:    v.IsVerified,
+						DateCreated:   v.DateCreated,
+						DateModified:  v.DateModified,
+						CreatedBy:     v.CreatedBy,
+						ModifiedBy:    v.ModifiedBy,
+						Branch:        nil,
+					}
+					var resp = responses.UserResponseDTO{StatusCode: 200, Result: &userResp, StatusDesc: message}
 					c.Data["json"] = resp
 				}
 

@@ -125,7 +125,7 @@ func (c *ShopsController) GetOne() {
 				branchData := responses.BranchResp{}
 				if sb.Branch != nil {
 					branchData = responses.BranchResp{
-						BranchId:     sb.Branch.BranchId,
+						BranchId:     strconv.FormatInt(sb.Branch.BranchId, 10),
 						BranchName:   sb.Branch.Branch,
 						Description:  sb.Branch.Location,
 						Location:     sb.Branch.Location,
@@ -491,7 +491,7 @@ func (c *ShopsController) AddBranch() {
 			for _, sb := range shop.ShopBranches {
 				shopBranchResp_ = append(shopBranchResp_, responses.ShopBranchResp{
 					ShopBranch: responses.BranchResp{
-						BranchId:     sb.Branch.BranchId,
+						BranchId:     strconv.FormatInt(sb.Branch.BranchId, 10),
 						BranchName:   sb.Branch.Branch,
 						Description:  sb.Branch.Location,
 						Location:     sb.Branch.Location,

@@ -5,7 +5,7 @@ import (
 )
 
 type Corporateinfo struct {
-	Branchid    int64
+	Branchid    string
 	Corpaddress string
 	Corpid      int64
 	Corpname    string

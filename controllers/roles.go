@@ -42,7 +42,17 @@ func (c *RolesController) Post() {
 	var role models.Roles = models.Roles{Role: v.Role, Description: v.Description, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: v.AddedBy, ModifiedBy: v.AddedBy}
 	if _, err := models.AddRoles(&role); err == nil {
 		c.Ctx.Output.SetStatus(200)
-		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &role, StatusDesc: "Role added"}
+		respRole := responses.Roles{
+			RoleId:       role.RoleId,
+			Role:         role.Role,
+			Description:  role.Description,
+			DateCreated:  role.DateCreated,
+			DateModified: role.DateModified,
+			Active:       role.Active,
+			CreatedBy:    role.CreatedBy,
+			ModifiedBy:   role.ModifiedBy,
+		}
+		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role added"}
 		c.Data["json"] = resp
 	} else {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding role ::: " + err.Error()}
@@ -69,7 +79,17 @@ func (c *RolesController) GetOne() {
 		c.Data["json"] = resp
 	} else {
 		logs.Info("Role fetched")
-		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: v, StatusDesc: "Role fetched"}
+		respRole := responses.Roles{
+			RoleId:       v.RoleId,
+			Role:         v.Role,
+			Description:  v.Description,
+			DateCreated:  v.DateCreated,
+			DateModified: v.DateModified,
+			Active:       v.Active,
+			CreatedBy:    v.CreatedBy,
+			ModifiedBy:   v.ModifiedBy,
+		}
+		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -89,7 +109,17 @@ func (c *RolesController) GetOneByName() {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting role ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: v, StatusDesc: "Role fetched"}
+		respRole := responses.Roles{
+			RoleId:       v.RoleId,
+			Role:         v.Role,
+			Description:  v.Description,
+			DateCreated:  v.DateCreated,
+			DateModified: v.DateModified,
+			Active:       v.Active,
+			CreatedBy:    v.CreatedBy,
+			ModifiedBy:   v.ModifiedBy,
+		}
+		var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -152,14 +182,23 @@ func (c *RolesController) GetAll() {
 	l, err := models.GetAllRoles(query, fields, sortby, order, offset, limit)
 	if err != nil {
 		logs.Error("An error occurred while fetching roles: ", err)
-		var resp = responses.RolesAllResponseDTO{StatusCode: 604, Roles: &[]models.Roles{}, StatusDesc: "Error getting roles ::: " + err.Error()}
+		var resp = responses.RolesAllResponseDTO{StatusCode: 604, Roles: &[]responses.Roles{}, StatusDesc: "Error getting roles ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		rolePermissions := []models.Roles{}
+		rolePermissions := []responses.Roles{}
 		for _, urs := range l {
 			m := urs.(models.Roles)
 
-			rolePermissions = append(rolePermissions, m)
+			rolePermissions = append(rolePermissions, responses.Roles{
+				RoleId:       m.RoleId,
+				Role:         m.Role,
+				Description:  m.Description,
+				DateCreated:  m.DateCreated,
+				DateModified: m.DateModified,
+				Active:       m.Active,
+				CreatedBy:    m.CreatedBy,
+				ModifiedBy:   m.ModifiedBy,
+			})
 		}
 		var resp = responses.RolesAllResponseDTO{StatusCode: 200, Roles: &rolePermissions, StatusDesc: "Roles fetched"}
 		c.Data["json"] = resp

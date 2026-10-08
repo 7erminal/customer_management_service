@@ -61,9 +61,10 @@ func (c *BranchController) Post() {
 		} else {
 			branchActive = 0
 		}
+		countryId, _ := strconv.ParseInt(country.Result.CountryId, 10, 64)
 		branchModel := models.Branches{
 			Branch:      branchRequestDTO.Branch,
-			Country:     country.Result.CountryId,
+			Country:     countryId,
 			PhoneNumber: branchRequestDTO.PhoneNumber,
 			Location:    branchRequestDTO.Location,
 			Active:      branchActive,
@@ -86,7 +87,7 @@ func (c *BranchController) Post() {
 				Currency:    nil,
 			}
 			branchResp := responses.BranchResp{
-				BranchId:     branchModel.BranchId,
+				BranchId:     strconv.FormatInt(branchModel.BranchId, 10),
 				BranchName:   branchModel.Branch,
 				Country:      &countryResp,
 				Location:     branchModel.Location,
@@ -148,7 +149,7 @@ func (c *BranchController) GetOne() {
 
 		}
 		branchResp := responses.BranchResp{
-			BranchId:     v.BranchId,
+			BranchId:     strconv.FormatInt(v.BranchId, 10),
 			BranchName:   v.Branch,
 			Location:     v.Location,
 			PhoneNumber:  v.PhoneNumber,
@@ -245,7 +246,7 @@ func (c *BranchController) GetAll() {
 			m := br.(models.Branches)
 
 			branchesResp = append(branchesResp, responses.BranchResp{
-				BranchId:    m.BranchId,
+				BranchId:    strconv.FormatInt(m.BranchId, 10),
 				BranchName:  m.Branch,
 				Location:    m.Location,
 				PhoneNumber: m.PhoneNumber,
@@ -320,7 +321,7 @@ func (c *BranchController) Put() {
 			statusCode = 200
 			statusDesc = "Branch updated successfully"
 			respData = responses.BranchResp{
-				BranchId:     branch.BranchId,
+				BranchId:     strconv.FormatInt(branch.BranchId, 10),
 				BranchName:   branch.Branch,
 				Location:     branch.Location,
 				PhoneNumber:  branch.PhoneNumber,
@@ -376,7 +377,7 @@ func (c *BranchController) UpdateBranchManager() {
 			logs.Info("User ID ", user.UserId)
 			if err := models.UpdateBranchesById(branch); err == nil {
 				branchResp := responses.BranchResp{
-					BranchId:     branch.BranchId,
+					BranchId:     strconv.FormatInt(branch.BranchId, 10),
 					BranchName:   branch.Branch,
 					Location:     branch.Location,
 					Active:       branch.Active,
@@ -425,7 +426,7 @@ func (c *BranchController) Delete() {
 			message := "OK"
 			logs.Info("Successfully updated branch with ID ", branch.BranchId)
 			branchResp := responses.BranchResp{
-				BranchId:     branch.BranchId,
+				BranchId:     strconv.FormatInt(branch.BranchId, 10),
 				BranchName:   branch.Branch,
 				Location:     branch.Location,
 				Active:       branch.Active,

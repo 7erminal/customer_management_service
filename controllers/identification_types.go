@@ -124,17 +124,20 @@ func (c *Identification_typesController) GetAll() {
 		resp := responses.IDTypesResponseDTO{StatusCode: 301, IdTypes: nil, StatusDesc: "ID Type not fetched"}
 		c.Data["json"] = resp
 	} else {
-		// idResp := []responses.IDTypeResponse{}
-		// for _, urs := range l {
-		// 	m := urs.(models.Identification_types)
+		idResp := []responses.IDTypeResponse{}
+		if l != nil {
+			for _, urs := range l {
+				m := urs.(models.Identification_types)
 
-		// 	idResp = append(idResp, m)
-		// }
-		if l == nil {
-			l = []interface{}{}
+				idResp = append(idResp, responses.IDTypeResponse{
+					IdentificationTypeId: strconv.FormatInt(m.IdentificationTypeId, 10),
+					Name:                 m.Name,
+					Code:                 m.Code,
+				})
+			}
 		}
 
-		resp := responses.IDTypesResponseDTO{StatusCode: 200, IdTypes: &l, StatusDesc: "Users fetched successfully"}
+		resp := responses.IDTypesResponseDTO{StatusCode: 200, IdTypes: &idResp, StatusDesc: "Users fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

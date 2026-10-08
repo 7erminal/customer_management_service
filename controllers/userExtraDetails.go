@@ -164,11 +164,93 @@ func (c *UserExtraDetailsController) Put() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	if err := models.UpdateUserExtraDetailsById(&v); err == nil {
 		c.Ctx.Output.SetStatus(200)
-		var resp = responses.UserExtraDetailsResponseDTO{StatusCode: 200, UserDetails: &v, StatusDesc: "Customer updated successfully"}
+		var branchResp *responses.BranchResp
+		var shopResp *responses.ShopResp
+		if v.Branch != nil {
+			branchResp = &responses.BranchResp{
+				BranchId:     strconv.FormatInt(v.Branch.BranchId, 10),
+				BranchName:   v.Branch.Branch,
+				Location:     v.Branch.Location,
+				Active:       v.Branch.Active,
+				DateCreated:  v.Branch.DateCreated,
+				DateModified: v.Branch.DateModified,
+				CreatedBy:    v.Branch.CreatedBy,
+				ModifiedBy:   v.Branch.ModifiedBy,
+			}
+		}
+		if v.Shop != nil {
+			shopResp = &responses.ShopResp{
+				ShopId:          strconv.FormatInt(v.Shop.ShopId, 10),
+				ShopName:        v.Shop.ShopName,
+				ShopDescription: v.Shop.ShopDescription,
+				PhoneNumber:     v.Shop.PhoneNumber,
+				Email:           v.Shop.Email,
+				Image:           v.Shop.Image,
+				ShopLocation:    v.Shop.ShopLocation,
+				DateCreated:     v.Shop.DateCreated,
+				DateModified:    v.Shop.DateModified,
+				CreatedBy:       v.Shop.CreatedBy,
+				ModifiedBy:      v.Shop.ModifiedBy,
+				Active:          v.Shop.Active,
+			}
+		}
+		userDetailsResp := responses.UserExtraDetails{
+			UserDetailsId: strconv.FormatInt(v.UserDetailsId, 10),
+			Branch:        branchResp,
+			Shop:          shopResp,
+			Nickname:      v.Nickname,
+			DateCreated:   v.DateCreated,
+			DateModified:  v.DateModified,
+			CreatedBy:     v.CreatedBy,
+			ModifiedBy:    v.ModifiedBy,
+			Active:        v.Active,
+		}
+		var resp = responses.UserExtraDetailsResponseDTO{StatusCode: 200, UserDetails: &userDetailsResp, StatusDesc: "Customer updated successfully"}
 		c.Data["json"] = resp
 	} else {
 		logs.Error("Customer update failed ", err.Error())
-		var resp = responses.UserExtraDetailsResponseDTO{StatusCode: 608, UserDetails: &v, StatusDesc: "Customer update failed"}
+		var branchResp *responses.BranchResp
+		var shopResp *responses.ShopResp
+		if v.Branch != nil {
+			branchResp = &responses.BranchResp{
+				BranchId:     strconv.FormatInt(v.Branch.BranchId, 10),
+				BranchName:   v.Branch.Branch,
+				Location:     v.Branch.Location,
+				Active:       v.Branch.Active,
+				DateCreated:  v.Branch.DateCreated,
+				DateModified: v.Branch.DateModified,
+				CreatedBy:    v.Branch.CreatedBy,
+				ModifiedBy:   v.Branch.ModifiedBy,
+			}
+		}
+		if v.Shop != nil {
+			shopResp = &responses.ShopResp{
+				ShopId:          strconv.FormatInt(v.Shop.ShopId, 10),
+				ShopName:        v.Shop.ShopName,
+				ShopDescription: v.Shop.ShopDescription,
+				PhoneNumber:     v.Shop.PhoneNumber,
+				Email:           v.Shop.Email,
+				Image:           v.Shop.Image,
+				ShopLocation:    v.Shop.ShopLocation,
+				DateCreated:     v.Shop.DateCreated,
+				DateModified:    v.Shop.DateModified,
+				CreatedBy:       v.Shop.CreatedBy,
+				ModifiedBy:      v.Shop.ModifiedBy,
+				Active:          v.Shop.Active,
+			}
+		}
+		userDetailsResp := responses.UserExtraDetails{
+			UserDetailsId: strconv.FormatInt(v.UserDetailsId, 10),
+			Branch:        branchResp,
+			Shop:          shopResp,
+			Nickname:      v.Nickname,
+			DateCreated:   v.DateCreated,
+			DateModified:  v.DateModified,
+			CreatedBy:     v.CreatedBy,
+			ModifiedBy:    v.ModifiedBy,
+			Active:        v.Active,
+		}
+		var resp = responses.UserExtraDetailsResponseDTO{StatusCode: 608, UserDetails: &userDetailsResp, StatusDesc: "Customer update failed"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

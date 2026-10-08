@@ -16,7 +16,7 @@ type InviteHashResponseDTO struct {
 }
 
 type UserInvitesResp struct {
-	UserInviteId    int64
+	UserInviteId    string
 	InvitedBy       *models.Users
 	InvitationToken *models.UserTokens
 	Email           string
@@ -24,8 +24,8 @@ type UserInvitesResp struct {
 	Status          string
 	DateCreated     time.Time
 	DateModified    time.Time
-	CreatedBy       int
-	ModifiedBy      int
+	CreatedBy       string
+	ModifiedBy      string
 	Active          int
 }
 

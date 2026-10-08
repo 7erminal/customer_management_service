@@ -48,7 +48,18 @@ func (c *PermissionsController) Post() {
 	permission := models.Permissions{Permission: v.Permission, PermissionDescription: v.Description, PermissionCode: permissionCode, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: v.AddedBy, ModifiedBy: v.AddedBy}
 	if _, err := models.AddPermissions(&permission); err == nil {
 		c.Ctx.Output.SetStatus(200)
-		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &permission, StatusDesc: "Permission added"}
+		respPermission := responses.Permissions{
+			PermissionId:          strconv.FormatInt(permission.PermissionId, 10),
+			Permission:            permission.Permission,
+			PermissionDescription: permission.PermissionDescription,
+			PermissionCode:        permission.PermissionCode,
+			DateCreated:           permission.DateCreated,
+			DateModified:          permission.DateModified,
+			Active:                permission.Active,
+			CreatedBy:             permission.CreatedBy,
+			ModifiedBy:            permission.ModifiedBy,
+		}
+		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &respPermission, StatusDesc: "Permission added"}
 		c.Data["json"] = resp
 	} else {
 		var resp = responses.PermissionResponseDTO{StatusCode: 604, Permission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
@@ -73,7 +84,18 @@ func (c *PermissionsController) GetOne() {
 		var resp = responses.PermissionResponseDTO{StatusCode: 604, Permission: nil, StatusDesc: "Error getting permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: v, StatusDesc: "Permission fetched"}
+		respPermission := responses.Permissions{
+			PermissionId:          strconv.FormatInt(v.PermissionId, 10),
+			Permission:            v.Permission,
+			PermissionDescription: v.PermissionDescription,
+			PermissionCode:        v.PermissionCode,
+			DateCreated:           v.DateCreated,
+			DateModified:          v.DateModified,
+			Active:                v.Active,
+			CreatedBy:             v.CreatedBy,
+			ModifiedBy:            v.ModifiedBy,
+		}
+		var resp = responses.PermissionResponseDTO{StatusCode: 200, Permission: &respPermission, StatusDesc: "Permission fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

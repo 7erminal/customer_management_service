@@ -63,7 +63,17 @@ func (c *Role_permissionsController) Post() {
 						return
 					}
 					c.Ctx.Output.SetStatus(200)
-					var resp = responses.RoleResponseDTO{StatusCode: 200, Role: role, StatusDesc: "Role Permission added"}
+					respRole := responses.Roles{
+						RoleId:       role.RoleId,
+						Role:         role.Role,
+						Description:  role.Description,
+						DateCreated:  role.DateCreated,
+						DateModified: role.DateModified,
+						Active:       role.Active,
+						CreatedBy:    role.CreatedBy,
+						ModifiedBy:   role.ModifiedBy,
+					}
+					var resp = responses.RoleResponseDTO{StatusCode: 200, Role: &respRole, StatusDesc: "Role Permission added"}
 					c.Data["json"] = resp
 				} else {
 					var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
@@ -103,7 +113,52 @@ func (c *Role_permissionsController) GetOne() {
 		var resp = responses.RolePermissionResponseDTO{StatusCode: 604, RolePermission: nil, StatusDesc: "Error adding permission ::: " + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: v, StatusDesc: "Role Permission added"}
+		var rolePermResp *responses.Role_permissions
+		if v.Role != nil && v.Permission != nil && v.Action != nil {
+			roleResp := responses.Roles{
+				RoleId:       v.Role.RoleId,
+				Role:         v.Role.Role,
+				Description:  v.Role.Description,
+				DateCreated:  v.Role.DateCreated,
+				DateModified: v.Role.DateModified,
+				CreatedBy:    v.Role.CreatedBy,
+				ModifiedBy:   v.Role.ModifiedBy,
+				Active:       v.Role.Active,
+			}
+			permResp := responses.Permissions{
+				PermissionId:          strconv.FormatInt(v.Permission.PermissionId, 10),
+				Permission:            v.Permission.Permission,
+				PermissionCode:        v.Permission.PermissionCode,
+				PermissionDescription: v.Permission.PermissionDescription,
+				DateCreated:           v.Permission.DateCreated,
+				DateModified:          v.Permission.DateModified,
+				CreatedBy:             v.Permission.CreatedBy,
+				ModifiedBy:            v.Permission.ModifiedBy,
+				Active:                v.Permission.Active,
+			}
+			actionResp := responses.Actions{
+				ActionId:     strconv.FormatInt(v.Action.ActionId, 10),
+				Action:       v.Action.Action,
+				Description:  v.Action.Description,
+				DateCreated:  v.Action.DateCreated,
+				DateModified: v.Action.DateModified,
+				CreatedBy:    v.Action.CreatedBy,
+				ModifiedBy:   v.Action.ModifiedBy,
+				Active:       v.Action.Active,
+			}
+			rolePermResp = &responses.Role_permissions{
+				RolePermissionId: strconv.FormatInt(v.RolePermissionId, 10),
+				Role:             &roleResp,
+				Permission:       &permResp,
+				Action:           &actionResp,
+				DateCreated:      v.DateCreated,
+				DateModified:     v.DateModified,
+				CreatedBy:        v.CreatedBy,
+				ModifiedBy:       v.ModifiedBy,
+				Active:           v.Active,
+			}
+		}
+		var resp = responses.RolePermissionResponseDTO{StatusCode: 200, RolePermission: rolePermResp, StatusDesc: "Role Permission added"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -171,11 +226,53 @@ func (c *Role_permissionsController) GetAll() {
 		if l == nil {
 			l = []interface{}{}
 		}
-		rolePermissions := []models.Role_permissions{}
+		rolePermissions := []responses.Role_permissions{}
 		for _, urs := range l {
 			m := urs.(models.Role_permissions)
 
-			rolePermissions = append(rolePermissions, m)
+			roleResp := responses.Roles{
+				RoleId:       m.Role.RoleId,
+				Role:         m.Role.Role,
+				Description:  m.Role.Description,
+				DateCreated:  m.Role.DateCreated,
+				DateModified: m.Role.DateModified,
+				CreatedBy:    m.Role.CreatedBy,
+				ModifiedBy:   m.Role.ModifiedBy,
+				Active:       m.Role.Active,
+			}
+			permResp := responses.Permissions{
+				PermissionId:          strconv.FormatInt(m.Permission.PermissionId, 10),
+				Permission:            m.Permission.Permission,
+				PermissionCode:        m.Permission.PermissionCode,
+				PermissionDescription: m.Permission.PermissionDescription,
+				DateCreated:           m.Permission.DateCreated,
+				DateModified:          m.Permission.DateModified,
+				CreatedBy:             m.Permission.CreatedBy,
+				ModifiedBy:            m.Permission.ModifiedBy,
+				Active:                m.Permission.Active,
+			}
+			actionResp := responses.Actions{
+				ActionId:     strconv.FormatInt(m.Action.ActionId, 10),
+				Action:       m.Action.Action,
+				Description:  m.Action.Description,
+				DateCreated:  m.Action.DateCreated,
+				DateModified: m.Action.DateModified,
+				CreatedBy:    m.Action.CreatedBy,
+				ModifiedBy:   m.Action.ModifiedBy,
+				Active:       m.Action.Active,
+			}
+
+			rolePermissions = append(rolePermissions, responses.Role_permissions{
+				RolePermissionId: strconv.FormatInt(m.RolePermissionId, 10),
+				Role:             &roleResp,
+				Permission:       &permResp,
+				Action:           &actionResp,
+				DateCreated:      m.DateCreated,
+				DateModified:     m.DateModified,
+				CreatedBy:        m.CreatedBy,
+				ModifiedBy:       m.ModifiedBy,
+				Active:           m.Active,
+			})
 		}
 		var resp = responses.RolePermissionsResponseDTO{StatusCode: 200, RolePermissions: &rolePermissions, StatusDesc: "Role Permissions fetched"}
 		c.Data["json"] = resp
@@ -247,7 +344,7 @@ func (c *Role_permissionsController) Delete() {
 
 	statusCode := 400
 	statusMessage := "Role permission not found"
-	role := &models.Roles{}
+	var roleResp *responses.Roles
 
 	idStrr := v.Role
 	roleId, _ := strconv.ParseInt(idStrr, 0, 64)
@@ -274,9 +371,20 @@ func (c *Role_permissionsController) Delete() {
 
 	if statusCode == 200 {
 		logs.Info("Role permission deleted successfully")
-		role, _ = models.GetRolesById(roleId)
+		if role, err := models.GetRolesById(roleId); err == nil && role != nil {
+			roleResp = &responses.Roles{
+				RoleId:       role.RoleId,
+				Role:         role.Role,
+				Description:  role.Description,
+				DateCreated:  role.DateCreated,
+				DateModified: role.DateModified,
+				Active:       role.Active,
+				CreatedBy:    role.CreatedBy,
+				ModifiedBy:   role.ModifiedBy,
+			}
+		}
 	}
-	resp := responses.RoleResponseDTO{StatusCode: statusCode, Role: role, StatusDesc: statusMessage}
+	resp := responses.RoleResponseDTO{StatusCode: statusCode, Role: roleResp, StatusDesc: statusMessage}
 	c.Data["json"] = resp
 	c.ServeJSON()
 }
