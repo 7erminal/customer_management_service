@@ -861,10 +861,15 @@ func (c *CustomersController) UpdateCustomerImage() {
 func (c *CustomersController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
+
+	deletedBy := c.Ctx.Input.Query("DeletedBy")
+	logs.Info("Deleted by ", deletedBy)
 	if err := models.DeleteCustomer(id); err == nil {
-		c.Data["json"] = "OK"
+		resp := responses.StringResponseDTO{StatusCode: 200, Value: "OK", StatusDesc: "Delete successful"}
+		c.Data["json"] = resp
 	} else {
-		c.Data["json"] = err.Error()
+		resp := responses.StringResponseDTO{StatusCode: 301, Value: "", StatusDesc: err.Error()}
+		c.Data["json"] = resp
 	}
 	c.ServeJSON()
 }

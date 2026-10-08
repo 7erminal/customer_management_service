@@ -312,14 +312,15 @@ func (c *Role_permissionsController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	_, _ = strconv.ParseInt(idStr, 0, 64)
 
-	v := requests.RolePermissionRequest{
+	v := requests.RemoveRolePermissionRequest{
 		Role:           c.GetString("Role"),
 		PermissionCode: c.GetString("PermissionCode"),
 		Action:         c.GetString("Action"),
+		RemovedBy:      c.GetString("RemovedBy"),
 	}
 
 	// Some clients send DELETE params as x-www-form-urlencoded body.
-	if (v.Role == "" || v.PermissionCode == "" || v.Action == "") && len(c.Ctx.Input.RequestBody) > 0 {
+	if (v.Role == "" || v.PermissionCode == "" || v.Action == "" || v.RemovedBy == "") && len(c.Ctx.Input.RequestBody) > 0 {
 		if formValues, err := url.ParseQuery(string(c.Ctx.Input.RequestBody)); err == nil {
 			if v.Role == "" {
 				v.Role = formValues.Get("Role")
@@ -330,16 +331,19 @@ func (c *Role_permissionsController) Delete() {
 			if v.Action == "" {
 				v.Action = formValues.Get("Action")
 			}
+			if v.RemovedBy == "" {
+				v.RemovedBy = formValues.Get("RemovedBy")
+			}
 		}
 	}
 
-	if v.Role == "" || v.PermissionCode == "" || v.Action == "" {
+	if v.Role == "" || v.PermissionCode == "" || v.Action == "" || v.RemovedBy == "" {
 		json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	}
 
 	logs.Info("Request json is ")
 	logs.Info("Request json is ", string(c.Ctx.Input.RequestBody))
-	logs.Info("Request body: ", string(c.Ctx.Input.RequestBody), " Role: ", c.GetString("Role"), " PermissionCode: ", c.GetString("PermissionCode"), " Action: ", c.GetString("Action"))
+	logs.Info("Request body: ", string(c.Ctx.Input.RequestBody), " Role: ", c.GetString("Role"), " PermissionCode: ", c.GetString("PermissionCode"), " Action: ", c.GetString("Action"), " RemovedBy: ", c.GetString("RemovedBy"))
 	logs.Info("Parsed request: ", v)
 
 	statusCode := 400

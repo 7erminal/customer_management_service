@@ -6,3 +6,10 @@ type RolePermissionRequest struct {
 	PermissionCode string
 	AddedBy        string
 }
+
+type RemoveRolePermissionRequest struct {
+	Role           string
+	Action         string
+	PermissionCode string
+	RemovedBy      string
+}

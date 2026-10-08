@@ -24,7 +24,7 @@ type UpdateCustomerRequestDTO struct {
 	Location    string
 	Email       string
 	Dob         string
-	AddedBy     string
+	UpdatedBy   string
 	Branch      string
 	Status      string
 }

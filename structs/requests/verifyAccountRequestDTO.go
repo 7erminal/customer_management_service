@@ -1,7 +1,7 @@
 package requests
 
 type VerifyAccountRequestDTO struct {
-	UserId   int64
+	UserId   string
 	Image    string
 	IdNumber string
 }
