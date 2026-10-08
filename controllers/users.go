@@ -605,8 +605,8 @@ func (c *UsersController) VerifyUsername() {
 					UserDetails: &responses.UserExtraDetails{
 						UserDetailsId: strconv.FormatInt(v.UserDetails.UserDetailsId, 10),
 						Branch: &responses.BranchResp{
-							BranchId:   strconv.FormatInt(v.UserDetails.Branch.BranchId, 10),
-							BranchName: v.UserDetails.Branch.Branch,
+							BranchId:   strconv.FormatInt(branch.BranchId, 10),
+							BranchName: branch.Branch,
 							Country: &responses.CountryResp{
 								CountryId:   country.Result.CountryId,
 								Country:     country.Result.Country,
@@ -617,12 +617,12 @@ func (c *UsersController) VerifyUsername() {
 									Symbol:     country.Result.DefaultCurrency.Symbol,
 								},
 							},
-							Location:     v.UserDetails.Branch.Location,
-							Active:       v.UserDetails.Branch.Active,
-							DateCreated:  v.UserDetails.Branch.DateCreated,
-							DateModified: v.UserDetails.Branch.DateModified,
-							CreatedBy:    v.UserDetails.Branch.CreatedBy,
-							ModifiedBy:   v.UserDetails.Branch.ModifiedBy,
+							Location:     branch.Location,
+							Active:       branch.Active,
+							DateCreated:  branch.DateCreated,
+							DateModified: branch.DateModified,
+							CreatedBy:    branch.CreatedBy,
+							ModifiedBy:   branch.ModifiedBy,
 						},
 						Shop: &responses.ShopResp{
 							ShopId:              strconv.FormatInt(v.UserDetails.Shop.ShopId, 10),
@@ -657,7 +657,7 @@ func (c *UsersController) VerifyUsername() {
 			}
 		} else {
 			logs.Error("User not found")
-			var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "User not found"}
+			var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "Branch not found"}
 			c.Data["json"] = resp
 			c.ServeJSON()
 			return
@@ -691,88 +691,104 @@ func (c *UsersController) VerifyUser() {
 		if err := models.UpdateUsersById(v); err == nil {
 			logs.Info("User found and verified....sending user data")
 			userResp := responses.UserResp{}
-			if country, err := functions.GetCountryWithId(&c.Controller, v.UserDetails.Branch.Country); err == nil {
 
-				userResp = responses.UserResp{
-					UserId:        strconv.FormatInt(v.UserId, 10),
-					ImagePath:     v.ImagePath,
-					UserType:      strconv.Itoa(v.UserType),
-					FullName:      v.FullName,
-					Username:      v.Username,
-					Password:      v.Password,
-					Email:         v.Email,
-					PhoneNumber:   v.PhoneNumber,
-					Gender:        v.Gender,
-					Dob:           v.Dob,
-					Address:       v.Address,
-					IdType:        v.IdType,
-					IdNumber:      v.IdNumber,
-					MaritalStatus: v.MaritalStatus,
-					Active:        v.Active,
-					Role: &responses.Roles{
-						RoleId:       strconv.FormatInt(v.Role.RoleId, 10),
-						Role:         v.Role.Role,
-						Description:  v.Role.Description,
-						DateCreated:  v.Role.DateCreated,
-						DateModified: v.Role.DateModified,
-						Active:       v.Role.Active,
-						CreatedBy:    v.Role.CreatedBy,
-						ModifiedBy:   v.Role.ModifiedBy,
-					},
-					IsVerified:   v.IsVerified,
-					DateCreated:  v.DateCreated,
-					DateModified: v.DateModified,
-					CreatedBy:    v.CreatedBy,
-					ModifiedBy:   v.ModifiedBy,
-					UserDetails: &responses.UserExtraDetails{
-						UserDetailsId: strconv.FormatInt(v.UserDetails.UserDetailsId, 10),
-						Branch: &responses.BranchResp{
-							BranchId:   strconv.FormatInt(v.UserDetails.Branch.BranchId, 10),
-							BranchName: v.UserDetails.Branch.Branch,
-							Country: &responses.CountryResp{
-								CountryId:   country.Result.CountryId,
-								Country:     country.Result.Country,
-								CountryCode: country.Result.CountryCode,
-								Currency: &responses.CurrencyResp{
-									CurrencyId: country.Result.DefaultCurrency.CurrencyId,
-									Currency:   country.Result.DefaultCurrency.Currency,
-									Symbol:     country.Result.DefaultCurrency.Symbol,
+			branchid := ""
+			if v.UserDetails.Branch != nil {
+				branchid = strconv.FormatInt(v.UserDetails.Branch.BranchId, 10)
+			} else {
+				branchid = "2"
+			}
+			branchidint, _ := strconv.ParseInt(branchid, 10, 64)
+			if branch, err := models.GetBranchesById(branchidint); err == nil {
+				if country, err := functions.GetCountryWithId(&c.Controller, branch.Country); err == nil {
+
+					userResp = responses.UserResp{
+						UserId:        strconv.FormatInt(v.UserId, 10),
+						ImagePath:     v.ImagePath,
+						UserType:      strconv.Itoa(v.UserType),
+						FullName:      v.FullName,
+						Username:      v.Username,
+						Password:      v.Password,
+						Email:         v.Email,
+						PhoneNumber:   v.PhoneNumber,
+						Gender:        v.Gender,
+						Dob:           v.Dob,
+						Address:       v.Address,
+						IdType:        v.IdType,
+						IdNumber:      v.IdNumber,
+						MaritalStatus: v.MaritalStatus,
+						Active:        v.Active,
+						Role: &responses.Roles{
+							RoleId:       strconv.FormatInt(v.Role.RoleId, 10),
+							Role:         v.Role.Role,
+							Description:  v.Role.Description,
+							DateCreated:  v.Role.DateCreated,
+							DateModified: v.Role.DateModified,
+							Active:       v.Role.Active,
+							CreatedBy:    v.Role.CreatedBy,
+							ModifiedBy:   v.Role.ModifiedBy,
+						},
+						IsVerified:   v.IsVerified,
+						DateCreated:  v.DateCreated,
+						DateModified: v.DateModified,
+						CreatedBy:    v.CreatedBy,
+						ModifiedBy:   v.ModifiedBy,
+						UserDetails: &responses.UserExtraDetails{
+							UserDetailsId: strconv.FormatInt(v.UserDetails.UserDetailsId, 10),
+							Branch: &responses.BranchResp{
+								BranchId:   strconv.FormatInt(branch.BranchId, 10),
+								BranchName: branch.Branch,
+								Country: &responses.CountryResp{
+									CountryId:   country.Result.CountryId,
+									Country:     country.Result.Country,
+									CountryCode: country.Result.CountryCode,
+									Currency: &responses.CurrencyResp{
+										CurrencyId: country.Result.DefaultCurrency.CurrencyId,
+										Currency:   country.Result.DefaultCurrency.Currency,
+										Symbol:     country.Result.DefaultCurrency.Symbol,
+									},
 								},
+								Location:     branch.Location,
+								Active:       branch.Active,
+								DateCreated:  branch.DateCreated,
+								DateModified: branch.DateModified,
+								CreatedBy:    branch.CreatedBy,
+								ModifiedBy:   branch.ModifiedBy,
 							},
-							Location:     v.UserDetails.Branch.Location,
-							Active:       v.UserDetails.Branch.Active,
-							DateCreated:  v.UserDetails.Branch.DateCreated,
-							DateModified: v.UserDetails.Branch.DateModified,
-							CreatedBy:    v.UserDetails.Branch.CreatedBy,
-							ModifiedBy:   v.UserDetails.Branch.ModifiedBy,
+							Shop: &responses.ShopResp{
+								ShopId:              strconv.FormatInt(v.UserDetails.Shop.ShopId, 10),
+								ShopName:            v.UserDetails.Shop.ShopName,
+								ShopLocation:        v.UserDetails.Shop.ShopLocation,
+								ShopDescription:     v.UserDetails.Shop.ShopDescription,
+								ShopAssistantName:   v.UserDetails.Shop.ShopAssistantName,
+								ShopAssistantNumber: v.UserDetails.Shop.ShopAssistantNumber,
+								PhoneNumber:         v.UserDetails.Shop.PhoneNumber,
+								Email:               v.UserDetails.Shop.Email,
+								Image:               v.UserDetails.Shop.Image,
+								Active:              v.UserDetails.Shop.Active,
+								DateCreated:         v.UserDetails.Shop.DateCreated,
+								DateModified:        v.UserDetails.Shop.DateModified,
+								CreatedBy:           v.UserDetails.Shop.CreatedBy,
+								ModifiedBy:          v.UserDetails.Shop.ModifiedBy,
+							},
+							Nickname:     v.UserDetails.Nickname,
+							DateCreated:  v.UserDetails.DateCreated,
+							DateModified: v.UserDetails.DateModified,
+							CreatedBy:    v.UserDetails.CreatedBy,
+							ModifiedBy:   v.UserDetails.ModifiedBy,
+							Active:       v.UserDetails.Active,
 						},
-						Shop: &responses.ShopResp{
-							ShopId:              strconv.FormatInt(v.UserDetails.Shop.ShopId, 10),
-							ShopName:            v.UserDetails.Shop.ShopName,
-							ShopLocation:        v.UserDetails.Shop.ShopLocation,
-							ShopDescription:     v.UserDetails.Shop.ShopDescription,
-							ShopAssistantName:   v.UserDetails.Shop.ShopAssistantName,
-							ShopAssistantNumber: v.UserDetails.Shop.ShopAssistantNumber,
-							PhoneNumber:         v.UserDetails.Shop.PhoneNumber,
-							Email:               v.UserDetails.Shop.Email,
-							Image:               v.UserDetails.Shop.Image,
-							Active:              v.UserDetails.Shop.Active,
-							DateCreated:         v.UserDetails.Shop.DateCreated,
-							DateModified:        v.UserDetails.Shop.DateModified,
-							CreatedBy:           v.UserDetails.Shop.CreatedBy,
-							ModifiedBy:          v.UserDetails.Shop.ModifiedBy,
-						},
-						Nickname:     v.UserDetails.Nickname,
-						DateCreated:  v.UserDetails.DateCreated,
-						DateModified: v.UserDetails.DateModified,
-						CreatedBy:    v.UserDetails.CreatedBy,
-						ModifiedBy:   v.UserDetails.ModifiedBy,
-						Active:       v.UserDetails.Active,
-					},
+					}
+				} else {
+					logs.Error("Error fetching country with ID: ", err.Error())
+					var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "Country not found"}
+					c.Data["json"] = resp
+					c.ServeJSON()
+					return
 				}
 			} else {
-				logs.Error("Error fetching country with ID: ", err.Error())
-				var resp = responses.UserResponseDTO{StatusCode: 605, Result: nil, StatusDesc: "Country not found"}
+				logs.Error("Error fetching user details with ID: ", err.Error())
+				var resp = responses.UserResponseDTO{StatusCode: 604, Result: nil, StatusDesc: "User details not found"}
 				c.Data["json"] = resp
 				c.ServeJSON()
 				return
