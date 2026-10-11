@@ -342,6 +342,7 @@ func (c *CustomersController) GetCustomerByUsername() {
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		logs.Info("Fetched customer: ", v.Customer.FullName)
 		jsonStr, err := json.MarshalIndent(v, "", "  ")
 		if err != nil {
 			logs.Error("Failed to marshal customer to JSON: ", err)
