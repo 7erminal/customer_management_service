@@ -930,7 +930,7 @@ paths:
       tags:
       - customers
       description: |-
-        get Customers by msisdn
+        get Customers by username
         <br>
       operationId: CustomersController.Get Customer by Username
       parameters:
@@ -945,7 +945,7 @@ paths:
           schema:
             $ref: '#/definitions/models.Customers'
         "403":
-          description: :msisdn is empty
+          description: :username is empty
   /id-types/:
     get:
       tags:
@@ -2396,20 +2396,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  615.<nil>.0x1400096a6d8:
-    title: "0x1400096a6d8"
+  819.<nil>.BranchResp:
+    title: BranchResp
     type: object
-  1501.<nil>.0x1400096a8a0:
-    title: "0x1400096a8a0"
+  2080.<nil>.0x57f0a88050e0:
+    title: "0x57f0a88050e0"
     type: object
-  2399.<nil>.0x1400096aa98:
-    title: "0x1400096aa98"
+  2978.<nil>.0x57f0a88052d8:
+    title: "0x57f0a88052d8"
     type: object
-  3202.<nil>.0x1400096ac48:
-    title: "0x1400096ac48"
+  3781.<nil>.0x57f0a8805488:
+    title: "0x57f0a8805488"
     type: object
-  4613.<nil>.0x1400096ae88:
-    title: "0x1400096ae88"
+  5192.<nil>.0x57f0a88056c8:
+    title: "0x57f0a88056c8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2754,8 +2754,6 @@ definitions:
         type: string
       Shop:
         $ref: '#/definitions/models.Shops'
-      User:
-        $ref: '#/definitions/models.Users'
   models.Identification_types:
     title: Identification_types
     type: object
@@ -2950,6 +2948,8 @@ definitions:
         type: string
       RoleRequired:
         type: boolean
+      Username:
+        type: string
   models.UpdateCustomerLastTxnRequest:
     title: UpdateCustomerLastTxnRequest
     type: object
@@ -3024,9 +3024,6 @@ definitions:
         type: string
       Shop:
         $ref: '#/definitions/models.Shops'
-      User:
-        type: integer
-        format: int64
       UserDetailsId:
         type: integer
         format: int64
@@ -3351,8 +3348,8 @@ definitions:
     title: BranchesResponseDTO
     type: object
     properties:
-      Branches:
-        $ref: '#/definitions/615.<nil>.0x1400096a6d8'
+      Result:
+        $ref: '#/definitions/819.<nil>.BranchResp'
       StatusCode:
         type: integer
         format: int64
@@ -3385,7 +3382,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2399.<nil>.0x1400096aa98'
+        $ref: '#/definitions/2978.<nil>.0x57f0a88052d8'
       StatusCode:
         type: integer
         format: int64
@@ -3407,7 +3404,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3202.<nil>.0x1400096ac48'
+        $ref: '#/definitions/3781.<nil>.0x57f0a8805488'
       StatusCode:
         type: integer
         format: int64
@@ -3457,7 +3454,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1501.<nil>.0x1400096a8a0'
+        $ref: '#/definitions/2080.<nil>.0x57f0a88050e0'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -3479,7 +3476,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4613.<nil>.0x1400096ae88'
+        $ref: '#/definitions/5192.<nil>.0x57f0a88056c8'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object

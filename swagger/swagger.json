@@ -1193,7 +1193,7 @@
                 "tags": [
                     "customers"
                 ],
-                "description": "get Customers by msisdn\n\u003cbr\u003e",
+                "description": "get Customers by username\n\u003cbr\u003e",
                 "operationId": "CustomersController.Get Customer by Username",
                 "parameters": [
                     {
@@ -1212,7 +1212,7 @@
                         }
                     },
                     "403": {
-                        "description": ":msisdn is empty"
+                        "description": ":username is empty"
                     }
                 }
             }
@@ -3332,24 +3332,24 @@
         }
     },
     "definitions": {
-        "1501.\u003cnil\u003e.0x1400096a8a0": {
-            "title": "0x1400096a8a0",
+        "2080.\u003cnil\u003e.0x57f0a88050e0": {
+            "title": "0x57f0a88050e0",
             "type": "object"
         },
-        "2399.\u003cnil\u003e.0x1400096aa98": {
-            "title": "0x1400096aa98",
+        "2978.\u003cnil\u003e.0x57f0a88052d8": {
+            "title": "0x57f0a88052d8",
             "type": "object"
         },
-        "3202.\u003cnil\u003e.0x1400096ac48": {
-            "title": "0x1400096ac48",
+        "3781.\u003cnil\u003e.0x57f0a8805488": {
+            "title": "0x57f0a8805488",
             "type": "object"
         },
-        "4613.\u003cnil\u003e.0x1400096ae88": {
-            "title": "0x1400096ae88",
+        "5192.\u003cnil\u003e.0x57f0a88056c8": {
+            "title": "0x57f0a88056c8",
             "type": "object"
         },
-        "615.\u003cnil\u003e.0x1400096a6d8": {
-            "title": "0x1400096a6d8",
+        "819.\u003cnil\u003e.BranchResp": {
+            "title": "BranchResp",
             "type": "object"
         },
         "models.Accounts": {
@@ -3831,9 +3831,6 @@
                 },
                 "Shop": {
                     "$ref": "#/definitions/models.Shops"
-                },
-                "User": {
-                    "$ref": "#/definitions/models.Users"
                 }
             }
         },
@@ -4107,6 +4104,9 @@
                 },
                 "RoleRequired": {
                     "type": "boolean"
+                },
+                "Username": {
+                    "type": "string"
                 }
             }
         },
@@ -4214,10 +4214,6 @@
                 },
                 "Shop": {
                     "$ref": "#/definitions/models.Shops"
-                },
-                "User": {
-                    "type": "integer",
-                    "format": "int64"
                 },
                 "UserDetailsId": {
                     "type": "integer",
@@ -4687,8 +4683,8 @@
             "title": "BranchesResponseDTO",
             "type": "object",
             "properties": {
-                "Branches": {
-                    "$ref": "#/definitions/615.\u003cnil\u003e.0x1400096a6d8"
+                "Result": {
+                    "$ref": "#/definitions/819.\u003cnil\u003e.BranchResp"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4736,7 +4732,7 @@
             "type": "object",
             "properties": {
                 "Permissions": {
-                    "$ref": "#/definitions/2399.\u003cnil\u003e.0x1400096aa98"
+                    "$ref": "#/definitions/2978.\u003cnil\u003e.0x57f0a88052d8"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4768,7 +4764,7 @@
             "type": "object",
             "properties": {
                 "Roles": {
-                    "$ref": "#/definitions/3202.\u003cnil\u003e.0x1400096ac48"
+                    "$ref": "#/definitions/3781.\u003cnil\u003e.0x57f0a8805488"
                 },
                 "StatusCode": {
                     "type": "integer",
@@ -4841,7 +4837,7 @@
                     "type": "string"
                 },
                 "UserInvites": {
-                    "$ref": "#/definitions/1501.\u003cnil\u003e.0x1400096a8a0"
+                    "$ref": "#/definitions/2080.\u003cnil\u003e.0x57f0a88050e0"
                 }
             }
         },
@@ -4873,7 +4869,7 @@
                     "type": "string"
                 },
                 "Users": {
-                    "$ref": "#/definitions/4613.\u003cnil\u003e.0x1400096ae88"
+                    "$ref": "#/definitions/5192.\u003cnil\u003e.0x57f0a88056c8"
                 }
             }
         },
