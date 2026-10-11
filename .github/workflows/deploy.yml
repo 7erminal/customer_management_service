@@ -36,7 +36,8 @@ jobs:
           set -e
           cd /usr/app/mobile-application/customer-management-service
           git stash
-          git pull origin msysmobilizer
+          git fetch origin msysmobilizer
+          git reset --hard origin/msysmobilizer
           go build -o customer-management-service
           pm2 restart customer-management-service || \
           pm2 start customer-management-service --name customer-management-service
