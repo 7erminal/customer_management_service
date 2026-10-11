@@ -25,17 +25,17 @@ type CustomersController struct {
 
 // URLMapping ...
 func (c *CustomersController) URLMapping() {
-	c.Mapping("GetOne", c.GetOne)
-	c.Mapping("GetAll", c.GetAll)
-	c.Mapping("Put", c.Put)
-	c.Mapping("Delete", c.Delete)
 	c.Mapping("AddCustomer", c.AddCustomer)
 	c.Mapping("UpdateCustomerImage", c.UpdateCustomerImage)
-	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
-	c.Mapping("GetAllByBranch", c.GetAllByBranch)
 	c.Mapping("GetCustomerCount", c.GetCustomerCount)
 	c.Mapping("GetCustomerByMsisdn", c.GetCustomerByMsisdn)
 	c.Mapping("GetCustomerByUsername", c.GetCustomerByUsername)
+	c.Mapping("GetAllByBranch", c.GetAllByBranch)
+	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
+	c.Mapping("GetOne", c.GetOne)
+	c.Mapping("Put", c.Put)
+	c.Mapping("Delete", c.Delete)
+	c.Mapping("GetAll", c.GetAll)
 }
 
 // Post ...
