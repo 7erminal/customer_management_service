@@ -35,9 +35,12 @@ jobs:
         ssh -o StrictHostKeyChecking=no root@185.211.5.90 << 'EOF'
           set -e
           cd /usr/app/mobile-application/customer-management-service
+          git merge --abort 2>/dev/null || true
+          git rebase --abort 2>/dev/null || true
           git stash
           git fetch origin msysmobilizer
           git reset --hard origin/msysmobilizer
+          git clean -fd
           go build -o customer-management-service
           pm2 restart customer-management-service || \
           pm2 start customer-management-service --name customer-management-service
