@@ -230,24 +230,24 @@ func (c *Customer_credentialsController) Put() {
 			return
 		}
 
-		// hashedPin, errr := bcrypt.GenerateFromPassword([]byte(v.Pin), 8)
-		// if errr != nil {
-		// 	logs.Error("Error hashing password: %v", errr)
-		// 	c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-		// 		StatusCode: 500,
-		// 		StatusDesc: "Internal Server Error",
-		// 		Result:     "Error hashing password",
-		// 	}
-		// 	c.Ctx.Output.SetStatus(500)
-		// 	return
-		// }
+		hashedPin, errr := bcrypt.GenerateFromPassword([]byte(v.Pin), 8)
+		if errr != nil {
+			logs.Error("Error hashing password: %v", errr)
+			c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
+				StatusCode: 500,
+				StatusDesc: "Internal Server Error",
+				Result:     "Error hashing password",
+			}
+			c.Ctx.Output.SetStatus(500)
+			return
+		}
 
 		ccredential := models.Customer_credentials{
 			Id:           customerC.Id,
 			Customer:     &customer,
 			Username:     v.Username,
 			Password:     string(hashedPassword),
-			Pin:          v.Pin,
+			Pin:          string(hashedPin),
 			DateCreated:  time.Now(),
 			DateModified: time.Now(),
 			CreatedBy:    1,
