@@ -15,7 +15,7 @@ type Customer_credentials struct {
 	Customer     *Customers `orm:"rel(fk)"`
 	Username     string     `orm:"size(255)"`
 	Password     string     `orm:"size(255)"`
-	Pin          string     `orm:"size(10)"`
+	Pin          string     `orm:"size(255)"`
 	DateCreated  time.Time  `orm:"type(datetime)"`
 	DateModified time.Time  `orm:"type(datetime)"`
 	CreatedBy    int
