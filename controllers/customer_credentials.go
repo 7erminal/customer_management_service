@@ -245,7 +245,7 @@ func (c *Customer_credentialsController) Put() {
 		ccredential := models.Customer_credentials{
 			Id:           customerC.Id,
 			Customer:     &customer,
-			Username:     v.Username,
+			Username:     customerC.Username,
 			Password:     string(hashedPassword),
 			Pin:          string(hashedPin),
 			DateCreated:  time.Now(),
