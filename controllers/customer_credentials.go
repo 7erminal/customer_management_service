@@ -197,16 +197,16 @@ func (c *Customer_credentialsController) GetAll() {
 // @Title Put
 // @Description update the Customer_credentials
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	requests.CustomerCredentialUpdateRequestDTO	true		"body for Customer_credentials content"
+// @Param	body		body 	requests.UpdatePinRequestDTO	true		"body for Customer_credentials content"
 // @Success 200 {object} models.Customer_credentials
 // @Failure 403 :customerId is not int
-// @router /update-customer-credential/:customerId [put]
+// @router /update-customer-pin/:customerId [put]
 func (c *Customer_credentialsController) Put() {
 	idStr := c.Ctx.Input.Param(":customerId")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	// v := models.Customer_credentials{Id: id}
 
-	var v requests.CustomerCredentialUpdateRequestDTO
+	var v requests.UpdatePinRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
 	logs.Info("Adding customer credential for customer ID: ", idStr)
@@ -217,18 +217,6 @@ func (c *Customer_credentialsController) Put() {
 	customer := models.Customers{CustomerId: id}
 
 	if customerC, err := models.GetCustomer_credentialsByCustomerId(customer); err == nil {
-
-		hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
-		if errr != nil {
-			logs.Error("Error hashing password: %v", errr)
-			c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
-				StatusCode: 500,
-				StatusDesc: "Internal Server Error",
-				Result:     "Error hashing password",
-			}
-			c.Ctx.Output.SetStatus(500)
-			return
-		}
 
 		hashedPin, errr := bcrypt.GenerateFromPassword([]byte(v.Pin), 8)
 		if errr != nil {
@@ -246,7 +234,7 @@ func (c *Customer_credentialsController) Put() {
 			Id:           customerC.Id,
 			Customer:     &customer,
 			Username:     customerC.Username,
-			Password:     string(hashedPassword),
+			Password:     customerC.Password,
 			Pin:          string(hashedPin),
 			DateCreated:  time.Now(),
 			DateModified: time.Now(),

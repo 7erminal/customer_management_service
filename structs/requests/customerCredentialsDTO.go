@@ -13,6 +13,17 @@ type CustomerCredentialUpdateRequestDTO struct {
 	Pin      string
 }
 
+type UpdatePinRequestDTO struct {
+	Username string
+	Pin      string
+}
+
+type ChangePinRequestDTO struct {
+	Username string
+	OldPin   string
+	NewPin   string
+}
+
 type ValidatePin struct {
 	Username string
 	Password string
