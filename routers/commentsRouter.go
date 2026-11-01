@@ -136,7 +136,7 @@ func init() {
     beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"] = append(beego.GlobalControllerRouter["customer_management_service/controllers:Customer_credentialsController"],
         beego.ControllerComments{
             Method: "Put",
-            Router: `/update-customer-credential/:customerId`,
+            Router: `/update-customer-pin/:customerId`,
             AllowHTTPMethods: []string{"put"},
             MethodParams: param.Make(),
             Filters: nil,
