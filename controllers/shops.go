@@ -52,6 +52,7 @@ func (c *ShopsController) Post() {
 		ShopAssistantNumber: req.AssistantNumber,
 		CreatedBy:           req.CreatedBy,
 		ModifiedBy:          req.CreatedBy,
+		Active:              req.Active,
 	}
 	if _, err := models.AddShops(&v); err == nil {
 		c.Ctx.Output.SetStatus(201)

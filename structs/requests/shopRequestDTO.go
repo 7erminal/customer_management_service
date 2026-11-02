@@ -9,6 +9,7 @@ type ShopRequest struct {
 	Location        string
 	AssistantName   string
 	AssistantNumber string
+	Active          int
 	CreatedBy       string
 }
 
