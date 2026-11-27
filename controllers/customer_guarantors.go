@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"encoding/json"
@@ -9,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/beego/beego/v2/core/logs"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -36,19 +36,22 @@ func (c *Customer_guarantorsController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *Customer_guarantorsController) Post() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	var req requests.AddCustomerGuarantorRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	customerId, _ := strconv.ParseInt(req.CustomerId, 10, 64)
+	log.Info("Adding customer guarantor", "customer_id", customerId)
 	customer := models.Customers{CustomerId: customerId}
 	var v models.Customer_guarantors = models.Customer_guarantors{Name: req.Name, Contact: req.PhoneNumber, Customer: &customer, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: req.AddedBy, ModifiedBy: req.AddedBy}
-	if _, err := models.AddCustomer_guarantors(&v); err == nil {
+	if _, err := models.AddCustomer_guarantorsWithCtx(ctx, &v); err == nil {
 		c.Ctx.Output.SetStatus(200)
+		log.Info("Customer guarantor created", "customer_guarantor_id", v.CustomerGuarantorId, "customer_id", customerId)
 		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: &v, StatusDesc: "Customer guarantor created successfully"}
 		c.Data["json"] = resp
 	} else {
 		// c.Data["json"] = err.Error()
-		logs.Info("Error adding customer guarantor: ", err)
-		logs.Error("An error occurred adding customer ", err.Error())
+		log.Error("Error adding customer guarantor", "customer_id", customerId, "error", err.Error())
 		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not created"}
 		c.Data["json"] = resp
 	}
@@ -146,6 +149,8 @@ func (c *Customer_guarantorsController) GetAll() {
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *Customer_guarantorsController) Put() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	var req requests.EditCustomerGuarantorRequestDTO
@@ -154,23 +159,22 @@ func (c *Customer_guarantorsController) Put() {
 	name := c.Ctx.Input.Query("Name")
 	phoneNumber := c.Ctx.Input.Query("PhoneNumber")
 
-	if cust, err := models.GetCustomer_guarantorsById(id); err == nil {
+	if cust, err := models.GetCustomer_guarantorsByIdWithCtx(ctx, id); err == nil {
 		v := models.Customer_guarantors{CustomerGuarantorId: id, Name: name, Contact: phoneNumber, Customer: cust.Customer, ModifiedBy: req.ModifiedBy, DateModified: time.Now()}
 
-		if err := models.UpdateCustomer_guarantorsById(&v); err == nil {
+		if err := models.UpdateCustomer_guarantorsByIdWithCtx(ctx, &v); err == nil {
 			// c.Data["json"] = "OK"
-			logs.Info("Customer guarantor updated successfully")
+			log.Info("Customer guarantor updated", "customer_guarantor_id", id)
 			var resp = models.CustomerGuarantorResponseDTO{StatusCode: 200, CustomerGuarantor: &v, StatusDesc: "Customer guarantor updated successfully"}
 			c.Data["json"] = resp
 		} else {
-			logs.Error("An error occurred updating customer ", err.Error())
+			log.Error("Error updating customer guarantor", "customer_guarantor_id", id, "error", err.Error())
 			// c.Data["json"] = err.Error()
 			var resp = models.CustomerGuarantorResponseDTO{StatusCode: 604, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not updated"}
 			c.Data["json"] = resp
 		}
 	} else {
-		logs.Error("Customer guarantor not found with id: ", id)
-		logs.Error("An error occurred retrieving customer guarantor ", err.Error())
+		log.Error("Customer guarantor not found", "customer_guarantor_id", id, "error", err.Error())
 		var resp = models.CustomerGuarantorResponseDTO{StatusCode: 604, CustomerGuarantor: nil, StatusDesc: "Customer guarantor not found"}
 		c.Data["json"] = resp
 	}

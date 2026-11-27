@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"context"
+
 	"customer_management_service/controllers/functions"
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -60,9 +63,11 @@ func (c *UsersController) URLMapping() {
 // @Failure 403 body is empty
 // @router /2/sign-up [post]
 func (c *UsersController) SignUp2() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	var v requests.SignUpCredDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	logs.Info("Received ", v)
+	log.Info("Received sign-up request")
 
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 
@@ -70,11 +75,7 @@ func (c *UsersController) SignUp2() {
 	application := c.Ctx.Input.Header("Application")
 
 	if errr == nil {
-		logs.Debug(hashedPassword)
-
 		v.Password = string(hashedPassword)
-
-		logs.Debug("Sending", v.Password)
 
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
@@ -93,10 +94,10 @@ func (c *UsersController) SignUp2() {
 		CreatedBy:    v.AddedBy,
 		ModifiedBy:   v.AddedBy}
 
-	if _, err := models.AddUsers(&addUserModel); err == nil {
+	if _, err := models.AddUsersWithCtx(ctx, &addUserModel); err == nil {
 		c.Ctx.Output.SetStatus(201)
 
-		logs.Debug("Returned user A is", addUserModel)
+		log.Info("User created", "user_id", addUserModel.UserId)
 
 		// id, _ := strconv.ParseInt(idStr, 0, 64)
 		// v, err := models.GetUsersById(r)
@@ -109,7 +110,6 @@ func (c *UsersController) SignUp2() {
 			var resp = responses.UserResponseDTO{StatusCode: 601, Result: nil, StatusDesc: "Error fetching user"}
 			c.Data["json"] = resp
 		} else {
-			logs.Debug("Returned user B is", v)
 
 			// Shop here will be amended to cater for the shop that the customer is registering for
 
@@ -123,7 +123,7 @@ func (c *UsersController) SignUp2() {
 				ModifiedBy:   v.AddedBy,
 			}
 
-			if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
+			if _, err := models.AddUserExtraDetailsWithCtx(ctx, &userDetails); err == nil {
 				// Check application and register
 				// If application is rides then create an account
 				// Formulate request to send to create account
@@ -138,7 +138,7 @@ func (c *UsersController) SignUp2() {
 					c.Data["json"] = resp
 				} else {
 					addUserModel.UserDetails = &userDetails
-					if err := models.UpdateUsersById(&addUserModel); err == nil {
+					if err := models.UpdateUsersByIdWithCtx(ctx, &addUserModel); err == nil {
 
 						// userResp := responses.UserResp{
 						// 	UserId:        v.UserId,
@@ -269,9 +269,11 @@ func (c *UsersController) SignUp2() {
 // @Failure 403 body is empty
 // @router /sign-up [post]
 func (c *UsersController) SignUp() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	var v requests.SignUpDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	logs.Info("Received ", v)
+	log.Info("Received sign-up request")
 
 	// authorization := c.Ctx.Input.Header("Authorization")
 	// application := c.Ctx.Input.Header("Application")
@@ -279,11 +281,7 @@ func (c *UsersController) SignUp() {
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 
 	if errr == nil {
-		logs.Debug(hashedPassword)
-
 		v.Password = string(hashedPassword)
-
-		logs.Debug("Sending", v.Password)
 
 		// models.Agents{AgentName: v.AgentName, BranchId: v.BranchId, IdType: v.IdType, IdNumber: v.IdNumber, IsVerified: false, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: c_by, ModifiedBy: c_by}
 	}
@@ -311,7 +309,7 @@ func (c *UsersController) SignUp() {
 		proceed = true
 	}
 
-	if _, err := models.GetUsersByUsername(v.Email); err != nil && proceed {
+	if _, err := models.GetUsersByUsernameWithCtx(ctx, v.Email); err != nil && proceed {
 		logs.Debug("About to debug")
 
 		proceed = false
@@ -379,10 +377,10 @@ func (c *UsersController) SignUp() {
 				Username:     v.Username,
 			}
 
-			if _, err := models.AddUsers(&addUserModel); err == nil {
+			if _, err := models.AddUsersWithCtx(ctx, &addUserModel); err == nil {
 				c.Ctx.Output.SetStatus(201)
 
-				logs.Debug("User is ", addUserModel)
+				log.Info("User created", "user_id", addUserModel.UserId)
 
 				// logs.Debug("Returned user is", r)
 
@@ -416,7 +414,7 @@ func (c *UsersController) SignUp() {
 				}
 
 				logs.Info("User details add after")
-				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
+				if _, err := models.AddUserExtraDetailsWithCtx(ctx, &userDetails); err == nil {
 					logs.Info("Successfully added user extra details")
 					c.Ctx.Output.SetStatus(200)
 
@@ -425,7 +423,7 @@ func (c *UsersController) SignUp() {
 					// Formulate request to send to create account
 
 					addUserModel.UserDetails = &userDetails
-					if err := models.UpdateUsersById(&addUserModel); err == nil {
+					if err := models.UpdateUsersByIdWithCtx(ctx, &addUserModel); err == nil {
 						logs.Info("User found and verified....sending user data")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
@@ -811,6 +809,7 @@ func (c *UsersController) VerifyUser() {
 // @Failure 403 body is empty
 // @router /invite-user [post]
 func (c *UsersController) InviteUser() {
+	ctx := c.Ctx.Request.Context()
 	var fields []string
 	var sortby []string
 	var order []string
@@ -820,13 +819,14 @@ func (c *UsersController) InviteUser() {
 
 	var v requests.RegisterInviteRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	logs.Info("Received ", v)
+	log := logging.For(ctx)
+	log.Info("Received invite request")
 
-	if _, err := models.GetUsersByUsername(v.Email); err != nil {
+	if _, err := models.GetUsersByUsernameWithCtx(ctx, v.Email); err != nil {
 		logs.Info("User not found")
 		proceed := false
 		if uis, errr := models.GetAllUserInvitesByEmail(v.Email, query, fields, sortby, order, offset, limit); errr == nil {
-			logs.Info("User invites returned ", uis)
+			log.Info("Existing user invites returned", "count", len(uis))
 			proceed = true
 			for _, ui := range uis {
 				m := ui.(models.UserInvites)
@@ -860,13 +860,13 @@ func (c *UsersController) InviteUser() {
 			statCode := 608
 			tokenResp := functions.GenerateToken(&c.Controller, v.Email, v.Role)
 
-			logs.Info("Token resp is ", tokenResp.Value.Token)
+			log.Info("Token response received")
 
 			i, _ := strconv.ParseInt(v.InviteBy, 10, 64)
 			status := "PENDING"
 
 			inviteByName := ""
-			inviteBy, err := models.GetUsersById(i)
+			inviteBy, err := models.GetUsersByIdWithCtx(ctx, i)
 
 			if err != nil {
 				message = "User not found"
@@ -878,20 +878,18 @@ func (c *UsersController) InviteUser() {
 
 			role, err := models.GetRolesById(roleid)
 			if err != nil {
-				logs.Error("Role provided not found for token ", tokenResp.Value.Token)
+				log.Error("Role not found for invite")
 				message = "Role provided not found"
 			} else {
 				proceed = true
 			}
 
 			if proceed {
-				logs.Info("User invite by is ", inviteBy)
-				logs.Info("Email to invite is ", v.Email)
-				logs.Info("Role to invite is ", role)
+				log.Info("Creating user invite")
 				proceed = false
 				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: v.InviteBy, ModifiedBy: v.InviteBy}
 
-				ui, err := models.AddUserInvites(&userInvite)
+				ui, err := models.AddUserInvitesWithCtx(ctx, &userInvite)
 
 				if err != nil {
 					logs.Error("Error response received when adding invite ", err.Error())
@@ -903,8 +901,7 @@ func (c *UsersController) InviteUser() {
 				}
 
 				if proceed {
-					logs.Info("User invite added ", ui)
-					logs.Info("Token to be sent is ", tokenResp.Value.Token.Token)
+					log.Info("User invite added", "invite_id", ui)
 
 					// Split inviteByName by "|" and concatenate with a space
 					name := strings.Join(strings.Split(inviteByName, "|"), " ")
@@ -918,7 +915,7 @@ func (c *UsersController) InviteUser() {
 						message_ = strings.Replace(message_, placeholder, formattedLink, -1)
 					}
 
-					go functions.SendEmail(v.Email, v.Subject, message_)
+					go functions.SendEmail(context.WithoutCancel(ctx), v.Email, v.Subject, message_)
 
 					logs.Info("Email sent")
 				}
@@ -951,15 +948,16 @@ func (c *UsersController) InviteUser() {
 func (c *UsersController) VerifyInvite() {
 	var v requests.StringRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	logs.Info("Received ", v)
+	log := logging.For(c.Ctx.Request.Context())
+	log.Info("Received invite verification request")
 
+	ctx := c.Ctx.Request.Context()
 	statusCode := 608
 	message := "An error occurred"
 
 	if token, err := models.GetUserTokensByToken(v.Value); err == nil {
-		logs.Info("Token fetched from DB")
-		logs.Info("Token expiry ")
-		if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
+		log.Info("Token fetched from DB")
+		if userInvite, err := models.GetUserInvitesByTokenWithCtx(ctx, token); err == nil {
 			if token.ExpiryDate.After(time.Now()) {
 				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
 				if verifyTokenResp.StatusCode == 200 {
@@ -970,12 +968,11 @@ func (c *UsersController) VerifyInvite() {
 						statusCode = 201
 						message = "Token has been verified already"
 					}
-					logs.Info("Token verified successfully ", verifyTokenResp.Value)
-					logs.Info("User who invited is ", userInvite.InvitedBy)
+					log.Info("Invite token verified successfully")
 
 					inviteByStr := userInvite.InvitedBy.UserId
 
-					logs.Info("Invite by user ID is ", inviteByStr)
+					log.Info("Invite by user ID", "invite_by_user_id", inviteByStr)
 
 					var tokenResp responses.TokenDestructureResponseDTO = responses.TokenDestructureResponseDTO{
 						TokenId:  verifyTokenResp.Value.TokenId,
@@ -997,8 +994,8 @@ func (c *UsersController) VerifyInvite() {
 				status := "EXPIRED"
 				userInvite.Status = status
 
-				_ = models.UpdateUserInvitesById(userInvite)
-				logs.Error("Token expired ")
+				_ = models.UpdateUserInvitesByIdWithCtx(ctx, userInvite)
+				log.Error("Token expired ")
 				statusCode = 608
 				message = "Token expired"
 				var resp = responses.InviteDecodeResponseDTO{StatusCode: statusCode, Value: nil, StatusDesc: message}

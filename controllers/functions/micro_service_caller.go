@@ -2,7 +2,9 @@ package functions
 
 import (
 	"bytes"
+	"context"
 	"customer_management_service/api"
+	"customer_management_service/logging"
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"io"
@@ -29,9 +31,11 @@ func setControllerJSON(c *beego.Controller, value interface{}) {
 }
 
 func GetCountryWithId(c *beego.Controller, countryId string) (responses.CountryResponseDTO, error) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, _ := beego.AppConfig.String("systemBaseUrl")
 
-	logs.Info("Request to get Country: ", countryId)
+	log.Info("Request to get Country", "country_id", countryId)
 
 	request := api.NewRequest(
 		host,
@@ -43,24 +47,25 @@ func GetCountryWithId(c *beego.Controller, countryId string) (responses.CountryR
 		Request: request,
 		Type_:   "params",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("System service request failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CountryResponseDTO{}, err
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("Reading System service response failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CountryResponseDTO{}, err
 	}
 
 	var prettyJSON bytes.Buffer
 	if err := json.Indent(&prettyJSON, read, "", "  "); err != nil {
-		logs.Info("Raw response received is ", string(read))
+		log.Info("Raw response received")
 	} else {
-		logs.Info("Raw response received is \n", prettyJSON.String())
+		log.Info("Raw response received", "bytes", len(read))
 	}
 	// data := map[string]interface{}{}
 	// var dataOri responses.UserOriResponseDTO
@@ -71,16 +76,18 @@ func GetCountryWithId(c *beego.Controller, countryId string) (responses.CountryR
 	}
 	setControllerJSON(c, data)
 
-	logs.Info("Resp is ", data)
+	log.Info("System service response received")
 	// logs.Info("Resp is ", data.User.Branch.Country.DefaultCurrency)
 
 	return data, nil
 }
 
 func GetCountryWithCode(c *beego.Controller, countryCode string) (responses.CountryResponseDTO, error) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, _ := beego.AppConfig.String("systemBaseUrl")
 
-	logs.Info("Request to get Country: ", countryCode)
+	log.Info("Request to get Country", "country_code", countryCode)
 
 	request := api.NewRequest(
 		host,
@@ -92,24 +99,25 @@ func GetCountryWithCode(c *beego.Controller, countryCode string) (responses.Coun
 		Request: request,
 		Type_:   "params",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("System service request failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CountryResponseDTO{}, err
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("Reading System service response failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CountryResponseDTO{}, err
 	}
 
 	var prettyJSON bytes.Buffer
 	if err := json.Indent(&prettyJSON, read, "", "  "); err != nil {
-		logs.Info("Raw response received is ", string(read))
+		log.Info("Raw response received")
 	} else {
-		logs.Info("Raw response received is \n", prettyJSON.String())
+		log.Info("Raw response received", "bytes", len(read))
 	}
 	// data := map[string]interface{}{}
 	// var dataOri responses.UserOriResponseDTO
@@ -120,16 +128,18 @@ func GetCountryWithCode(c *beego.Controller, countryCode string) (responses.Coun
 	}
 	setControllerJSON(c, data)
 
-	logs.Info("Resp is ", data)
+	log.Info("System service response received")
 	// logs.Info("Resp is ", data.User.Branch.Country.DefaultCurrency)
 
 	return data, nil
 }
 
 func GetCurrencyWithName(c *beego.Controller, currencyName string) (responses.CurrencyResponseDTO, error) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, _ := beego.AppConfig.String("systemBaseUrl")
 
-	logs.Info("Request to get Currency: ", currencyName)
+	log.Info("Request to get Currency", "currency_name", currencyName)
 
 	request := api.NewRequest(
 		host,
@@ -141,24 +151,25 @@ func GetCurrencyWithName(c *beego.Controller, currencyName string) (responses.Cu
 		Request: request,
 		Type_:   "params",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("System service request failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CurrencyResponseDTO{}, err
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("Reading System service response failed", "error", err.Error())
 		setControllerJSON(c, err.Error())
 		return responses.CurrencyResponseDTO{}, err
 	}
 
 	var prettyJSON bytes.Buffer
 	if err := json.Indent(&prettyJSON, read, "", "  "); err != nil {
-		logs.Info("Raw response received is ", string(read))
+		log.Info("Raw response received")
 	} else {
-		logs.Info("Raw response received is \n", prettyJSON.String())
+		log.Info("Raw response received", "bytes", len(read))
 	}
 	// data := map[string]interface{}{}
 	// var dataOri responses.UserOriResponseDTO
@@ -169,7 +180,7 @@ func GetCurrencyWithName(c *beego.Controller, currencyName string) (responses.Cu
 	}
 	setControllerJSON(c, data)
 
-	logs.Info("Resp is ", data)
+	log.Info("System service response received")
 	// logs.Info("Resp is ", data.User.Branch.Country.DefaultCurrency)
 
 	return data, nil

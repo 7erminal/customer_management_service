@@ -2,19 +2,21 @@ package functions
 
 import (
 	"customer_management_service/api"
+	"customer_management_service/logging"
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"io"
 	"strconv"
 
-	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
 func RegisterAccount(c *beego.Controller, userid int64) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, err := beego.AppConfig.String("accountsBaseUrl")
 
-	logs.Info("Sending user ID ", userid)
+	log.Info("Sending user ID to accounts service", "user_id", userid)
 
 	request := api.NewRequest(
 		host,
@@ -26,39 +28,31 @@ func RegisterAccount(c *beego.Controller, userid int64) {
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("accounts service request failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("reading accounts service response failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 
-	logs.Info("Raw response received is ", res)
-	// data := map[string]interface{}{}
 	var data responses.AccountDTO
 	json.Unmarshal(read, &data)
 	c.Data["json"] = data
-
-	// logs.Info("Response received ", c.Data["json"])
-	// logs.Info("Access token ", data["access_token"])
-	// logs.Info("Expires in ", data["expires_in"])
-	// logs.Info("Scope is ", data["scope"])
-	// logs.Info("Token Type is ", data["token_type"])
-	// logs.Info("Response received ", c.Data["json"])
-	// logs.Info("Access token ", data.Access_token)
-	// logs.Info("Expires in ", data.Expires_in)
-	// logs.Info("Scope is ", data.Scope)
-	// logs.Info("Token Type is ", data.Token_type)
 }
 
 func GenerateToken(c *beego.Controller, email string, role string) (resp responses.InviteHashResponseDTO) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, _ := beego.AppConfig.String("authenticationBaseUrl")
 
-	logs.Info("About to generate token ", email)
+	log.Info("About to generate invite token")
 
 	request := api.NewRequest(
 		host,
@@ -71,19 +65,20 @@ func GenerateToken(c *beego.Controller, email string, role string) (resp respons
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("authentication service request failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("reading authentication service response failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 
-	logs.Info("Raw response received is ", res)
-	// data := map[string]interface{}{}
 	var data responses.InviteHashResponseDTO
 	json.Unmarshal(read, &data)
 	c.Data["json"] = data
@@ -92,9 +87,11 @@ func GenerateToken(c *beego.Controller, email string, role string) (resp respons
 }
 
 func VerifyUserToken(c *beego.Controller, token string, nonce string, email string) (resp responses.InviteDecodeResponseDTO) {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	host, _ := beego.AppConfig.String("authenticationBaseUrl")
 
-	logs.Info("About to verify token ", token)
+	log.Info("About to verify invite token")
 
 	request := api.NewRequest(
 		host,
@@ -108,19 +105,20 @@ func VerifyUserToken(c *beego.Controller, token string, nonce string, email stri
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequestWithContext(ctx)
 	if err != nil {
-		logs.Error("client.Error: %v", err)
+		log.Error("authentication service request failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error("reading authentication service response failed", "error", err.Error())
 		c.Data["json"] = err.Error()
+		return
 	}
 
-	logs.Info("Raw response received is ", res)
-	// data := map[string]interface{}{}
 	var data responses.InviteDecodeResponseDTO
 	json.Unmarshal(read, &data)
 	c.Data["json"] = data

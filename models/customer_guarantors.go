@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -28,17 +29,29 @@ func init() {
 // AddCustomer_guarantors insert a new Customer_guarantors into database and returns
 // last inserted Id on success.
 func AddCustomer_guarantors(m *Customer_guarantors) (id int64, err error) {
+	return AddCustomer_guarantorsWithCtx(context.Background(), m)
+}
+
+// AddCustomer_guarantorsWithCtx is AddCustomer_guarantors with context
+// propagation (tracing IDs).
+func AddCustomer_guarantorsWithCtx(ctx context.Context, m *Customer_guarantors) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetCustomer_guarantorsById retrieves Customer_guarantors by Id. Returns error if
 // Id doesn't exist
 func GetCustomer_guarantorsById(id int64) (v *Customer_guarantors, err error) {
+	return GetCustomer_guarantorsByIdWithCtx(context.Background(), id)
+}
+
+// GetCustomer_guarantorsByIdWithCtx is GetCustomer_guarantorsById with
+// context propagation.
+func GetCustomer_guarantorsByIdWithCtx(ctx context.Context, id int64) (v *Customer_guarantors, err error) {
 	o := orm.NewOrm()
 	v = &Customer_guarantors{CustomerGuarantorId: id}
-	if err = o.QueryTable(new(Customer_guarantors)).Filter("CustomerGuarantorId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Customer_guarantors)).Filter("CustomerGuarantorId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -121,12 +134,18 @@ func GetAllCustomer_guarantors(query map[string]string, fields []string, sortby 
 // UpdateCustomer_guarantors updates Customer_guarantors by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateCustomer_guarantorsById(m *Customer_guarantors) (err error) {
+	return UpdateCustomer_guarantorsByIdWithCtx(context.Background(), m)
+}
+
+// UpdateCustomer_guarantorsByIdWithCtx is UpdateCustomer_guarantorsById
+// with context propagation.
+func UpdateCustomer_guarantorsByIdWithCtx(ctx context.Context, m *Customer_guarantors) (err error) {
 	o := orm.NewOrm()
 	v := Customer_guarantors{CustomerGuarantorId: m.CustomerGuarantorId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
 			fmt.Println("Number of records updated in database:", num)
 		}
 	}
