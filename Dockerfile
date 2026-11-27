@@ -1,6 +1,6 @@
 # Base image is in https://registry.hub.docker.com/_/golang/
 # Refer to https://blog.golang.org/docker for usage
-FROM golang:1.18-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 # ENV GOPATH /go
 

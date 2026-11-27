@@ -55,7 +55,7 @@ func (c *Identification_typesController) Post() {
 func (c *Identification_typesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetIdentification_typesById(id)
+	v, err := models.GetIdentification_typesByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {

@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -32,17 +32,25 @@ func init() {
 // AddUserInvites insert a new UserInvites into database and returns
 // last inserted Id on success.
 func AddUserInvites(m *UserInvites) (id int64, err error) {
+	return AddUserInvitesWithContext(context.Background(), m)
+}
+
+func AddUserInvitesWithContext(ctx context.Context, m *UserInvites) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetUserInvitesById retrieves UserInvites by Id. Returns error if
 // Id doesn't exist
 func GetUserInvitesById(id int64) (v *UserInvites, err error) {
+	return GetUserInvitesByIdWithContext(context.Background(), id)
+}
+
+func GetUserInvitesByIdWithContext(ctx context.Context, id int64) (v *UserInvites, err error) {
 	o := orm.NewOrm()
 	v = &UserInvites{UserInviteId: id}
-	if err = o.QueryTable(new(UserInvites)).Filter("UserInviteId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(UserInvites)).Filter("UserInviteId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -51,9 +59,13 @@ func GetUserInvitesById(id int64) (v *UserInvites, err error) {
 // GetUserInvitesByTokenId retrieves UserInvites by Id. Returns error if
 // Id doesn't exist
 func GetUserInvitesByToken(token *UserTokens) (v *UserInvites, err error) {
+	return GetUserInvitesByTokenWithContext(context.Background(), token)
+}
+
+func GetUserInvitesByTokenWithContext(ctx context.Context, token *UserTokens) (v *UserInvites, err error) {
 	o := orm.NewOrm()
 	v = &UserInvites{InvitationToken: token}
-	if err = o.QueryTable(new(UserInvites)).Filter("InvitationToken", token).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(UserInvites)).Filter("InvitationToken", token).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -62,9 +74,13 @@ func GetUserInvitesByToken(token *UserTokens) (v *UserInvites, err error) {
 // GetUserInvitesByTokenId retrieves UserInvites by Id. Returns error if
 // Id doesn't exist
 func GetUserInvitesByEmail(email string) (v []*UserInvites, err error) {
+	return GetUserInvitesByEmailWithContext(context.Background(), email)
+}
+
+func GetUserInvitesByEmailWithContext(ctx context.Context, email string) (v []*UserInvites, err error) {
 	o := orm.NewOrm()
 	v = []*UserInvites{}
-	if _, err := o.QueryTable(new(UserInvites)).Filter("Email", email).RelatedSel().All(&v); err == nil {
+	if _, err := o.QueryTable(new(UserInvites)).Filter("Email", email).RelatedSel().AllWithCtx(ctx, &v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -246,13 +262,17 @@ func GetAllUserInvites(query map[string]string, fields []string, sortby []string
 // UpdateUserInvites updates UserInvites by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateUserInvitesById(m *UserInvites) (err error) {
+	return UpdateUserInvitesByIdWithContext(context.Background(), m)
+}
+
+func UpdateUserInvitesByIdWithContext(ctx context.Context, m *UserInvites) (err error) {
 	o := orm.NewOrm()
 	v := UserInvites{UserInviteId: m.UserInviteId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
+			_ = num
 		}
 	}
 	return
@@ -267,7 +287,7 @@ func DeleteUserInvites(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&UserInvites{UserInviteId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

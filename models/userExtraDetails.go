@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -29,17 +29,25 @@ func init() {
 // AddCustomers insert a new Customers into database and returns
 // last inserted Id on success.
 func AddUserExtraDetails(m *UserExtraDetails) (id int64, err error) {
+	return AddUserExtraDetailsWithContext(context.Background(), m)
+}
+
+func AddUserExtraDetailsWithContext(ctx context.Context, m *UserExtraDetails) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetCustomersById retrieves Customers by Id. Returns error if
 // Id doesn't exist
 func GetUserExtraDetailsById(id int64) (v *UserExtraDetails, err error) {
+	return GetUserExtraDetailsByIdWithContext(context.Background(), id)
+}
+
+func GetUserExtraDetailsByIdWithContext(ctx context.Context, id int64) (v *UserExtraDetails, err error) {
 	o := orm.NewOrm()
 	v = &UserExtraDetails{UserDetailsId: id}
-	if err = o.QueryTable(new(UserExtraDetails)).Filter("UserDetailsId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(UserExtraDetails)).Filter("UserDetailsId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -48,11 +56,15 @@ func GetUserExtraDetailsById(id int64) (v *UserExtraDetails, err error) {
 // GetCustomersByUserId retrieves Customers by User Id. Returns error if
 // Id doesn't exist
 func GetUserExtraDetailsByUser(user *Users) (v *UserExtraDetails, err error) {
+	return GetUserExtraDetailsByUserWithContext(context.Background(), user)
+}
+
+func GetUserExtraDetailsByUserWithContext(ctx context.Context, user *Users) (v *UserExtraDetails, err error) {
 	o := orm.NewOrm()
 	u := &Users{UserId: user.UserId}
-	if err = o.QueryTable(new(Users)).Filter("UserId", user.UserId).RelatedSel().One(u); err == nil {
+	if err = o.QueryTable(new(Users)).Filter("UserId", user.UserId).RelatedSel().OneWithCtx(ctx, u); err == nil {
 		v = u.UserDetails
-		if err = o.QueryTable(new(UserExtraDetails)).Filter("User", u).RelatedSel().One(v); err == nil {
+		if err = o.QueryTable(new(UserExtraDetails)).Filter("User", u).RelatedSel().OneWithCtx(ctx, v); err == nil {
 			return v, nil
 		}
 	}
@@ -170,13 +182,17 @@ func GetAllUserExtraDetails(query map[string]string, fields []string, sortby []s
 // UpdateCustomers updates Customers by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateUserExtraDetailsById(m *UserExtraDetails) (err error) {
+	return UpdateUserExtraDetailsByIdWithContext(context.Background(), m)
+}
+
+func UpdateUserExtraDetailsByIdWithContext(ctx context.Context, m *UserExtraDetails) (err error) {
 	o := orm.NewOrm()
 	v := UserExtraDetails{UserDetailsId: m.UserDetailsId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
+			_ = num
 		}
 	}
 	return
@@ -191,7 +207,7 @@ func DeleteUserExtraDetails(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&UserExtraDetails{UserDetailsId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

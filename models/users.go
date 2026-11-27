@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -47,21 +47,29 @@ func init() {
 // AddUsers insert a new Users into database and returns
 // last inserted Id on success.
 func AddUsers(m *Users) (id int64, err error) {
+	return AddUsersWithContext(context.Background(), m)
+}
+
+func AddUsersWithContext(ctx context.Context, m *Users) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetUsersById retrieves Users by username. Returns error if
 // Id doesn't exist
 func GetUsersByUsername(username string) (v *Users, err error) {
+	return GetUsersByUsernameWithContext(context.Background(), username)
+}
+
+func GetUsersByUsernameWithContext(ctx context.Context, username string) (v *Users, err error) {
 	o := orm.NewOrm()
 	v = &Users{Email: username}
-	if err = o.QueryTable(new(Users)).Filter("Email", username).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Users)).Filter("Email", username).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
-	} else if err = o.QueryTable(new(Users)).Filter("PhoneNumber", username).RelatedSel().One(v); err == nil {
+	} else if err = o.QueryTable(new(Users)).Filter("PhoneNumber", username).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
-	} else if err = o.QueryTable(new(Users)).Filter("Username", username).RelatedSel().One(v); err == nil {
+	} else if err = o.QueryTable(new(Users)).Filter("Username", username).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 
@@ -71,9 +79,13 @@ func GetUsersByUsername(username string) (v *Users, err error) {
 // GetUsersById retrieves Users by Id. Returns error if
 // Id doesn't exist
 func GetUsersById(id int64) (v *Users, err error) {
+	return GetUsersByIdWithContext(context.Background(), id)
+}
+
+func GetUsersByIdWithContext(ctx context.Context, id int64) (v *Users, err error) {
 	o := orm.NewOrm()
 	v = &Users{UserId: id}
-	if err = o.QueryTable(new(Users)).Filter("UserId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Users)).Filter("UserId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -376,13 +388,17 @@ func GetAllUsersByBranch(branch *Branches, query map[string]string, fields []str
 // UpdateUsers updates Users by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateUsersById(m *Users) (err error) {
+	return UpdateUsersByIdWithContext(context.Background(), m)
+}
+
+func UpdateUsersByIdWithContext(ctx context.Context, m *Users) (err error) {
 	o := orm.NewOrm()
 	v := Users{UserId: m.UserId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
+			_ = num
 		}
 	}
 	return
@@ -397,7 +413,7 @@ func DeleteUsers(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Users{UserId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

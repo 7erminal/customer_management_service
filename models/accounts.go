@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -30,17 +30,25 @@ func init() {
 // AddAccounts insert a new Accounts into database and returns
 // last inserted Id on success.
 func AddAccounts(m *Accounts) (id int64, err error) {
+	return AddAccountsWithContext(context.Background(), m)
+}
+
+func AddAccountsWithContext(ctx context.Context, m *Accounts) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetAccountsById retrieves Accounts by Id. Returns error if
 // Id doesn't exist
 func GetAccountsById(id int64) (v *Accounts, err error) {
+	return GetAccountsByIdWithContext(context.Background(), id)
+}
+
+func GetAccountsByIdWithContext(ctx context.Context, id int64) (v *Accounts, err error) {
 	o := orm.NewOrm()
 	v = &Accounts{AccountId: id}
-	if err = o.QueryTable(new(Accounts)).Filter("AccountId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Accounts)).Filter("AccountId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -123,13 +131,17 @@ func GetAllAccounts(query map[string]string, fields []string, sortby []string, o
 // UpdateAccounts updates Accounts by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateAccountsById(m *Accounts) (err error) {
+	return UpdateAccountsByIdWithContext(context.Background(), m)
+}
+
+func UpdateAccountsByIdWithContext(ctx context.Context, m *Accounts) (err error) {
 	o := orm.NewOrm()
 	v := Accounts{AccountId: m.AccountId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
+			_ = num
 		}
 	}
 	return
@@ -144,7 +156,7 @@ func DeleteAccounts(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Accounts{AccountId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

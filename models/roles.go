@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -36,9 +36,13 @@ func AddRoles(m *Roles) (id int64, err error) {
 // GetRolesById retrieves Roles by Id. Returns error if
 // Id doesn't exist
 func GetRolesById(id int64) (v *Roles, err error) {
+	return GetRolesByIdWithContext(context.Background(), id)
+}
+
+func GetRolesByIdWithContext(ctx context.Context, id int64) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{RoleId: id}
-	if err = o.QueryTable(new(Roles)).Filter("RoleId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Roles)).Filter("RoleId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -47,9 +51,13 @@ func GetRolesById(id int64) (v *Roles, err error) {
 // GetRolesById retrieves Roles by Id. Returns error if
 // Id doesn't exist
 func GetRolesByName(roleName string) (v *Roles, err error) {
+	return GetRolesByNameWithContext(context.Background(), roleName)
+}
+
+func GetRolesByNameWithContext(ctx context.Context, roleName string) (v *Roles, err error) {
 	o := orm.NewOrm()
 	v = &Roles{Role: roleName}
-	if err = o.QueryTable(new(Roles)).Filter("Role", roleName).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Roles)).Filter("Role", roleName).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -138,7 +146,7 @@ func UpdateRolesById(m *Roles) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -153,7 +161,7 @@ func DeleteRoles(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Roles{RoleId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return
