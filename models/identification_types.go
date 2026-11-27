@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -36,9 +36,13 @@ func AddIdentification_types(m *Identification_types) (id int64, err error) {
 // GetIdentification_typesById retrieves Identification_types by Id. Returns error if
 // Id doesn't exist
 func GetIdentification_typesById(id int64) (v *Identification_types, err error) {
+	return GetIdentification_typesByIdWithContext(context.Background(), id)
+}
+
+func GetIdentification_typesByIdWithContext(ctx context.Context, id int64) (v *Identification_types, err error) {
 	o := orm.NewOrm()
 	v = &Identification_types{IdentificationTypeId: id}
-	if err = o.QueryTable(new(Identification_types)).Filter("IdentificationTypeId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Identification_types)).Filter("IdentificationTypeId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -47,9 +51,13 @@ func GetIdentification_typesById(id int64) (v *Identification_types, err error) 
 // GetIdentification_typesById retrieves Identification_types by Id. Returns error if
 // Id doesn't exist
 func GetIdentification_typesByCode(code string) (v *Identification_types, err error) {
+	return GetIdentification_typesByCodeWithContext(context.Background(), code)
+}
+
+func GetIdentification_typesByCodeWithContext(ctx context.Context, code string) (v *Identification_types, err error) {
 	o := orm.NewOrm()
 	v = &Identification_types{Code: code}
-	if err = o.QueryTable(new(Identification_types)).Filter("Code", code).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Identification_types)).Filter("Code", code).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -138,7 +146,7 @@ func UpdateIdentification_typesById(m *Identification_types) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -153,7 +161,7 @@ func DeleteIdentification_types(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Identification_types{IdentificationTypeId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

@@ -60,7 +60,7 @@ func (c *Customer_categoriesController) Post() {
 func (c *Customer_categoriesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetCustomer_categoriesById(id)
+	v, err := models.GetCustomer_categoriesByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {

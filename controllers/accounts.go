@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/internal/trace"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -38,9 +39,10 @@ func (c *AccountsController) Post() {
 	var q requests.CreateAccountRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
 
-	if us, err := models.GetUsersById(q.UserId); err == nil {
+	if us, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), q.UserId); err == nil {
 		var v models.Accounts = models.Accounts{UserId: q.UserId, AccountNumber: us.PhoneNumber, Balance: 0, BalanceBefore: 0, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1, Active: 1}
-		if _, err := models.AddAccounts(&v); err == nil {
+		if _, err := models.AddAccountsWithContext(c.Ctx.Request.Context(), &v); err == nil {
+			trace.Logger(c.Ctx.Request.Context(), trace.Service).Info("account created", "account_id", v.AccountId)
 			resp := responses.AccountDTO{StatusCode: 200, Account: &v, StatusDesc: "Account Successfully Added"}
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = resp
@@ -65,7 +67,7 @@ func (c *AccountsController) Post() {
 func (c *AccountsController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetAccountsById(id)
+	v, err := models.GetAccountsByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -150,7 +152,7 @@ func (c *AccountsController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v := models.Accounts{AccountId: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateAccountsById(&v); err == nil {
+	if err := models.UpdateAccountsByIdWithContext(c.Ctx.Request.Context(), &v); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()

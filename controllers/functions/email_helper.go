@@ -1,12 +1,12 @@
 package functions
 
 import (
+	"context"
+	"customer_management_service/internal/trace"
 	"net/smtp"
-
-	"github.com/beego/beego/v2/core/logs"
 )
 
-func SendEmail(email string, subject_ string, message string) {
+func SendEmail(ctx context.Context, email string, subject_ string, message string) {
 	// Create app password in gmail to use here
 	// auth := smtp.PlainAuth("", "bede.abbe@gmail.com", "psxglveajilrvisa", "smtp.gmail.com")
 	auth := smtp.PlainAuth("", "info@amcrentalsgh.com", "eeastbiqnvvjzyjb", "smtp.gmail.com")
@@ -25,7 +25,7 @@ func SendEmail(email string, subject_ string, message string) {
 
 	if err != nil {
 
-		logs.Debug(err)
+		trace.Logger(ctx, trace.Service).Error("email delivery failed")
 
 	}
 }

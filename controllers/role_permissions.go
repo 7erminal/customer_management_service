@@ -39,7 +39,7 @@ func (c *Role_permissionsController) Post() {
 	var v requests.RolePermissionRequest
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
-	if role, err := models.GetRolesById(v.Role); err == nil {
+	if role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), v.Role); err == nil {
 		if permission, err := models.GetPermissionsByCode(v.PermissionCode); err == nil {
 			if action, err := models.GetActionsByName(v.Action); err == nil {
 				var rolePermission models.Role_permissions = models.Role_permissions{Role: role, Permission: permission, Action: action, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}

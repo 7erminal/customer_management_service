@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -36,9 +36,13 @@ func AddCustomer_categories(m *Customer_categories) (id int64, err error) {
 // GetCustomer_categoriesById retrieves Customer_categories by Id. Returns error if
 // Id doesn't exist
 func GetCustomer_categoriesById(id int64) (v *Customer_categories, err error) {
+	return GetCustomer_categoriesByIdWithContext(context.Background(), id)
+}
+
+func GetCustomer_categoriesByIdWithContext(ctx context.Context, id int64) (v *Customer_categories, err error) {
 	o := orm.NewOrm()
 	v = &Customer_categories{CustomerCategoryId: id}
-	if err = o.QueryTable(new(Customer_categories)).Filter("CustomerCategoryId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Customer_categories)).Filter("CustomerCategoryId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -47,9 +51,13 @@ func GetCustomer_categoriesById(id int64) (v *Customer_categories, err error) {
 // GetCustomer_categoriesById retrieves Customer_categories by Id. Returns error if
 // Id doesn't exist
 func GetCustomer_categoriesByName(name string) (v *Customer_categories, err error) {
+	return GetCustomer_categoriesByNameWithContext(context.Background(), name)
+}
+
+func GetCustomer_categoriesByNameWithContext(ctx context.Context, name string) (v *Customer_categories, err error) {
 	o := orm.NewOrm()
 	v = &Customer_categories{Category: name}
-	if err = o.QueryTable(new(Customer_categories)).Filter("Category", name).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Customer_categories)).Filter("Category", name).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -138,7 +146,7 @@ func UpdateCustomer_categoriesById(m *Customer_categories) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -153,7 +161,7 @@ func DeleteCustomer_categories(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Customer_categories{CustomerCategoryId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

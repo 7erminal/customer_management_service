@@ -1,6 +1,6 @@
 module customer_management_service
 
-go 1.21
+go 1.22
 
 require github.com/beego/beego/v2 v2.1.6
 

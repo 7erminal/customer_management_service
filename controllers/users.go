@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"context"
 	"customer_management_service/controllers/functions"
+	"customer_management_service/internal/trace"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -84,7 +86,8 @@ func (c *UsersController) SignUp2() {
 	// Assign dob
 	var addUserModel = models.Users{Username: v.Username, UserType: 1, Password: string(hashedPassword), DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: 1, ModifiedBy: 1}
 
-	if _, err := models.AddUsers(&addUserModel); err == nil {
+	if _, err := models.AddUsersWithContext(c.Ctx.Request.Context(), &addUserModel); err == nil {
+		trace.Logger(c.Ctx.Request.Context(), trace.Service).Info("user created", "user_id", addUserModel.UserId)
 		c.Ctx.Output.SetStatus(201)
 
 		logs.Debug("Returned user A is", addUserModel)
@@ -114,7 +117,7 @@ func (c *UsersController) SignUp2() {
 				ModifiedBy:   1,
 			}
 
-			if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
+			if _, err := models.AddUserExtraDetailsWithContext(c.Ctx.Request.Context(), &userDetails); err == nil {
 				// Check application and register
 				// If application is rides then create an account
 				// Formulate request to send to create account
@@ -129,7 +132,7 @@ func (c *UsersController) SignUp2() {
 					c.Data["json"] = resp
 				} else {
 					addUserModel.UserDetails = &userDetails
-					if err := models.UpdateUsersById(&addUserModel); err == nil {
+					if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), &addUserModel); err == nil {
 
 						// userResp := responses.UserResp{
 						// 	UserId:        v.UserId,
@@ -215,7 +218,7 @@ func (c *UsersController) SignUp() {
 
 	roleId, _ := strconv.ParseInt(v.Role, 10, 64)
 
-	role, err := models.GetRolesById(roleId)
+	role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), roleId)
 
 	// logs.Info("Role in request is ", v.Role)
 
@@ -236,7 +239,7 @@ func (c *UsersController) SignUp() {
 		proceed = true
 	}
 
-	if _, err := models.GetUsersByUsername(v.Username); err != nil && proceed {
+	if _, err := models.GetUsersByUsernameWithContext(c.Ctx.Request.Context(), v.Username); err != nil && proceed {
 		logs.Debug("About to debug")
 
 		proceed = false
@@ -301,7 +304,8 @@ func (c *UsersController) SignUp() {
 				Username:     v.Username,
 			}
 
-			if _, err := models.AddUsers(&addUserModel); err == nil {
+			if _, err := models.AddUsersWithContext(c.Ctx.Request.Context(), &addUserModel); err == nil {
+				trace.Logger(c.Ctx.Request.Context(), trace.Service).Info("user created", "user_id", addUserModel.UserId)
 				c.Ctx.Output.SetStatus(201)
 
 				logs.Debug("User is ", addUserModel)
@@ -338,7 +342,7 @@ func (c *UsersController) SignUp() {
 				}
 
 				logs.Info("User details add after")
-				if _, err := models.AddUserExtraDetails(&userDetails); err == nil {
+				if _, err := models.AddUserExtraDetailsWithContext(c.Ctx.Request.Context(), &userDetails); err == nil {
 					logs.Info("Successfully added user extra details")
 					c.Ctx.Output.SetStatus(200)
 
@@ -351,7 +355,7 @@ func (c *UsersController) SignUp() {
 					}
 
 					addUserModel.UserDetails = &userDetails
-					if err := models.UpdateUsersById(&addUserModel); err == nil {
+					if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), &addUserModel); err == nil {
 						logs.Info("User found and verified....sending user data")
 						// Clear UserDetails to avoid circular reference during JSON serialization
 						addUserModel.UserDetails = nil
@@ -408,7 +412,7 @@ func (c *UsersController) SignUp() {
 // @router /get-user-by-username/:username [get]
 func (c *UsersController) VerifyUsername() {
 	username := c.Ctx.Input.Param(":username")
-	v, err := models.GetUsersByUsername(username)
+	v, err := models.GetUsersByUsernameWithContext(c.Ctx.Request.Context(), username)
 
 	logs.Info("Get user request:: ", username)
 
@@ -471,7 +475,7 @@ func (c *UsersController) VerifyUsername() {
 func (c *UsersController) VerifyUser() {
 	idStr := c.Ctx.Input.Param(":id")
 	userid, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetUsersById(userid)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), userid)
 
 	logs.Info("Get user by user ID", userid)
 
@@ -481,7 +485,7 @@ func (c *UsersController) VerifyUser() {
 		c.Data["json"] = resp
 	} else {
 		v.IsVerified = true
-		if err := models.UpdateUsersById(v); err == nil {
+		if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 			logs.Info("User found and verified....sending user data")
 			// cust, err := models.GetCustomersByUser(v.UserId)
 
@@ -549,7 +553,7 @@ func (c *UsersController) InviteUser() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
-	if _, err := models.GetUsersByUsername(v.Email); err != nil {
+	if _, err := models.GetUsersByUsernameWithContext(c.Ctx.Request.Context(), v.Email); err != nil {
 		logs.Info("User not found")
 		proceed := false
 		if uis, errr := models.GetAllUserInvitesByEmail(v.Email, query, fields, sortby, order, offset, limit); errr == nil {
@@ -564,7 +568,7 @@ func (c *UsersController) InviteUser() {
 						status := "EXPIRED"
 						m.Status = status
 
-						_ = models.UpdateUserInvitesById(&m)
+						_ = models.UpdateUserInvitesByIdWithContext(c.Ctx.Request.Context(), &m)
 					} else {
 						proceed = false
 					}
@@ -593,7 +597,7 @@ func (c *UsersController) InviteUser() {
 			status := "PENDING"
 
 			inviteByName := ""
-			inviteBy, err := models.GetUsersById(i)
+			inviteBy, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), i)
 
 			if err != nil {
 				message = "User not found"
@@ -603,7 +607,7 @@ func (c *UsersController) InviteUser() {
 
 			roleid, _ := strconv.ParseInt(v.Role, 10, 64)
 
-			role, err := models.GetRolesById(roleid)
+			role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), roleid)
 			if err != nil {
 				logs.Error("Role provided not found for token ", tokenResp.Value.Token)
 				message = "Role provided not found"
@@ -618,7 +622,7 @@ func (c *UsersController) InviteUser() {
 				proceed = false
 				var userInvite models.UserInvites = models.UserInvites{InvitedBy: inviteBy, InvitationToken: tokenResp.Value.Token, Email: v.Email, Role: role, Status: status, Active: 1, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1}
 
-				ui, err := models.AddUserInvites(&userInvite)
+				ui, err := models.AddUserInvitesWithContext(c.Ctx.Request.Context(), &userInvite)
 
 				if err != nil {
 					logs.Error("Error response received when adding invite ", err.Error())
@@ -645,7 +649,7 @@ func (c *UsersController) InviteUser() {
 						message_ = strings.Replace(message_, placeholder, formattedLink, -1)
 					}
 
-					go functions.SendEmail(v.Email, v.Subject, message_)
+					go functions.SendEmail(context.WithoutCancel(c.Ctx.Request.Context()), v.Email, v.Subject, message_)
 
 					logs.Info("Email sent")
 				}
@@ -683,10 +687,10 @@ func (c *UsersController) VerifyInvite() {
 	statusCode := 608
 	message := "An error occurred"
 
-	if token, err := models.GetUserTokensByToken(v.Value); err == nil {
+	if token, err := models.GetUserTokensByTokenWithContext(c.Ctx.Request.Context(), v.Value); err == nil {
 		logs.Info("Token fetched from DB")
 		logs.Info("Token expiry ")
-		if userInvite, err := models.GetUserInvitesByToken(token); err == nil {
+		if userInvite, err := models.GetUserInvitesByTokenWithContext(c.Ctx.Request.Context(), token); err == nil {
 			if token.ExpiryDate.After(time.Now()) {
 				verifyTokenResp := functions.VerifyUserToken(&c.Controller, token.Token, token.Nonce, userInvite.InvitedBy.Email)
 				if verifyTokenResp.StatusCode == 200 {
@@ -724,7 +728,7 @@ func (c *UsersController) VerifyInvite() {
 				status := "EXPIRED"
 				userInvite.Status = status
 
-				_ = models.UpdateUserInvitesById(userInvite)
+				_ = models.UpdateUserInvitesByIdWithContext(c.Ctx.Request.Context(), userInvite)
 				logs.Error("Token expired ")
 				statusCode = 608
 				message = "Token expired"
@@ -809,7 +813,7 @@ func (c *UsersController) UpdateInviteToken() {
 
 					userInvite.Status = v.Status
 
-					if err := models.UpdateUserInvitesById(&userInvite); err == nil {
+					if err := models.UpdateUserInvitesByIdWithContext(c.Ctx.Request.Context(), &userInvite); err == nil {
 						logs.Info("User invite updated successfully")
 					} else {
 						logs.Error("Error updating user invite: ", err)
@@ -856,13 +860,13 @@ func (c *UsersController) RevokeUserInvites() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 	logs.Info("Received ", v)
 
-	if userInvites, err := models.GetUserInvitesByEmail(v.Value); err == nil {
+	if userInvites, err := models.GetUserInvitesByEmailWithContext(c.Ctx.Request.Context(), v.Value); err == nil {
 		for _, invite := range userInvites {
 			logs.Info("Each user invite is ", invite)
 			status := "EXPIRED"
 			invite.Status = status
 
-			_ = models.UpdateUserInvitesById(invite)
+			_ = models.UpdateUserInvitesByIdWithContext(c.Ctx.Request.Context(), invite)
 			logs.Error("Token expired ")
 			var resp = responses.StringResponseDTO{StatusCode: 200, Value: "DONE", StatusDesc: "Expired Invites"}
 			c.Data["json"] = resp
@@ -887,7 +891,7 @@ func (c *UsersController) RevokeUserInvites() {
 func (c *UsersController) GetInvite() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetUserInvitesById(id)
+	v, err := models.GetUserInvitesByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		logs.Error("Error getting user invite::", err.Error())
 		var resp = responses.UserInviteResponseDTO{StatusCode: 604, UserInvite: nil, StatusDesc: "Error getting user ::: " + err.Error()}
@@ -917,7 +921,7 @@ func (c *UsersController) GetInvite() {
 func (c *UsersController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		var resp = responses.UserResponseDTO{StatusCode: 604, User: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
@@ -1078,7 +1082,7 @@ func (c *UsersController) GetUsersWithRole() {
 		}
 	}
 
-	if role, err := models.GetRolesById(role_id); err == nil {
+	if role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), role_id); err == nil {
 		logs.Info("Role fetched ", role.Role)
 		l, err := models.GetAllUsersWithRole(role, query, fields, sortby, order, offset, limit)
 		if err != nil {
@@ -1162,7 +1166,7 @@ func (c *UsersController) GetUsersUnderBranch() {
 		}
 	}
 
-	if branch, err := models.GetBranchesById(branch_id); err == nil {
+	if branch, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), branch_id); err == nil {
 		logs.Info("Branch fetched ", branch.Branch)
 		l, err := models.GetAllUsersByBranch(branch, query, fields, sortby, order, offset, limit)
 		if err != nil {
@@ -1320,13 +1324,13 @@ func (c *UsersController) UpdateUserImage() {
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Query("UserId"), 10, 64)
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 
 	if err == nil {
 		v.ImagePath = filePath
 
-		if err := models.UpdateUsersById(v); err == nil {
-			v, err := models.GetUsersById(v.UserId)
+		if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
+			v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), v.UserId)
 
 			if err != nil {
 				c.Data["json"] = err.Error()
@@ -1446,7 +1450,7 @@ func (c *UsersController) Put() {
 		}
 	}
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 
 	logs.Debug("About to save", v)
 	logs.Debug("And error is ", err)
@@ -1479,7 +1483,7 @@ func (c *UsersController) Put() {
 
 		updatedBy, _ := strconv.ParseInt(rmodifiedby, 10, 64)
 
-		if upu, err := models.GetUsersById(updatedBy); err == nil {
+		if upu, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), updatedBy); err == nil {
 			updatedBy = upu.UserId
 		}
 
@@ -1521,15 +1525,15 @@ func (c *UsersController) Put() {
 
 		// about to get role to update with
 		roleid, _ := strconv.ParseInt(rroleid, 10, 64)
-		if role, err := models.GetRolesById(roleid); err == nil {
+		if role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), roleid); err == nil {
 			logs.Info("Role fetched for ", roleid)
 			v.Role = role
 		} else {
 			logs.Error("There was an error getting the provided role")
 		}
 
-		if err := models.UpdateUsersById(v); err == nil {
-			userDetails, err := models.GetUserExtraDetailsById(v.UserDetails.UserDetailsId)
+		if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
+			userDetails, err := models.GetUserExtraDetailsByIdWithContext(c.Ctx.Request.Context(), v.UserDetails.UserDetailsId)
 
 			if err != nil {
 				logs.Error("Error returned fetching customer ", err.Error())
@@ -1540,7 +1544,7 @@ func (c *UsersController) Put() {
 			} else {
 				logs.Debug("Returned customer is", userDetails)
 				branchid, _ := strconv.ParseInt(rbranchid, 10, 64)
-				branch, err := models.GetBranchesById(branchid)
+				branch, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), branchid)
 
 				if err != nil {
 					logs.Error("Error fetching branch specified")
@@ -1551,7 +1555,7 @@ func (c *UsersController) Put() {
 
 				message := "Profile updated successfully"
 
-				if err := models.UpdateUserExtraDetailsById(userDetails); err != nil {
+				if err := models.UpdateUserExtraDetailsByIdWithContext(c.Ctx.Request.Context(), userDetails); err != nil {
 					logs.Error("Failed to update customer branch")
 					message = "Failed to update branch"
 				}
@@ -1626,7 +1630,7 @@ func (c *UsersController) UpdateUserRole() {
 
 	logs.Debug("User id is ", id)
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 
 	logs.Debug("About to save", v)
 	logs.Debug("And error is ", err)
@@ -1635,11 +1639,11 @@ func (c *UsersController) UpdateUserRole() {
 		logs.Debug("User fetched successfully")
 
 		// about to get role to update with
-		if role, err := models.GetRolesById(h.RoleId); err == nil {
+		if role, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), h.RoleId); err == nil {
 			logs.Info("Role fetched for ", h.RoleId)
 			v.Role = role
 
-			if err := models.UpdateUsersById(v); err == nil {
+			if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 				message := "Profile updated successfully"
 				var resp = responses.UserResponseDTO{StatusCode: 200, User: v, StatusDesc: message}
 				c.Data["json"] = resp
@@ -1688,7 +1692,7 @@ func (c *UsersController) UpdateUserBranch() {
 
 	logs.Debug("User id is ", id)
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 
 	logs.Debug("About to save", v)
 	logs.Debug("And error is ", err)
@@ -1696,7 +1700,7 @@ func (c *UsersController) UpdateUserBranch() {
 	if err == nil {
 		logs.Debug("User fetched successfully")
 
-		userDetails, err := models.GetUserExtraDetailsByUser(v)
+		userDetails, err := models.GetUserExtraDetailsByUserWithContext(c.Ctx.Request.Context(), v)
 
 		if err != nil {
 			logs.Error("Error returned fetching user details ", err.Error())
@@ -1706,7 +1710,7 @@ func (c *UsersController) UpdateUserBranch() {
 			c.Data["json"] = resp
 		} else {
 			logs.Debug("Returned user details is", userDetails)
-			branch, err := models.GetBranchesById(h.BranchId)
+			branch, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), h.BranchId)
 			message := "Profile updated successfully"
 
 			if err != nil {
@@ -1717,7 +1721,7 @@ func (c *UsersController) UpdateUserBranch() {
 			} else {
 				userDetails.Branch = branch
 
-				if err := models.UpdateUserExtraDetailsById(userDetails); err != nil {
+				if err := models.UpdateUserExtraDetailsByIdWithContext(c.Ctx.Request.Context(), userDetails); err != nil {
 					logs.Error("Failed to update user branch")
 					message = "Failed to update branch"
 
@@ -1754,14 +1758,14 @@ func (c *UsersController) UpdateUserBranch() {
 // @router /user-invite/:token [get]
 func (c *UsersController) GetUserInvite() {
 	token := c.Ctx.Input.Param(":token")
-	v, err := models.GetUserTokensByToken(token)
+	v, err := models.GetUserTokensByTokenWithContext(c.Ctx.Request.Context(), token)
 	if err != nil {
 		logs.Error("Error getting user invite", err.Error())
 		c.Ctx.Output.SetStatus(200)
 		var resp = responses.UserInviteResponseDTO{StatusCode: 608, UserInvite: nil, StatusDesc: "Error getting user invite"}
 		c.Data["json"] = resp
 	} else {
-		if q, err := models.GetUserInvitesByToken(v); err == nil {
+		if q, err := models.GetUserInvitesByTokenWithContext(c.Ctx.Request.Context(), v); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = responses.UserInviteResponseDTO{StatusCode: 200, UserInvite: q, StatusDesc: "User invite fetch successful"}
 			c.Data["json"] = resp
@@ -1792,7 +1796,7 @@ func (c *UsersController) UpdateUserInvite() {
 
 	logs.Info("Status to update user invite is ", h.Status)
 
-	if ui, err := models.GetUserInvitesById(id); err == nil {
+	if ui, err := models.GetUserInvitesByIdWithContext(c.Ctx.Request.Context(), id); err == nil {
 		statuses := [3]string{"PENDING", "ACCEPTED", "CANCELLED"}
 		proceed := false
 		for _, st := range statuses {
@@ -1806,7 +1810,7 @@ func (c *UsersController) UpdateUserInvite() {
 			ui.Status = h.Status
 			logs.Info("About to update user invite", ui)
 
-			if err := models.UpdateUserInvitesById(ui); err == nil {
+			if err := models.UpdateUserInvitesByIdWithContext(c.Ctx.Request.Context(), ui); err == nil {
 				logs.Debug("User invite updated successfully")
 				logs.Debug(ui.InvitedBy.FullName)
 				c.Ctx.Output.SetStatus(200)
@@ -1841,10 +1845,10 @@ func (c *UsersController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 	if err == nil {
 		v.Active = 6
-		if err := models.UpdateUsersById(v); err == nil {
+		if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 			// if err := models.DeleteUsers(id); err == nil {
 			// 	c.Data["json"] = "OK"
 			// } else {
@@ -1858,10 +1862,10 @@ func (c *UsersController) Delete() {
 			c.Data["json"] = resp
 		}
 	} else {
-		v, err := models.GetUsersByUsername(idStr)
+		v, err := models.GetUsersByUsernameWithContext(c.Ctx.Request.Context(), idStr)
 		if err == nil {
 			v.Active = 6
-			if err := models.UpdateUsersById(v); err == nil {
+			if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 				resp := responses.StringResponseDTO{StatusCode: 200, Value: "OK", StatusDesc: "OK"}
 				c.Data["json"] = resp
 			} else {
@@ -1891,10 +1895,10 @@ func (c *UsersController) Deactivate() {
 
 	logs.Info("Checking user ", idStr)
 
-	v, err := models.GetUsersById(id)
+	v, err := models.GetUsersByIdWithContext(c.Ctx.Request.Context(), id)
 	if err == nil {
 		v.Active = 4
-		if err := models.UpdateUsersById(v); err == nil {
+		if err := models.UpdateUsersByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 			// if err := models.DeleteUsers(id); err == nil {
 			// 	c.Data["json"] = "OK"
 			// } else {

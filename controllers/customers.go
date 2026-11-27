@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/internal/trace"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -164,9 +165,9 @@ func (c *CustomersController) AddCustomer() {
 		// Assign dob
 		category := models.Customer_categories{}
 		ccid, _ := strconv.ParseInt(rcategoryid, 0, 64)
-		if cc, errr := models.GetCustomer_categoriesById(ccid); errr != nil {
+		if cc, errr := models.GetCustomer_categoriesByIdWithContext(c.Ctx.Request.Context(), ccid); errr != nil {
 			logs.Error("Customer category does not exist")
-			if cc, errr := models.GetCustomer_categoriesByName(rcategoryid); errr != nil {
+			if cc, errr := models.GetCustomer_categoriesByNameWithContext(c.Ctx.Request.Context(), rcategoryid); errr != nil {
 				logs.Error("Customer category does not exist")
 			} else {
 				category = *cc
@@ -177,9 +178,9 @@ func (c *CustomersController) AddCustomer() {
 
 		idType := models.Identification_types{}
 		idT, _ := strconv.ParseInt(ridtype, 10, 64)
-		if idtype_, err := models.GetIdentification_typesById(idT); err != nil {
+		if idtype_, err := models.GetIdentification_typesByIdWithContext(c.Ctx.Request.Context(), idT); err != nil {
 			logs.Error("ID Type provided: ", ridtype, " does not exist ", err.Error())
-			if idtype_, err := models.GetIdentification_typesByCode(ridtype); err != nil {
+			if idtype_, err := models.GetIdentification_typesByCodeWithContext(c.Ctx.Request.Context(), ridtype); err != nil {
 				logs.Error("ID Type provided: ", ridtype, " does not exist ", err.Error())
 			} else {
 				idType = *idtype_
@@ -203,9 +204,9 @@ func (c *CustomersController) AddCustomer() {
 
 		branch := models.Branches{}
 		idB, _ := strconv.ParseInt(rbranch, 10, 64)
-		if branch_, err := models.GetBranchesById(idB); err != nil {
+		if branch_, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), idB); err != nil {
 			logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
-			if branch_, err := models.GetBranchesByName(rbranch); err != nil {
+			if branch_, err := models.GetBranchesByNameWithContext(c.Ctx.Request.Context(), rbranch); err != nil {
 				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
 			} else {
 				branch = *branch_
@@ -231,7 +232,8 @@ func (c *CustomersController) AddCustomer() {
 			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		}
 
-		if _, err := models.AddCustomer(&cust); err == nil {
+		if _, err := models.AddCustomerWithContext(c.Ctx.Request.Context(), &cust); err == nil {
+			trace.Logger(c.Ctx.Request.Context(), trace.Service).Info("customer created", "customer_id", cust.CustomerId)
 			logs.Info("Customer added successfully ", cust.CustomerId)
 			c.Ctx.Output.SetStatus(200)
 			errorCode := 200
@@ -240,7 +242,7 @@ func (c *CustomersController) AddCustomer() {
 			// Generate customer number
 			cust.CustomerNumber = fmt.Sprintf("CUST%06d", cust.CustomerId)
 			logs.Info("Generated customer number ", cust.CustomerNumber)
-			if err := models.UpdateCustomerById(&cust); err != nil {
+			if err := models.UpdateCustomerByIdWithContext(c.Ctx.Request.Context(), &cust); err != nil {
 				logs.Error("An error occurred updating customer number ", err.Error())
 				errorCode = 609
 				message = "An error occurred updating customer number. " + err.Error()
@@ -280,7 +282,7 @@ func (c *CustomersController) AddCustomer() {
 func (c *CustomersController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetCustomerById(id)
+	v, err := models.GetCustomerByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
@@ -307,7 +309,7 @@ func (c *CustomersController) GetOne() {
 // @router /phone-number/:msisdn [get]
 func (c *CustomersController) GetCustomerByMsisdn() {
 	msisdn := c.Ctx.Input.Param(":msisdn")
-	v, err := models.GetCustomerByMsisdn(msisdn)
+	v, err := models.GetCustomerByMsisdnWithContext(c.Ctx.Request.Context(), msisdn)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
@@ -335,7 +337,7 @@ func (c *CustomersController) GetCustomerByMsisdn() {
 // @router /username/:username [get]
 func (c *CustomersController) GetCustomerByUsername() {
 	username := c.Ctx.Input.Param(":username")
-	v, err := models.GetCustomer_credentialsByCustomerUsername(username)
+	v, err := models.GetCustomer_credentialsByCustomerUsernameWithContext(c.Ctx.Request.Context(), username)
 	if err != nil {
 		logs.Error("An error occurred fetching customer")
 		logs.Error(err.Error())
@@ -435,8 +437,8 @@ func (c *CustomersController) GetAll() {
 		if l == nil {
 			l = []interface{}{}
 		}
-		// fmt.Printf("Type of customers: %T\n", l)
-		// fmt.Printf("Value of customers: %+v\n", l)
+		// _ = l
+		// _ = l
 		resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
 		c.Data["json"] = resp
 	}
@@ -500,7 +502,7 @@ func (c *CustomersController) GetAllByBranch() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 
-	if br, err := models.GetBranchesById(id); err == nil {
+	if br, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), id); err == nil {
 		l, err := models.GetAllCustomersByBranch(br, query, fields, sortby, order, offset, limit)
 		if err != nil {
 			logs.Error("Error fetching customers ", err.Error())
@@ -510,8 +512,8 @@ func (c *CustomersController) GetAllByBranch() {
 			if l == nil {
 				l = []interface{}{}
 			}
-			fmt.Printf("Type of customers: %T\n", l)
-			fmt.Printf("Value of customers: %+v\n", l)
+			_ = l
+			_ = l
 			resp := responses.CustomersDTO{StatusCode: 200, Customers: &l, StatusDesc: "Successfully fetched customers"}
 			c.Data["json"] = resp
 		}
@@ -576,7 +578,7 @@ func (c *CustomersController) Put() {
 		}
 	}
 
-	if cust, err := models.GetCustomerById(id); err == nil {
+	if cust, err := models.GetCustomerByIdWithContext(c.Ctx.Request.Context(), id); err == nil {
 		remail := c.Ctx.Input.Query("Email")
 		rname := c.Ctx.Input.Query("Name")
 		rnickname := c.Ctx.Input.Query("Nickname")
@@ -622,10 +624,10 @@ func (c *CustomersController) Put() {
 		logs.Info("Status is ", rstatus, " and status int is ", statusInt)
 
 		idT, _ := strconv.ParseInt(ridtype, 10, 64)
-		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
+		if idtype, err := models.GetIdentification_typesByIdWithContext(c.Ctx.Request.Context(), idT); err != nil {
 
 			logs.Error("ID Type provided does not exist")
-			if idtype, err := models.GetIdentification_typesByCode(ridtype); err != nil {
+			if idtype, err := models.GetIdentification_typesByCodeWithContext(c.Ctx.Request.Context(), ridtype); err != nil {
 				logs.Error("ID Type provided: ", ridtype, " does not exist ", err.Error())
 			} else {
 				cust.IdentificationType = idtype
@@ -648,9 +650,9 @@ func (c *CustomersController) Put() {
 		// }
 
 		idB, _ := strconv.ParseInt(rbranch, 10, 64)
-		if branch_, err := models.GetBranchesById(idB); err != nil {
+		if branch_, err := models.GetBranchesByIdWithContext(c.Ctx.Request.Context(), idB); err != nil {
 			logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
-			if branch_, err := models.GetBranchesByName(rbranch); err != nil {
+			if branch_, err := models.GetBranchesByNameWithContext(c.Ctx.Request.Context(), rbranch); err != nil {
 				logs.Error("Branch provided: ", rbranch, " does not exist ", err.Error())
 			} else {
 				cust.Branch = branch_
@@ -661,7 +663,7 @@ func (c *CustomersController) Put() {
 
 		logs.Info("About to update customer record ", cust.CustomerId, " with name ", cust.FullName)
 		logs.Info("Date created for customer is ", cust.DateCreated)
-		if err := models.UpdateCustomerById(cust); err == nil {
+		if err := models.UpdateCustomerByIdWithContext(c.Ctx.Request.Context(), cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
 			c.Data["json"] = resp
@@ -695,7 +697,7 @@ func (c *CustomersController) UpdateCustomerLastTxnDate() {
 	// Trim extra text from the date string
 	transactionDate = strings.Split(transactionDate, " m=")[0]
 
-	if cust, err := models.GetCustomerById(id); err == nil {
+	if cust, err := models.GetCustomerByIdWithContext(c.Ctx.Request.Context(), id); err == nil {
 		var lastTxnDate time.Time
 
 		var allowedDateList [8]string = [8]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST", "2006-01-02 15:04:05.000000000 -0700 MST", "2006-01-02 15:04:05.000000000 -0700 UTC"}
@@ -716,7 +718,7 @@ func (c *CustomersController) UpdateCustomerLastTxnDate() {
 		}
 
 		cust.LastTxnDate = lastTxnDate
-		if err := models.UpdateCustomerById(cust); err == nil {
+		if err := models.UpdateCustomerByIdWithContext(c.Ctx.Request.Context(), cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}
 			c.Data["json"] = resp
@@ -774,12 +776,12 @@ func (c *CustomersController) UpdateCustomerImage() {
 
 	id, _ := strconv.ParseInt(c.Ctx.Input.Query("UserId"), 10, 64)
 
-	v, err := models.GetCustomerById(id)
+	v, err := models.GetCustomerByIdWithContext(c.Ctx.Request.Context(), id)
 
 	if err == nil {
 		v.ImagePath = filePath
 
-		if err := models.UpdateCustomerById(v); err == nil {
+		if err := models.UpdateCustomerByIdWithContext(c.Ctx.Request.Context(), v); err == nil {
 
 			logs.Debug("Returned customer is", v)
 

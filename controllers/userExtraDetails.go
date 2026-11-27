@@ -54,7 +54,7 @@ func (c *UserExtraDetailsController) URLMapping() {
 func (c *UserExtraDetailsController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetUserExtraDetailsById(id)
+	v, err := models.GetUserExtraDetailsByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -157,7 +157,7 @@ func (c *UserExtraDetailsController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	v := models.UserExtraDetails{UserDetailsId: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateUserExtraDetailsById(&v); err == nil {
+	if err := models.UpdateUserExtraDetailsByIdWithContext(c.Ctx.Request.Context(), &v); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		var resp = responses.UserExtraDetailsResponseDTO{StatusCode: 200, UserDetails: &v, StatusDesc: "Customer updated successfully"}
 		c.Data["json"] = resp

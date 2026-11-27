@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -38,9 +38,13 @@ func AddBranches(m *Branches) (id int64, err error) {
 // GetBranchesById retrieves Branches by Id. Returns error if
 // Id doesn't exist
 func GetBranchesById(id int64) (v *Branches, err error) {
+	return GetBranchesByIdWithContext(context.Background(), id)
+}
+
+func GetBranchesByIdWithContext(ctx context.Context, id int64) (v *Branches, err error) {
 	o := orm.NewOrm()
 	v = &Branches{BranchId: id}
-	if err = o.QueryTable(new(Branches)).Filter("BranchId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Branches)).Filter("BranchId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -49,9 +53,13 @@ func GetBranchesById(id int64) (v *Branches, err error) {
 // GetBranchesById retrieves Branches by Id. Returns error if
 // Id doesn't exist
 func GetBranchesByName(name string) (v *Branches, err error) {
+	return GetBranchesByNameWithContext(context.Background(), name)
+}
+
+func GetBranchesByNameWithContext(ctx context.Context, name string) (v *Branches, err error) {
 	o := orm.NewOrm()
 	v = &Branches{Branch: name}
-	if err = o.QueryTable(new(Branches)).Filter("Branch", name).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Branches)).Filter("Branch", name).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -140,7 +148,7 @@ func UpdateBranchesById(m *Branches) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -155,7 +163,7 @@ func DeleteBranches(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Branches{BranchId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

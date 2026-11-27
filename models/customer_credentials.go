@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -60,9 +60,13 @@ func GetCustomer_credentialsByCustomerId(id Customers) (v *Customer_credentials,
 // GetCustomer_credentialsByCustomerId retrieves Customer_credentials by Id. Returns error if
 // Id doesn't exist
 func GetCustomer_credentialsByCustomerUsername(username string) (v *Customer_credentials, err error) {
+	return GetCustomer_credentialsByCustomerUsernameWithContext(context.Background(), username)
+}
+
+func GetCustomer_credentialsByCustomerUsernameWithContext(ctx context.Context, username string) (v *Customer_credentials, err error) {
 	o := orm.NewOrm()
 	v = &Customer_credentials{Username: username}
-	if err = o.QueryTable(new(Customer_credentials)).Filter("Username", username).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Customer_credentials)).Filter("Username", username).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -151,7 +155,7 @@ func UpdateCustomer_credentialsById(m *Customer_credentials) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -166,7 +170,7 @@ func DeleteCustomer_credentials(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Customer_credentials{Id: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

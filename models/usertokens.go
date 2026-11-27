@@ -1,8 +1,8 @@
 package models
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -48,9 +48,13 @@ func GetUserTokensById(id int64) (v *UserTokens, err error) {
 // GetUserTokensById retrieves UserTokens by Token. Returns error if
 // Token doesn't exist
 func GetUserTokensByToken(tkn string) (v *UserTokens, err error) {
+	return GetUserTokensByTokenWithContext(context.Background(), tkn)
+}
+
+func GetUserTokensByTokenWithContext(ctx context.Context, tkn string) (v *UserTokens, err error) {
 	o := orm.NewOrm()
 	v = &UserTokens{Token: tkn}
-	if err = o.QueryTable(new(UserTokens)).Filter("Token", tkn).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(UserTokens)).Filter("Token", tkn).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -139,7 +143,7 @@ func UpdateUserTokensById(m *UserTokens) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -154,7 +158,7 @@ func DeleteUserTokens(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&UserTokens{UserTokenId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

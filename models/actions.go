@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -138,7 +137,7 @@ func UpdateActionsById(m *Actions) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+			_ = num
 		}
 	}
 	return
@@ -153,7 +152,7 @@ func DeleteActions(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Actions{ActionId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

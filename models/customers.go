@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -44,19 +45,27 @@ func init() {
 // AddCustomers insert a new Customers into database and returns
 // last inserted Id on success.
 func AddCustomer(m *Customers) (id int64, err error) {
+	return AddCustomerWithContext(context.Background(), m)
+}
+
+func AddCustomerWithContext(ctx context.Context, m *Customers) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetCustomersById retrieves Customers by Id. Returns error if
 // Id doesn't exist
 func GetCustomerById(id int64) (v *Customers, err error) {
+	return GetCustomerByIdWithContext(context.Background(), id)
+}
+
+func GetCustomerByIdWithContext(ctx context.Context, id int64) (v *Customers, err error) {
 	o := orm.NewOrm()
 	v = &Customers{CustomerId: id}
 	qs := o.QueryTable(new(Customers))
-	if err = qs.Filter("CustomerId", id).RelatedSel().One(v); err == nil {
-		_, err = o.LoadRelated(v, "EmergencyContacts")
+	if err = qs.Filter("CustomerId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
+		_, err = o.LoadRelatedWithCtx(ctx, v, "EmergencyContacts")
 		if err != nil {
 			logs.Error("Error loading related EmergencyContacts: ", err)
 		} else {
@@ -67,7 +76,7 @@ func GetCustomerById(id int64) (v *Customers, err error) {
 			// 	fmt.Printf("Emergency contact: %v\n", ec)
 			// }
 		}
-		_, err = o.LoadRelated(v, "Guarantors")
+		_, err = o.LoadRelatedWithCtx(ctx, v, "Guarantors")
 		if err != nil {
 			logs.Error("Error loading related Guarantors: ", err)
 		}
@@ -80,12 +89,16 @@ func GetCustomerById(id int64) (v *Customers, err error) {
 // GetCustomersByMsisdn retrieves Customers by MSISDN. Returns error if
 // MSISDN doesn't exist
 func GetCustomerByMsisdn(msisdn string) (v *Customers, err error) {
+	return GetCustomerByMsisdnWithContext(context.Background(), msisdn)
+}
+
+func GetCustomerByMsisdnWithContext(ctx context.Context, msisdn string) (v *Customers, err error) {
 	o := orm.NewOrm()
 
 	v = &Customers{PhoneNumber: fmt.Sprintf("%d", msisdn)}
 	qs := o.QueryTable(new(Customers))
-	if err = qs.Filter("PhoneNumber", msisdn).RelatedSel().One(v); err == nil {
-		_, err = o.LoadRelated(v, "EmergencyContacts")
+	if err = qs.Filter("PhoneNumber", msisdn).RelatedSel().OneWithCtx(ctx, v); err == nil {
+		_, err = o.LoadRelatedWithCtx(ctx, v, "EmergencyContacts")
 		if err != nil {
 			logs.Error("Error loading related EmergencyContacts: ", err)
 		} else {
@@ -96,7 +109,7 @@ func GetCustomerByMsisdn(msisdn string) (v *Customers, err error) {
 			// 	fmt.Printf("Emergency contact: %v\n", ec)
 			// }
 		}
-		_, err = o.LoadRelated(v, "Guarantors")
+		_, err = o.LoadRelatedWithCtx(ctx, v, "Guarantors")
 		if err != nil {
 			logs.Error("Error loading related Guarantors: ", err)
 		}
@@ -399,13 +412,17 @@ func GetAllCustomersByBranch(branch *Branches, query map[string]string, fields [
 // UpdateCustomers updates Customers by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateCustomerById(m *Customers) (err error) {
+	return UpdateCustomerByIdWithContext(context.Background(), m)
+}
+
+func UpdateCustomerByIdWithContext(ctx context.Context, m *Customers) (err error) {
 	o := orm.NewOrm()
 	v := Customers{CustomerId: m.CustomerId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
+			_ = num
 		}
 	}
 	return
@@ -420,7 +437,7 @@ func DeleteCustomer(id int64) (err error) {
 	if err = o.Read(&v); err == nil {
 		var num int64
 		if num, err = o.Delete(&Customers{CustomerId: id}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
+			_ = num
 		}
 	}
 	return

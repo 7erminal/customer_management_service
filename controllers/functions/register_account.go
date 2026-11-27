@@ -2,6 +2,7 @@ package functions
 
 import (
 	"customer_management_service/api"
+	"customer_management_service/internal/trace"
 	"customer_management_service/structs/responses"
 	"encoding/json"
 	"io"
@@ -26,10 +27,12 @@ func RegisterAccount(c *beego.Controller, userid int64) {
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequest(c.Ctx.Request.Context())
 	if err != nil {
+		trace.Logger(c.Ctx.Request.Context(), trace.Service).Error("upstream request failed", "upstream", "accounts")
 		logs.Error("client.Error: %v", err)
 		c.Data["json"] = err.Error()
+		return
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
@@ -71,10 +74,12 @@ func GenerateToken(c *beego.Controller, email string, role string) (resp respons
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequest(c.Ctx.Request.Context())
 	if err != nil {
+		trace.Logger(c.Ctx.Request.Context(), trace.Service).Error("upstream request failed", "upstream", "authentication")
 		logs.Error("client.Error: %v", err)
 		c.Data["json"] = err.Error()
+		return resp
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)
@@ -108,10 +113,12 @@ func VerifyUserToken(c *beego.Controller, token string, nonce string, email stri
 		Request: request,
 		Type_:   "body",
 	}
-	res, err := client.SendRequest()
+	res, err := client.SendRequest(c.Ctx.Request.Context())
 	if err != nil {
+		trace.Logger(c.Ctx.Request.Context(), trace.Service).Error("upstream request failed", "upstream", "authentication")
 		logs.Error("client.Error: %v", err)
 		c.Data["json"] = err.Error()
+		return resp
 	}
 	defer res.Body.Close()
 	read, err := io.ReadAll(res.Body)

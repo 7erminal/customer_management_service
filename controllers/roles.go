@@ -62,7 +62,7 @@ func (c *RolesController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	logs.Info("Role received is ", idStr)
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetRolesById(id)
+	v, err := models.GetRolesByIdWithContext(c.Ctx.Request.Context(), id)
 	if err != nil {
 		logs.Error("Unable to fetch role ", err.Error())
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
@@ -84,7 +84,7 @@ func (c *RolesController) GetOne() {
 // @router /role/:role [get]
 func (c *RolesController) GetOneByName() {
 	role := c.Ctx.Input.Param(":role")
-	v, err := models.GetRolesByName(role)
+	v, err := models.GetRolesByNameWithContext(c.Ctx.Request.Context(), role)
 	if err != nil {
 		var resp = responses.RoleResponseDTO{StatusCode: 604, Role: nil, StatusDesc: "Error getting user ::: " + err.Error()}
 		c.Data["json"] = resp
