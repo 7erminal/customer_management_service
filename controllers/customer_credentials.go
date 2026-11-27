@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -37,10 +38,12 @@ func (c *Customer_credentialsController) URLMapping() {
 // @Failure 403 body is empty
 // @router /add-customer-credential [post]
 func (c *Customer_credentialsController) AddCustomerCredential() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	var v requests.CustomerCredentialRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
 
-	logs.Info("Adding customer credential for customer ID: ", v.CustomerId)
+	log.Info("Adding customer credential", "customer_id", v.CustomerId)
 
 	statusCode := 401
 	statusDesc := "Unauthorized"
@@ -49,7 +52,7 @@ func (c *Customer_credentialsController) AddCustomerCredential() {
 
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(v.Password), 8)
 	if errr != nil {
-		logs.Error("Error hashing password: %v", errr)
+		log.Error("Error hashing password", "error", errr.Error())
 		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
 			StatusCode: 500,
 			StatusDesc: "Internal Server Error",
@@ -83,13 +86,13 @@ func (c *Customer_credentialsController) AddCustomerCredential() {
 		Active:       1,
 	}
 
-	if _, err := models.AddCustomer_credentials(&ccredential); err == nil {
+	if _, err := models.AddCustomer_credentialsWithCtx(ctx, &ccredential); err == nil {
 		c.Ctx.Output.SetStatus(200)
 
 		statusCode = 200
 		statusDesc = "Customer credential added successfully"
 
-		logs.Info("Customer credential added successfully: ", ccredential)
+		log.Info("Customer credential added successfully", "customer_id", ccredential.Customer.CustomerId)
 		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{
 			StatusCode: statusCode,
 			StatusDesc: statusDesc,
@@ -99,7 +102,7 @@ func (c *Customer_credentialsController) AddCustomerCredential() {
 	} else {
 		c.Data["json"] = err.Error()
 
-		logs.Error("Error adding customer credential: %v", err)
+		log.Error("Error adding customer credential", "customer_id", v.CustomerId, "error", err.Error())
 		c.Ctx.Output.SetStatus(200)
 
 		c.Data["json"] = &responses.CustomerCredentialsResponseDTO{

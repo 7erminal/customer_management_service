@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -30,17 +31,27 @@ func init() {
 // AddAccounts insert a new Accounts into database and returns
 // last inserted Id on success.
 func AddAccounts(m *Accounts) (id int64, err error) {
+	return AddAccountsWithCtx(context.Background(), m)
+}
+
+// AddAccountsWithCtx is AddAccounts with context propagation (tracing IDs).
+func AddAccountsWithCtx(ctx context.Context, m *Accounts) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetAccountsById retrieves Accounts by Id. Returns error if
 // Id doesn't exist
 func GetAccountsById(id int64) (v *Accounts, err error) {
+	return GetAccountsByIdWithCtx(context.Background(), id)
+}
+
+// GetAccountsByIdWithCtx is GetAccountsById with context propagation.
+func GetAccountsByIdWithCtx(ctx context.Context, id int64) (v *Accounts, err error) {
 	o := orm.NewOrm()
 	v = &Accounts{AccountId: id}
-	if err = o.QueryTable(new(Accounts)).Filter("AccountId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Accounts)).Filter("AccountId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err

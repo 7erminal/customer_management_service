@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -30,8 +31,14 @@ func init() {
 // AddCustomer_credentials insert a new Customer_credentials into database and returns
 // last inserted Id on success.
 func AddCustomer_credentials(m *Customer_credentials) (id int64, err error) {
+	return AddCustomer_credentialsWithCtx(context.Background(), m)
+}
+
+// AddCustomer_credentialsWithCtx is AddCustomer_credentials with context
+// propagation (tracing IDs).
+func AddCustomer_credentialsWithCtx(ctx context.Context, m *Customer_credentials) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 

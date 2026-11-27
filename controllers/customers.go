@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -66,6 +67,8 @@ func (c *CustomersController) URLMapping() {
 // @Failure 403 body is empty
 // @router /add-customer [post]
 func (c *CustomersController) AddCustomer() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	// image of user received
 	file, header, err := c.GetFile("CustomerImage")
 	var filePath string = ""
@@ -102,8 +105,6 @@ func (c *CustomersController) AddCustomer() {
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(defaultPassword), 8)
 
 	if errr == nil {
-		logs.Debug(hashedPassword)
-
 		// defaultPassword = string(hashedPassword)
 
 		// logs.Debug("Category received is ", rcategory)
@@ -125,7 +126,7 @@ func (c *CustomersController) AddCustomer() {
 	status := c.Ctx.Input.Query("Status")
 	rgender := c.Ctx.Input.Query("Gender")
 
-	logs.Info("Received :::", rdob, " ::: ", rcategoryid, " ::: ", remail, " ::: ", rname, " ::: ", " ::: ", rnickname)
+	log.Info("Received add-customer request")
 
 	var proceed bool = true
 	errorCode := 302
@@ -231,17 +232,17 @@ func (c *CustomersController) AddCustomer() {
 			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
 		}
 
-		if _, err := models.AddCustomer(&cust); err == nil {
-			logs.Info("Customer added successfully ", cust.CustomerId)
+		if _, err := models.AddCustomerWithCtx(ctx, &cust); err == nil {
+			log.Info("Customer added", "customer_id", cust.CustomerId)
 			c.Ctx.Output.SetStatus(200)
 			errorCode := 200
 			message := "Customer added successfully"
 
 			// Generate customer number
 			cust.CustomerNumber = fmt.Sprintf("CUST%06d", cust.CustomerId)
-			logs.Info("Generated customer number ", cust.CustomerNumber)
-			if err := models.UpdateCustomerById(&cust); err != nil {
-				logs.Error("An error occurred updating customer number ", err.Error())
+			log.Info("Generated customer number", "customer_id", cust.CustomerId, "customer_number", cust.CustomerNumber)
+			if err := models.UpdateCustomerByIdWithCtx(ctx, &cust); err != nil {
+				log.Error("Error updating customer number", "customer_id", cust.CustomerId, "error", err.Error())
 				errorCode = 609
 				message = "An error occurred updating customer number. " + err.Error()
 			}
@@ -250,7 +251,7 @@ func (c *CustomersController) AddCustomer() {
 
 		} else {
 			// c.Data["json"] = err.Error()
-			logs.Error("An error occurred adding customer ", err.Error())
+			log.Error("Error adding customer", "error", err.Error())
 			if strings.Contains(strings.ToUpper(err.Error()), "DUPLICATE") || strings.Contains(strings.ToUpper(err.Error()), "UNIQUE") {
 				errorCode = 607
 				message = "Customer with the same email or phone number already exists"
@@ -258,7 +259,7 @@ func (c *CustomersController) AddCustomer() {
 				errorCode = 608
 				message = "An error occurred adding customer. " + err.Error()
 			}
-			logs.Info("Error adding customer message:: ", message)
+			log.Info("Add customer failed", "error_code", errorCode)
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}

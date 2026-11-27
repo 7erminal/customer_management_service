@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -38,17 +39,22 @@ func (c *AccountsController) Post() {
 	var q requests.CreateAccountRequestDTO
 	json.Unmarshal(c.Ctx.Input.RequestBody, &q)
 
-	if us, err := models.GetUsersById(q.UserId); err == nil {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
+	if us, err := models.GetUsersByIdWithCtx(ctx, q.UserId); err == nil {
 		var v models.Accounts = models.Accounts{UserId: q.UserId, AccountNumber: us.PhoneNumber, Balance: 0, BalanceBefore: 0, DateCreated: time.Now(), DateModified: time.Now(), CreatedBy: 1, ModifiedBy: 1, Active: 1}
-		if _, err := models.AddAccounts(&v); err == nil {
+		if _, err := models.AddAccountsWithCtx(ctx, &v); err == nil {
 			resp := responses.AccountDTO{StatusCode: 200, Account: &v, StatusDesc: "Account Successfully Added"}
 			c.Ctx.Output.SetStatus(201)
+			log.Info("Account created", "account_id", v.AccountId, "user_id", v.UserId)
 			c.Data["json"] = resp
 		} else {
+			log.Error("Error adding account", "user_id", q.UserId, "error", err.Error())
 			resp := responses.AccountDTO{StatusCode: 302, Account: nil, StatusDesc: err.Error()}
 			c.Data["json"] = resp
 		}
 	} else {
+		log.Error("Error adding account: user not found", "user_id", q.UserId)
 		resp := responses.AccountDTO{StatusCode: 301, Account: nil, StatusDesc: err.Error()}
 		c.Data["json"] = resp
 	}
