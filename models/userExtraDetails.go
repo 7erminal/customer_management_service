@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -29,8 +30,14 @@ func init() {
 // AddCustomers insert a new Customers into database and returns
 // last inserted Id on success.
 func AddUserExtraDetails(m *UserExtraDetails) (id int64, err error) {
+	return AddUserExtraDetailsWithCtx(context.Background(), m)
+}
+
+// AddUserExtraDetailsWithCtx is AddUserExtraDetails with context
+// propagation (tracing IDs).
+func AddUserExtraDetailsWithCtx(ctx context.Context, m *UserExtraDetails) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 

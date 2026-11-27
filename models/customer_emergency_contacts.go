@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -28,17 +29,29 @@ func init() {
 // AddCustomer_emergency_contacts insert a new Customer_emergency_contacts into database and returns
 // last inserted Id on success.
 func AddCustomer_emergency_contacts(m *Customer_emergency_contacts) (id int64, err error) {
+	return AddCustomer_emergency_contactsWithCtx(context.Background(), m)
+}
+
+// AddCustomer_emergency_contactsWithCtx is AddCustomer_emergency_contacts
+// with context propagation (tracing IDs).
+func AddCustomer_emergency_contactsWithCtx(ctx context.Context, m *Customer_emergency_contacts) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetCustomer_emergency_contactsById retrieves Customer_emergency_contacts by Id. Returns error if
 // Id doesn't exist
 func GetCustomer_emergency_contactsById(id int64) (v *Customer_emergency_contacts, err error) {
+	return GetCustomer_emergency_contactsByIdWithCtx(context.Background(), id)
+}
+
+// GetCustomer_emergency_contactsByIdWithCtx is
+// GetCustomer_emergency_contactsById with context propagation.
+func GetCustomer_emergency_contactsByIdWithCtx(ctx context.Context, id int64) (v *Customer_emergency_contacts, err error) {
 	o := orm.NewOrm()
 	v = &Customer_emergency_contacts{CustomerEmergencyContactId: id}
-	if err = o.QueryTable(new(Customer_emergency_contacts)).Filter("CustomerEmergencyContactId", id).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(Customer_emergency_contacts)).Filter("CustomerEmergencyContactId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -121,12 +134,18 @@ func GetAllCustomer_emergency_contacts(query map[string]string, fields []string,
 // UpdateCustomer_emergency_contacts updates Customer_emergency_contacts by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateCustomer_emergency_contactsById(m *Customer_emergency_contacts) (err error) {
+	return UpdateCustomer_emergency_contactsByIdWithCtx(context.Background(), m)
+}
+
+// UpdateCustomer_emergency_contactsByIdWithCtx is
+// UpdateCustomer_emergency_contactsById with context propagation.
+func UpdateCustomer_emergency_contactsByIdWithCtx(ctx context.Context, m *Customer_emergency_contacts) (err error) {
 	o := orm.NewOrm()
 	v := Customer_emergency_contacts{CustomerEmergencyContactId: m.CustomerEmergencyContactId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
 			fmt.Println("Number of records updated in database:", num)
 		}
 	}
