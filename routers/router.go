@@ -42,6 +42,12 @@ func init() {
 			),
 		),
 
+		beego.NSNamespace("/customer-credentials",
+			beego.NSInclude(
+				&controllers.Customer_credentialsController{},
+			),
+		),
+
 		beego.NSNamespace("/accounts",
 			beego.NSInclude(
 				&controllers.AccountsController{},

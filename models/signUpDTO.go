@@ -5,6 +5,7 @@ import (
 )
 
 type SignUpDTO struct {
+	Username     string `orm:"size(255)"`
 	Name         string `orm:"size(255)"`
 	Password     string `orm:"size(255)"`
 	Email        string `orm:"size(255)"`

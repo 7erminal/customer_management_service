@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -32,8 +33,14 @@ func init() {
 // AddUserInvites insert a new UserInvites into database and returns
 // last inserted Id on success.
 func AddUserInvites(m *UserInvites) (id int64, err error) {
+	return AddUserInvitesWithCtx(context.Background(), m)
+}
+
+// AddUserInvitesWithCtx is AddUserInvites with context propagation
+// (tracing IDs).
+func AddUserInvitesWithCtx(ctx context.Context, m *UserInvites) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
@@ -51,9 +58,15 @@ func GetUserInvitesById(id int64) (v *UserInvites, err error) {
 // GetUserInvitesByTokenId retrieves UserInvites by Id. Returns error if
 // Id doesn't exist
 func GetUserInvitesByToken(token *UserTokens) (v *UserInvites, err error) {
+	return GetUserInvitesByTokenWithCtx(context.Background(), token)
+}
+
+// GetUserInvitesByTokenWithCtx is GetUserInvitesByToken with context
+// propagation.
+func GetUserInvitesByTokenWithCtx(ctx context.Context, token *UserTokens) (v *UserInvites, err error) {
 	o := orm.NewOrm()
 	v = &UserInvites{InvitationToken: token}
-	if err = o.QueryTable(new(UserInvites)).Filter("InvitationToken", token).RelatedSel().One(v); err == nil {
+	if err = o.QueryTable(new(UserInvites)).Filter("InvitationToken", token).RelatedSel().OneWithCtx(ctx, v); err == nil {
 		return v, nil
 	}
 	return nil, err
@@ -246,12 +259,18 @@ func GetAllUserInvites(query map[string]string, fields []string, sortby []string
 // UpdateUserInvites updates UserInvites by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateUserInvitesById(m *UserInvites) (err error) {
+	return UpdateUserInvitesByIdWithCtx(context.Background(), m)
+}
+
+// UpdateUserInvitesByIdWithCtx is UpdateUserInvitesById with context
+// propagation.
+func UpdateUserInvitesByIdWithCtx(ctx context.Context, m *UserInvites) (err error) {
 	o := orm.NewOrm()
 	v := UserInvites{UserInviteId: m.UserInviteId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
 			fmt.Println("Number of records updated in database:", num)
 		}
 	}

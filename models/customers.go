@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -13,10 +14,12 @@ import (
 
 type Customers struct {
 	CustomerId           int64                 `orm:"auto"`
+	CustomerNumber       string                `orm:"column(customer_number);size(255)"`
 	FullName             string                `orm:"column(full_name);size(255)"`
 	ImagePath            string                `orm:"column(image_path);size(255)"`
 	Email                string                `orm:"column(email);size(255);null"`
 	PhoneNumber          string                `orm:"column(phone_number);size(255);null"`
+	Gender               string                `orm:"column(gender);size(10);null"`
 	Location             string                `orm:"column(location);size(255);null"`
 	IdentificationType   *Identification_types `orm:"rel(fk);column(identification_type_id);omitempty;null"`
 	IdentificationNumber string                `orm:"column(identification_number);size(255);null"`
@@ -30,7 +33,6 @@ type Customers struct {
 	CreatedBy            int
 	ModifiedBy           int
 	Active               int
-	User                 *Users                         `orm:"rel(fk);omitempty;null"`
 	LastTxnDate          time.Time                      `orm:"type(datetime)"`
 	EmergencyContacts    []*Customer_emergency_contacts `orm:"reverse(many);null;"`
 	Guarantors           []*Customer_guarantors         `orm:"reverse(many);null;"`
@@ -40,21 +42,58 @@ func init() {
 	orm.RegisterModel(new(Customers))
 }
 
-// AddCustomers insert a new Customers into database and returns
-// last inserted Id on success.
 func AddCustomer(m *Customers) (id int64, err error) {
+	return AddCustomerWithCtx(context.Background(), m)
+}
+
+// AddCustomerWithCtx is AddCustomer with context propagation (tracing IDs).
+func AddCustomerWithCtx(ctx context.Context, m *Customers) (id int64, err error) {
 	o := orm.NewOrm()
-	id, err = o.Insert(m)
+	id, err = o.InsertWithCtx(ctx, m)
 	return
 }
 
 // GetCustomersById retrieves Customers by Id. Returns error if
 // Id doesn't exist
 func GetCustomerById(id int64) (v *Customers, err error) {
+	return GetCustomerByIdWithCtx(context.Background(), id)
+}
+
+// GetCustomerByIdWithCtx is GetCustomerById with context propagation.
+func GetCustomerByIdWithCtx(ctx context.Context, id int64) (v *Customers, err error) {
 	o := orm.NewOrm()
 	v = &Customers{CustomerId: id}
 	qs := o.QueryTable(new(Customers))
-	if err = qs.Filter("CustomerId", id).RelatedSel().One(v); err == nil {
+	if err = qs.Filter("CustomerId", id).RelatedSel().OneWithCtx(ctx, v); err == nil {
+		_, err = o.LoadRelatedWithCtx(ctx, v, "EmergencyContacts")
+		if err != nil {
+			logs.Error("Error loading related EmergencyContacts: ", err)
+		} else {
+			logs.Info("EmergencyContacts loaded successfully")
+			// fmt.Printf("Emergency contacts of customers: %T\n", v)
+			// fmt.Printf("Emergency contacts of customers: %v\n", v.EmergencyContacts)
+			// for _, ec := range v.EmergencyContacts {
+			// 	fmt.Printf("Emergency contact: %v\n", ec)
+			// }
+		}
+		_, err = o.LoadRelatedWithCtx(ctx, v, "Guarantors")
+		if err != nil {
+			logs.Error("Error loading related Guarantors: ", err)
+		}
+		logs.Info("Guarantors loaded successfully")
+		return v, nil
+	}
+	return nil, err
+}
+
+// GetCustomersByMsisdn retrieves Customers by MSISDN. Returns error if
+// MSISDN doesn't exist
+func GetCustomerByMsisdn(msisdn string) (v *Customers, err error) {
+	o := orm.NewOrm()
+
+	v = &Customers{PhoneNumber: fmt.Sprintf("%d", msisdn)}
+	qs := o.QueryTable(new(Customers))
+	if err = qs.Filter("PhoneNumber", msisdn).RelatedSel().One(v); err == nil {
 		_, err = o.LoadRelated(v, "EmergencyContacts")
 		if err != nil {
 			logs.Error("Error loading related EmergencyContacts: ", err)
@@ -369,12 +408,17 @@ func GetAllCustomersByBranch(branch *Branches, query map[string]string, fields [
 // UpdateCustomers updates Customers by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateCustomerById(m *Customers) (err error) {
+	return UpdateCustomerByIdWithCtx(context.Background(), m)
+}
+
+// UpdateCustomerByIdWithCtx is UpdateCustomerById with context propagation.
+func UpdateCustomerByIdWithCtx(ctx context.Context, m *Customers) (err error) {
 	o := orm.NewOrm()
 	v := Customers{CustomerId: m.CustomerId}
 	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
+	if err = o.ReadWithCtx(ctx, &v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
+		if num, err = o.UpdateWithCtx(ctx, m); err == nil {
 			fmt.Println("Number of records updated in database:", num)
 		}
 	}

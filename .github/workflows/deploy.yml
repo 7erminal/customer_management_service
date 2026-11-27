@@ -1,0 +1,46 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "msysmobilizer" ]
+  pull_request:
+    branches: [ "msysmobilizer" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Build
+      env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh -o StrictHostKeyChecking=no root@185.211.5.90 << 'EOF'
+          set -e
+          cd /usr/app/mobile-application/customer-management-service
+          git merge --abort 2>/dev/null || true
+          git rebase --abort 2>/dev/null || true
+          git stash
+          git fetch origin msysmobilizer
+          git reset --hard origin/msysmobilizer
+          git clean -fd
+          go build -o customer-management-service
+          pm2 restart customer-management-service || \
+          pm2 start customer-management-service --name customer-management-service
+        EOF

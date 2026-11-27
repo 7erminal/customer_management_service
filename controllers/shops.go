@@ -192,10 +192,37 @@ func (c *ShopsController) GetAllBranches() {
 
 	l, err := models.GetAllBranches(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		var resp = responses.BranchesResponseDTO{StatusCode: 606, Branches: nil, StatusDesc: "Error fetching users" + err.Error()}
+		var resp = responses.BranchesResponseDTO{StatusCode: 606, Result: nil, StatusDesc: "Error fetching users" + err.Error()}
 		c.Data["json"] = resp
 	} else {
-		var resp = responses.BranchesResponseDTO{StatusCode: 200, Branches: &l, StatusDesc: "Branches fetched"}
+		branches := []responses.BranchResp{}
+		for _, branch := range l {
+			m := branch.(models.Branches)
+			country := responses.CountryResp{
+				CountryId:   strconv.FormatInt(m.Country.CountryId, 64),
+				Country:     m.Country.Country,
+				CountryCode: m.Country.CountryCode,
+				Currency: &responses.CurrencyResp{
+					CurrencyId: strconv.FormatInt(m.Country.DefaultCurrency.CurrencyId, 64),
+					Symbol:     m.Country.DefaultCurrency.Symbol,
+					Currency:   m.Country.DefaultCurrency.Currency,
+				},
+			}
+			branches = append(branches, responses.BranchResp{
+				BranchId:     strconv.FormatInt(m.BranchId, 64),
+				BranchName:   m.Branch,
+				Description:  m.Branch,
+				PhoneNumber:  m.PhoneNumber,
+				Location:     m.Location,
+				Country:      &country,
+				Active:       m.Active,
+				DateCreated:  m.DateCreated,
+				DateModified: m.DateModified,
+				CreatedBy:    strconv.FormatInt(int64(m.CreatedBy), 10),
+				ModifiedBy:   strconv.FormatInt(int64(m.ModifiedBy), 10),
+			})
+		}
+		var resp = responses.BranchesResponseDTO{StatusCode: 200, Result: &branches, StatusDesc: "Branches fetched"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()

@@ -262,6 +262,133 @@ paths:
           description: '{string} delete success!'
         "403":
           description: id is empty
+  /customer-credentials/:
+    get:
+      tags:
+      - customer-credentials
+      description: |-
+        get Customer_credentials
+        <br>
+      operationId: Customer_credentialsController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_credentials'
+        "403":
+          description: ""
+  /customer-credentials/{id}:
+    get:
+      tags:
+      - customer-credentials
+      description: |-
+        get Customer_credentials by id
+        <br>
+      operationId: Customer_credentialsController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_credentials'
+        "403":
+          description: :id is empty
+    delete:
+      tags:
+      - customer-credentials
+      description: |-
+        delete the Customer_credentials
+        <br>
+      operationId: Customer_credentialsController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /customer-credentials/add-customer-credential:
+    post:
+      tags:
+      - customer-credentials
+      description: |-
+        create Customer_credentials
+        <br>
+      operationId: Customer_credentialsController.Post
+      parameters:
+      - in: body
+        name: body
+        description: body for Customer_credentials content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CustomerCredentialRequestDTO'
+      responses:
+        "201":
+          description: '{int} models.Customer_credentials'
+        "403":
+          description: body is empty
+  /customer-credentials/update-customer-credential/{customerId}:
+    put:
+      tags:
+      - customer-credentials
+      description: |-
+        update the Customer_credentials
+        <br>
+      operationId: Customer_credentialsController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for Customer_credentials content
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CustomerCredentialUpdateRequestDTO'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customer_credentials'
+        "403":
+          description: :customerId is not int
   /customer-emergency-contacts/:
     get:
       tags:
@@ -751,6 +878,27 @@ paths:
             $ref: '#/definitions/models.CustomerResponseDTO'
         "403":
           description: :id is not int
+  /customers/phone-number/{msisdn}:
+    get:
+      tags:
+      - customers
+      description: |-
+        get Customers by msisdn
+        <br>
+      operationId: CustomersController.Get Customer by MSISDN
+      parameters:
+      - in: path
+        name: msisdn
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: :msisdn is empty
   /customers/update-customer-image:
     post:
       tags:
@@ -777,6 +925,27 @@ paths:
             $ref: '#/definitions/models.UserResponseDTO'
         "403":
           description: body is empty
+  /customers/username/{username}:
+    get:
+      tags:
+      - customers
+      description: |-
+        get Customers by username
+        <br>
+      operationId: CustomersController.Get Customer by Username
+      parameters:
+      - in: path
+        name: username
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Customers'
+        "403":
+          description: :username is empty
   /id-types/:
     get:
       tags:
@@ -2227,20 +2396,20 @@ paths:
         "403":
           description: :username is empty
 definitions:
-  494.<nil>.0x14000937d88:
-    title: "0x14000937d88"
+  819.<nil>.BranchResp:
+    title: BranchResp
     type: object
-  1380.<nil>.0x14000937f50:
-    title: "0x14000937f50"
+  2080.<nil>.0x57f0a88050e0:
+    title: "0x57f0a88050e0"
     type: object
-  2278.<nil>.0x140009841c8:
-    title: "0x140009841c8"
+  2978.<nil>.0x57f0a88052d8:
+    title: "0x57f0a88052d8"
     type: object
-  3081.<nil>.0x14000984378:
-    title: "0x14000984378"
+  3781.<nil>.0x57f0a8805488:
+    title: "0x57f0a8805488"
     type: object
-  4492.<nil>.0x140009845b8:
-    title: "0x140009845b8"
+  5192.<nil>.0x57f0a88056c8:
+    title: "0x57f0a88056c8"
     type: object
   models.Accounts:
     title: Accounts
@@ -2410,6 +2579,36 @@ definitions:
       ModifiedBy:
         type: integer
         format: int64
+  models.Customer_credentials:
+    title: Customer_credentials
+    type: object
+    properties:
+      Active:
+        type: integer
+        format: int64
+      CreatedBy:
+        type: integer
+        format: int64
+      Customer:
+        $ref: '#/definitions/models.Customers'
+      DateCreated:
+        type: string
+        format: datetime
+      DateModified:
+        type: string
+        format: datetime
+      Id:
+        type: integer
+        format: int64
+      ModifiedBy:
+        type: integer
+        format: int64
+      Password:
+        type: string
+      Pin:
+        type: string
+      Username:
+        type: string
   models.Customer_emergency_contacts:
     title: Customer_emergency_contacts
     type: object
@@ -2510,6 +2709,8 @@ definitions:
       CustomerId:
         type: integer
         format: int64
+      CustomerNumber:
+        type: string
       DateCreated:
         type: string
         format: datetime
@@ -2526,6 +2727,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Customer_emergency_contacts'
       FullName:
+        type: string
+      Gender:
         type: string
       Guarantors:
         type: array
@@ -2551,8 +2754,6 @@ definitions:
         type: string
       Shop:
         $ref: '#/definitions/models.Shops'
-      User:
-        $ref: '#/definitions/models.Users'
   models.Identification_types:
     title: Identification_types
     type: object
@@ -2729,6 +2930,8 @@ definitions:
     title: SignUpDTO
     type: object
     properties:
+      Branch:
+        type: string
       Dob:
         type: string
       Email:
@@ -2745,6 +2948,8 @@ definitions:
         type: string
       RoleRequired:
         type: boolean
+      Username:
+        type: string
   models.UpdateCustomerLastTxnRequest:
     title: UpdateCustomerLastTxnRequest
     type: object
@@ -2819,9 +3024,6 @@ definitions:
         type: string
       Shop:
         $ref: '#/definitions/models.Shops'
-      User:
-        type: integer
-        format: int64
       UserDetailsId:
         type: integer
         format: int64
@@ -3026,6 +3228,29 @@ definitions:
       UserId:
         type: integer
         format: int64
+  requests.CustomerCredentialRequestDTO:
+    title: CustomerCredentialRequestDTO
+    type: object
+    properties:
+      CustomerId:
+        type: integer
+        format: int64
+      Password:
+        type: string
+      Pin:
+        type: string
+      Username:
+        type: string
+  requests.CustomerCredentialUpdateRequestDTO:
+    title: CustomerCredentialUpdateRequestDTO
+    type: object
+    properties:
+      Password:
+        type: string
+      Pin:
+        type: string
+      Username:
+        type: string
   requests.NewsletterRequestDTO:
     title: NewsletterRequestDTO
     type: object
@@ -3123,8 +3348,8 @@ definitions:
     title: BranchesResponseDTO
     type: object
     properties:
-      Branches:
-        $ref: '#/definitions/494.<nil>.0x14000937d88'
+      Result:
+        $ref: '#/definitions/819.<nil>.BranchResp'
       StatusCode:
         type: integer
         format: int64
@@ -3157,7 +3382,7 @@ definitions:
     type: object
     properties:
       Permissions:
-        $ref: '#/definitions/2278.<nil>.0x140009841c8'
+        $ref: '#/definitions/2978.<nil>.0x57f0a88052d8'
       StatusCode:
         type: integer
         format: int64
@@ -3179,7 +3404,7 @@ definitions:
     type: object
     properties:
       Roles:
-        $ref: '#/definitions/3081.<nil>.0x14000984378'
+        $ref: '#/definitions/3781.<nil>.0x57f0a8805488'
       StatusCode:
         type: integer
         format: int64
@@ -3229,7 +3454,7 @@ definitions:
       StatusDesc:
         type: string
       UserInvites:
-        $ref: '#/definitions/1380.<nil>.0x14000937f50'
+        $ref: '#/definitions/2080.<nil>.0x57f0a88050e0'
   responses.UserResponseDTO:
     title: UserResponseDTO
     type: object
@@ -3251,7 +3476,7 @@ definitions:
       StatusDesc:
         type: string
       Users:
-        $ref: '#/definitions/4492.<nil>.0x140009845b8'
+        $ref: '#/definitions/5192.<nil>.0x57f0a88056c8'
   responsesDTOs.InviteDecodeResponseDTO:
     title: InviteDecodeResponseDTO
     type: object
@@ -3265,6 +3490,9 @@ tags:
 - name: customers
   description: |
     CustomersController operations for Customers
+- name: customer-credentials
+  description: |
+    Customer_credentialsController operations for Customer_credentials
 - name: accounts
   description: |
     AccountsController operations for Accounts

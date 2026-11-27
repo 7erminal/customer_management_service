@@ -25,7 +25,7 @@ func EncodeToString(max int) string {
 func ConvertStringToDateTime(date_ string) time.Time {
 	var tDateTime time.Time
 
-	var allowedDateList [4]string = [4]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000"}
+	var allowedDateList [6]string = [6]string{"2006-01-02", "2006/01/02", "2006-01-02 15:04:05.000", "2006/01/02 15:04:05.000", "2006-01-02T15:04:05.000Z", "2006-01-02 15:04:05.000000 -0700 MST"}
 
 	for _, cdate_ := range allowedDateList {
 		logs.Debug("About to convert ", date_)

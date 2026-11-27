@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"customer_management_service/logging"
 	"customer_management_service/models"
 	"customer_management_service/structs/requests"
 	"customer_management_service/structs/responses"
@@ -25,15 +26,17 @@ type CustomersController struct {
 
 // URLMapping ...
 func (c *CustomersController) URLMapping() {
-	c.Mapping("GetOne", c.GetOne)
-	c.Mapping("GetAll", c.GetAll)
-	c.Mapping("Put", c.Put)
-	c.Mapping("Delete", c.Delete)
 	c.Mapping("AddCustomer", c.AddCustomer)
 	c.Mapping("UpdateCustomerImage", c.UpdateCustomerImage)
-	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
-	c.Mapping("GetAllByBranch", c.GetAllByBranch)
 	c.Mapping("GetCustomerCount", c.GetCustomerCount)
+	c.Mapping("GetCustomerByMsisdn", c.GetCustomerByMsisdn)
+	c.Mapping("GetCustomerByUsername", c.GetCustomerByUsername)
+	c.Mapping("GetAllByBranch", c.GetAllByBranch)
+	c.Mapping("UpdateCustomerLastTxnDate", c.UpdateCustomerLastTxnDate)
+	c.Mapping("GetOne", c.GetOne)
+	c.Mapping("Put", c.Put)
+	c.Mapping("Delete", c.Delete)
+	c.Mapping("GetAll", c.GetAll)
 }
 
 // Post ...
@@ -64,6 +67,8 @@ func (c *CustomersController) URLMapping() {
 // @Failure 403 body is empty
 // @router /add-customer [post]
 func (c *CustomersController) AddCustomer() {
+	ctx := c.Ctx.Request.Context()
+	log := logging.For(ctx)
 	// image of user received
 	file, header, err := c.GetFile("CustomerImage")
 	var filePath string = ""
@@ -100,8 +105,6 @@ func (c *CustomersController) AddCustomer() {
 	hashedPassword, errr := bcrypt.GenerateFromPassword([]byte(defaultPassword), 8)
 
 	if errr == nil {
-		logs.Debug(hashedPassword)
-
 		// defaultPassword = string(hashedPassword)
 
 		// logs.Debug("Category received is ", rcategory)
@@ -120,8 +123,10 @@ func (c *CustomersController) AddCustomer() {
 	rlocation := c.Ctx.Input.Query("Location")
 	rbranch := c.Ctx.Input.Query("Branch")
 	raddedBy := c.Ctx.Input.Query("AddedBy")
+	status := c.Ctx.Input.Query("Status")
+	rgender := c.Ctx.Input.Query("Gender")
 
-	logs.Info("Received :::", rdob, " ::: ", rcategoryid, " ::: ", remail, " ::: ", rname, " ::: ", " ::: ", rnickname)
+	log.Info("Received add-customer request")
 
 	var proceed bool = true
 	errorCode := 302
@@ -184,6 +189,19 @@ func (c *CustomersController) AddCustomer() {
 			idType = *idtype_
 		}
 
+		// Gender
+		rgender = strings.ToUpper(rgender)
+
+		if rgender == "MALE" {
+			rgender = "M"
+		}
+		if rgender == "FEMALE" {
+			rgender = "F"
+		}
+		if rgender != "M" && rgender != "F" {
+			rgender = "N"
+		}
+
 		branch := models.Branches{}
 		idB, _ := strconv.ParseInt(rbranch, 10, 64)
 		if branch_, err := models.GetBranchesById(idB); err != nil {
@@ -199,23 +217,41 @@ func (c *CustomersController) AddCustomer() {
 
 		user, _ := strconv.ParseInt(raddedBy, 10, 64)
 
-		var cust models.Customers
-		if idType.IdentificationTypeId == 0 {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
-		} else {
-			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: 1, CreatedBy: int(user), ModifiedBy: int(user)}
+		activeStatus := 0
+
+		if strings.ToUpper(status) == "ACTIVE" || strings.ToUpper(status) == "1" || strings.ToUpper(status) == "ENABLED" {
+			activeStatus = 1
+		} else if strings.ToUpper(status) == "PENDING" || strings.ToUpper(status) == "2" || strings.ToUpper(status) == "DISABLED" {
+			activeStatus = 2
 		}
 
-		if _, err := models.AddCustomer(&cust); err == nil {
-			logs.Info("Customer added successfully ", cust.CustomerId)
+		var cust models.Customers
+		if idType.IdentificationTypeId == 0 {
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+		} else {
+			cust = models.Customers{FullName: rname, Branch: &branch, ImagePath: filePath, PhoneNumber: rphonenumber, Location: rlocation, Email: remail, Gender: rgender, Dob: dobm, IdentificationType: &idType, IdentificationNumber: ridnumber, Shop: nil, Nickname: rnickname, CustomerCategory: &category, DateCreated: time.Now(), DateModified: time.Now(), Active: activeStatus, CreatedBy: int(user), ModifiedBy: int(user)}
+		}
+
+		if _, err := models.AddCustomerWithCtx(ctx, &cust); err == nil {
+			log.Info("Customer added", "customer_id", cust.CustomerId)
 			c.Ctx.Output.SetStatus(200)
 			errorCode := 200
 			message := "Customer added successfully"
+
+			// Generate customer number
+			cust.CustomerNumber = fmt.Sprintf("CUST%06d", cust.CustomerId)
+			log.Info("Generated customer number", "customer_id", cust.CustomerId, "customer_number", cust.CustomerNumber)
+			if err := models.UpdateCustomerByIdWithCtx(ctx, &cust); err != nil {
+				log.Error("Error updating customer number", "customer_id", cust.CustomerId, "error", err.Error())
+				errorCode = 609
+				message = "An error occurred updating customer number. " + err.Error()
+			}
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: &cust, StatusDesc: message}
 			c.Data["json"] = resp
+
 		} else {
 			// c.Data["json"] = err.Error()
-			logs.Error("An error occurred adding customer ", err.Error())
+			log.Error("Error adding customer", "error", err.Error())
 			if strings.Contains(strings.ToUpper(err.Error()), "DUPLICATE") || strings.Contains(strings.ToUpper(err.Error()), "UNIQUE") {
 				errorCode = 607
 				message = "Customer with the same email or phone number already exists"
@@ -223,7 +259,7 @@ func (c *CustomersController) AddCustomer() {
 				errorCode = 608
 				message = "An error occurred adding customer. " + err.Error()
 			}
-			logs.Info("Error adding customer message:: ", message)
+			log.Info("Add customer failed", "error_code", errorCode)
 			var resp = models.CustomerResponseDTO{StatusCode: errorCode, Customer: nil, StatusDesc: message}
 			c.Data["json"] = resp
 		}
@@ -251,7 +287,71 @@ func (c *CustomersController) GetOne() {
 		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
 		c.Data["json"] = resp
 	} else {
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
 		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "User created successfully"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
+// GetCustomerByMsisdn ...
+// @Title Get Customer by MSISDN
+// @Description get Customers by msisdn
+// @Param	msisdn		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Customers
+// @Failure 403 :msisdn is empty
+// @router /phone-number/:msisdn [get]
+func (c *CustomersController) GetCustomerByMsisdn() {
+	msisdn := c.Ctx.Input.Param(":msisdn")
+	v, err := models.GetCustomerByMsisdn(msisdn)
+	if err != nil {
+		logs.Error("An error occurred fetching customer")
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
+
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v, StatusDesc: "Customer fetched successfully"}
+		c.Data["json"] = resp
+	}
+	c.ServeJSON()
+}
+
+// GetCustomerByUsername ...
+// @Title Get Customer by Username
+// @Description get Customers by username
+// @Param	username		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Customers
+// @Failure 403 :username is empty
+// @router /username/:username [get]
+func (c *CustomersController) GetCustomerByUsername() {
+	username := c.Ctx.Input.Param(":username")
+	v, err := models.GetCustomer_credentialsByCustomerUsername(username)
+	if err != nil {
+		logs.Error("An error occurred fetching customer")
+		logs.Error(err.Error())
+		var resp = models.CustomerResponseDTO{StatusCode: 608, Customer: nil, StatusDesc: "Error fetching customer " + err.Error()}
+		c.Data["json"] = resp
+	} else {
+		logs.Info("Fetched customer: ", v.Customer.FullName)
+		jsonStr, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			logs.Error("Failed to marshal customer to JSON: ", err)
+		} else {
+			logs.Info("Fetched customer: ", string(jsonStr))
+		}
+		logs.Info("Customer fetched successfully ", v.Customer.FullName)
+		var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: v.Customer, StatusDesc: "Customer fetched successfully"}
 		c.Data["json"] = resp
 	}
 	c.ServeJSON()
@@ -487,6 +587,7 @@ func (c *CustomersController) Put() {
 		rlocation := c.Ctx.Input.Query("Location")
 		rbranch := c.Ctx.Input.Query("Branch")
 		rmodifiedby := c.Ctx.Input.Query("ModifiedBy")
+		rstatus := c.Ctx.Input.Query("Status")
 		user, _ := strconv.ParseInt(rmodifiedby, 10, 64)
 		logs.Info("File path is ", filePath, " and customer image path is ", cust.ImagePath)
 		if filePath == "" && cust.ImagePath != "" {
@@ -501,6 +602,25 @@ func (c *CustomersController) Put() {
 		cust.Location = rlocation
 		cust.ImagePath = filePath
 		cust.ModifiedBy = int(user)
+		statusInt, err := strconv.Atoi(rstatus)
+		if err != nil {
+			logs.Error("Invalid status value: ", rstatus, " error: ", err)
+			statusInt = 0 // or set a default/fallback value
+		}
+
+		activeStatus := 0
+
+		logs.Info("Status received is ", rstatus, " and status int is ", statusInt)
+
+		if strings.ToUpper(rstatus) == "ACTIVE" || strings.ToUpper(rstatus) == "1" || strings.ToUpper(rstatus) == "ENABLED" {
+			activeStatus = 1
+		} else if strings.ToUpper(rstatus) == "PENDING" || strings.ToUpper(rstatus) == "2" || strings.ToUpper(rstatus) == "DISABLED" {
+			activeStatus = 2
+		}
+
+		cust.Active = activeStatus
+
+		logs.Info("Status is ", rstatus, " and status int is ", statusInt)
 
 		idT, _ := strconv.ParseInt(ridtype, 10, 64)
 		if idtype, err := models.GetIdentification_typesById(idT); err != nil {
@@ -540,6 +660,8 @@ func (c *CustomersController) Put() {
 			cust.Branch = branch_
 		}
 
+		logs.Info("About to update customer record ", cust.CustomerId, " with name ", cust.FullName)
+		logs.Info("Date created for customer is ", cust.DateCreated)
 		if err := models.UpdateCustomerById(cust); err == nil {
 			c.Ctx.Output.SetStatus(200)
 			var resp = models.CustomerResponseDTO{StatusCode: 200, Customer: cust, StatusDesc: "Customer updated successfully"}

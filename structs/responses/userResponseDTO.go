@@ -44,7 +44,7 @@ type UsersResponseDTO struct {
 
 type UsersAllCustomersDTO struct {
 	StatusCode int
-	Users      *[]interface{}
+	Users      *[]models.Users
 	StatusDesc string
 }
 
